@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  rage4j:
+    build:
+      context: .
+    ports:
+      - "3005:80"
+    environment:
+      - NODE_ENV=production

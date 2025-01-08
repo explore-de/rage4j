@@ -1,0 +1,32 @@
+# Ignore Maven's target directory
+/target/
+
+# Ignore Maven's dependency directory
+.m2/
+
+# Ignore Eclipse project files
+*.classpath
+*.project
+*.settings/
+
+# Ignore IntelliJ project files
+*.idea/
+*.iml
+*.ipr
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore compiled files
+*.class
+
+# Ignore other common generated files
+*.jar
+*.war
+*.ear
+/de.explore.rage4j/.env
+/.env

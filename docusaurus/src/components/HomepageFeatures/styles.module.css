@@ -1,0 +1,185 @@
+:root {
+    --section-bg: #070707;
+}
+
+/* Stats Styles */
+.statsSection {
+    background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9));
+    padding: 6rem 0;
+}
+
+.statsCard {
+    background: rgba(220, 38, 38, 0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.statsValue {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: white;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.5rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.statsCard:hover {
+    transform: translateY(-5px);
+}
+
+.statsIcon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.statsLabel {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+[data-theme='light'] .statsSection {
+    background: #ffffff;
+}
+
+[data-theme='light'] .statsCard {
+    background: rgba(255, 68, 0, 0.18);
+}
+
+[data-theme='light'] .statsValue {
+    -webkit-text-fill-color: black;
+}
+
+[data-theme='light'] .statsLabel {
+    color: black;
+}
+
+/* Features Styles */
+.quickStartSection {
+    background: var(--section-bg);
+}
+
+.featuresSection {
+    padding: 4rem 0;
+    position: relative;
+    background: black;
+}
+
+.featuresTitle {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.5rem;
+    background: var(--rage-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.featureCard {
+    background: black;
+}
+
+.featureGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+[data-theme='light'] .featuresSection {
+    background: black;
+}
+
+[data-theme='light'] .featureCard {
+    background: rgba(255, 255, 255, 0);
+    -webkit-text-fill-color: white;
+}
+
+[data-theme='light'] .featuresTitle {
+    -webkit-text-fill-color: #cb2c2c;
+}
+
+/* Installation Styles */
+.installationTitle {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 5rem;
+    text-align: center;
+}
+
+.installationSection {
+    padding: 4rem 0;
+    background: var(--section-bg);
+}
+
+.installationDescription {
+    max-width: 800px;
+    margin: 0 0 0 0;
+    margin-left: 20px;
+    text-align: left;
+}
+
+[data-theme='light'] .installationSection {
+    background: #ffffff;
+}
+
+/* Learn More Styles */
+.learnMoreSection {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.learnMoreDescription {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.getStartedButton {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.getStartedButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(220, 38, 38, 0.2);
+    background: var(--ifm-color-primary);
+    color: white;
+    border-color: var(--ifm-color-primary);
+}
+
+[data-theme='light'] .getStartedButton {
+    color: white;
+    background: black;
+}
+
+[data-theme='light'] .getStartedButton:hover {
+    background: var(--ifm-color-primary);
+}
