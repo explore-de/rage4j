@@ -1,11 +1,11 @@
-package dev.rage4j.core;
+package dev.rage4j.asserts;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.rage4j.core.exception.Rage4JCorrectnessException;
-import dev.rage4j.core.exception.Rage4JFaithfulnessException;
-import dev.rage4j.core.exception.Rage4JRelevanceException;
-import dev.rage4j.core.exception.Rage4JSimilarityException;
+import dev.rage4j.asserts.exception.Rage4JCorrectnessException;
+import dev.rage4j.asserts.exception.Rage4JFaithfulnessException;
+import dev.rage4j.asserts.exception.Rage4JRelevanceException;
+import dev.rage4j.asserts.exception.Rage4JSimilarityException;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.answercorrectness.AnswerCorrectnessEvaluator;
 import dev.rage4j.evaluation.answerrelevance.AnswerRelevanceEvaluator;
