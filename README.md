@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="docusaurus/static/img/rage4j.png" alt="rage4j" width="450" height="450">
+</div>
+
 # Rage4J
 
 For specific information about individual parts of the system,
@@ -10,3 +14,5 @@ there are maven wrappers inside the individual modules
 (`./mvnw`). Please use the exentra code formatter, and
 (on VSCode) install the editorconfig extension (IntelliJ has
 built-in support).
+
+
