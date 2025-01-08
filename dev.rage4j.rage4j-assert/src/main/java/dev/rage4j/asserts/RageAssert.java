@@ -1,4 +1,4 @@
-package dev.rage4j.core;
+package dev.rage4j.asserts;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;

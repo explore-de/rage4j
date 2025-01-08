@@ -1,4 +1,4 @@
-package dev.rage4j.core.exception;
+package dev.rage4j.asserts.exception;
 
 public class Rage4JSimilarityException extends RuntimeException
 {

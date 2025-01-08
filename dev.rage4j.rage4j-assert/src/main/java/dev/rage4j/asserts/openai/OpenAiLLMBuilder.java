@@ -1,9 +1,9 @@
-package dev.rage4j.openai;
+package dev.rage4j.asserts.openai;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
-import dev.rage4j.core.LLMBuilder;
-import dev.rage4j.core.RageAssert;
+import dev.rage4j.asserts.LLMBuilder;
+import dev.rage4j.asserts.RageAssert;
 
 public class OpenAiLLMBuilder implements LLMBuilder
 {

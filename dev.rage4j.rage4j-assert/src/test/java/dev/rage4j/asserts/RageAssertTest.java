@@ -1,11 +1,11 @@
-package dev.rage4j.core;
+package dev.rage4j.asserts;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
-import dev.rage4j.core.exception.Rage4JCorrectnessException;
-import dev.rage4j.core.exception.Rage4JFaithfulnessException;
-import dev.rage4j.core.exception.Rage4JRelevanceException;
-import dev.rage4j.core.exception.Rage4JSimilarityException;
-import dev.rage4j.openai.OpenAiLLMBuilder;
+import dev.rage4j.asserts.exception.Rage4JCorrectnessException;
+import dev.rage4j.asserts.exception.Rage4JFaithfulnessException;
+import dev.rage4j.asserts.exception.Rage4JRelevanceException;
+import dev.rage4j.asserts.exception.Rage4JSimilarityException;
+import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

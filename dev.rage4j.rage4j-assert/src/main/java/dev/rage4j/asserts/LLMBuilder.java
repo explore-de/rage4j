@@ -1,4 +1,4 @@
-package dev.rage4j.core;
+package dev.rage4j.asserts;
 
 public interface LLMBuilder
 {
