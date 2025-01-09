@@ -28,21 +28,20 @@ RAGE4J helps you assess LLM outputs across four key dimensions:
 ## Library Structure
 
 - **RAGE4J-Core**
-  - Evaluation metrics
-  - Sample handling
-  - Result aggregation
-  - Utility functions
+    - Evaluation metrics
+    - Sample handling
+    - Result aggregation
+    - Utility functions
 
 - **RAGE4J-Assert**
-  - JUnit integration
-  - Assertion helpers
-  - Test utilities
+    - JUnit integration
+    - Assertion helpers
+    - Test utilities
 
 ---
 
 Explore more about RAGE4J:
 
-1. [Installation](/docs/installation)
-2. [RAGE4j-Core](/docs/category/rage4j-core)
-3. [RAGE4j-Assert](/docs/category/rage4j-assert)
-4. [Contribution guide](/docs/contribution)
+1. [RAGE4j-Core](/docs/category/rage4j-core)
+2. [RAGE4j-Assert](/docs/category/rage4j-assert)
+3. [Contribution guide](/docs/contribution)
