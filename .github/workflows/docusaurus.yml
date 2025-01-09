@@ -20,14 +20,17 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+        working-directory: docusaurus
+
       - name: Build website
         run: yarn build
+        working-directory: docusaurus
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: docusaurus-build
-          path: build
+          path: docusaurus/build
 
   # deploy:
   #   name: Deploy

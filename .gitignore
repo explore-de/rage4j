@@ -30,3 +30,5 @@ Thumbs.db
 *.ear
 /de.explore.rage4j/.env
 /.env
+/github
+/github.pub
