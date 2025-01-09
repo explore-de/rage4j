@@ -17,9 +17,10 @@
     overflow: hidden;
 }
 
-.codeBlockLines_e6Vv {
+.codeBlockLines_RjmQ {
     background: #000000;
     margin: 0 auto;
+    white-space: break-spaces;
 }
 
 code {
@@ -134,7 +135,7 @@ nav.navbar {
     color: #e3e3e3;
 }
 
-[data-theme='light'] .codeBlockLines_e6Vv {
+[data-theme='light'] .codeBlockLines_RjmQ {
     background: #ffffff;
     border: 1px solid #c4c4c4;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
