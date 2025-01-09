@@ -27,4 +27,4 @@ jobs:
         with:
           context: "docusaurus"
           push: true
-          tags: ghcr.io/explore-de/rage4j:docu
+          tags: ghcr.io/explore-de/rage4j-docu
