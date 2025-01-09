@@ -140,15 +140,8 @@
                             </goals>
                         </execution>
                     </executions>
-                    <dependencies>
-                        <dependency>
-                            <groupId>de.exentra.maven</groupId>
-                            <artifactId>codeformatter</artifactId>
-                            <version>1.2</version>
-                        </dependency>
-                    </dependencies>
                     <configuration>
-                        <configFile>${project.basedir}/../formatter/java.xml</configFile>
+                        <configFile>${project.basedir}/formatter/java.xml</configFile>
                     </configuration>
                 </plugin>
             </plugins>
