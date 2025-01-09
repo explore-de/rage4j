@@ -11,7 +11,7 @@ const mavenDependency = `<dependency>
 </dependency>`;
 
 export default function HomepageFeatures(): JSX.Element {
-    const {stats, loading} = getGitHubStats('exp', 'rage4j'); // change to actual 'rage4j' repo when ready
+    const {stats, loading} = getGitHubStats('explore-de', 'rage4j');
     const githubStars = stats.stars;
     const githubForks = stats.forks;
 
