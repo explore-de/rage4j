@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import Cookies from 'js-cookie';
 
 interface GitHubApi {
     stars: number;
@@ -7,21 +7,45 @@ interface GitHubApi {
     version: string;
 }
 
+const COOKIE_KEY = 'github_stats';
+const COOKIE_EXPIRY = 6;
+
+function getStoredStats(): GitHubApi | null {
+    const stored = Cookies.get(COOKIE_KEY);
+    if (!stored) return null;
+
+    const data = JSON.parse(stored);
+    const now = new Date().getTime();
+
+    if (now > data.expiry) {
+        Cookies.remove(COOKIE_KEY);
+        return null;
+    }
+
+    return data.stats;
+}
+
+function storeStats(stats: GitHubApi) {
+    const expiry = new Date().getTime() + (COOKIE_EXPIRY * 60 * 60 * 1000);
+    Cookies.set(COOKIE_KEY, JSON.stringify({stats, expiry}), {expires: COOKIE_EXPIRY / 24});
+}
+
 export function getGitHubStats(owner: string, repo: string) {
-    const {siteConfig} = useDocusaurusContext();
-    const githubToken = siteConfig.customFields.githubToken as string;
     const [stats, setStats] = useState<GitHubApi>({stars: 0, forks: 0, version: '0.0.0'});
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const cachedStats = getStoredStats();
+        if (cachedStats) {
+            setStats(cachedStats);
+            setLoading(false);
+            return;
+        }
+
         const fetchOptions = {
             headers: {
-                'Accept': 'application/vnd.github.v3+json',
-                ...(githubToken && {
-                    'Authorization': `Bearer ${githubToken}`
-                })
-            },
-            method: 'GET'
+                'Accept': 'application/vnd.github.v3+json'
+            }
         };
 
         Promise.all([
@@ -29,26 +53,21 @@ export function getGitHubStats(owner: string, repo: string) {
             fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`, fetchOptions)
         ])
             .then(([repoResponse, releaseResponse]) => {
-                if (!repoResponse.ok || !releaseResponse.ok) {
-                    throw new Error('Failed to fetch data');
-                }
+                if (!repoResponse.ok) throw new Error(`GitHub API Error: ${repoResponse.status}`);
                 return Promise.all([repoResponse.json(), releaseResponse.json()]);
             })
             .then(([repoData, releaseData]) => {
-                setStats({
+                const newStats = {
                     stars: repoData.stargazers_count || 0,
                     forks: repoData.forks_count || 0,
                     version: releaseData.tag_name?.replace('v', '') || '0.0.0'
-                });
+                };
+                setStats(newStats);
+                storeStats(newStats);
             })
-            .catch((error) => {
-                console.error('GitHub API Error:', error);
-                setStats({stars: 0, forks: 0, version: '0.0.0'});
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, [owner, repo, githubToken]);
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, [owner, repo]);
 
     return {stats, loading};
 }
