@@ -1,0 +1,41 @@
+name: Build and Deploy Docusaurus
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Docusaurus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build website
+        run: yarn build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docusaurus-build
+          path: build
+
+  # deploy:
+  #   name: Deploy
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download Build Artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: docusaurus-build
+  #         path: build
