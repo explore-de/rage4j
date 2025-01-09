@@ -1,9 +1,5 @@
 /* Hero Styles */
-.codeBlockLines_e6Vv {
-    background: #000000;
-    margin: 0 auto;
-    white-space: pre-line;
-}
+
 
 .hero::before {
     content: '';
