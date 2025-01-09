@@ -1,3 +1,6 @@
+[![SonarCloud analysis](https://github.com/explore-de/rage4j/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/explore-de/rage4j/actions/workflows/sonarcloud.yml)
+[![Docusaurus](https://github.com/explore-de/rage4j/actions/workflows/docusaurus.yml/badge.svg)](https://github.com/explore-de/rage4j/actions/workflows/docusaurus.yml)
+
 <div align="center">
     <img src="docusaurus/static/img/rage4j.png" alt="rage4j" width="450" height="450">
 </div>
