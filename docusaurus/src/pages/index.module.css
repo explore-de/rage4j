@@ -1,6 +1,4 @@
 /* Hero Styles */
-
-
 .hero::before {
     content: '';
     position: absolute;
