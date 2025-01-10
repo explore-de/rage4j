@@ -8,7 +8,6 @@ interface GitHubApi {
 }
 
 const COOKIE_KEY = 'github_stats';
-const COOKIE_EXPIRY = 6;
 
 function getStoredStats(): GitHubApi | null {
     const stored = Cookies.get(COOKIE_KEY);
@@ -26,8 +25,8 @@ function getStoredStats(): GitHubApi | null {
 }
 
 function storeStats(stats: GitHubApi) {
-    const expiry = new Date().getTime() + (COOKIE_EXPIRY * 60 * 60 * 1000);
-    Cookies.set(COOKIE_KEY, JSON.stringify({stats, expiry}), {expires: COOKIE_EXPIRY / 24});
+    const expiry = new Date().getTime() + (6 * 60 * 60 * 1000); // default is 6 hours
+    Cookies.set(COOKIE_KEY, JSON.stringify({stats, expiry}), {expires: 6 / 24});
 }
 
 export function getGitHubStats(owner: string, repo: string) {
@@ -78,28 +77,3 @@ export function formatNumber(num: number): string {
     }
     return num.toString();
 }
-
-export const useTypewriter = (text: string, speed: number = 50) => {
-    const [displayText, setDisplayText] = useState('');
-
-    useEffect(() => {
-        setDisplayText('');
-
-        const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-        const typeText = async () => {
-            for (let i = 0; i < text.length; i++) {
-                await sleep(speed);
-                setDisplayText(current => current + text.charAt(i));
-            }
-        };
-
-        typeText();
-
-        return () => {
-            setDisplayText('');
-        };
-    }, [text, speed]);
-
-    return displayText;
-};

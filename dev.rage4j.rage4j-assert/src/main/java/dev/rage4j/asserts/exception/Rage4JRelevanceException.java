@@ -9,6 +9,7 @@ public class Rage4JRelevanceException extends RuntimeException
 
 	public Rage4JRelevanceException()
 	{
+		// empty
 	}
 
 }
