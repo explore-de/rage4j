@@ -9,5 +9,6 @@ public class Rage4JFaithfulnessException extends RuntimeException
 
 	public Rage4JFaithfulnessException()
 	{
+		// empty
 	}
 }

@@ -4,9 +4,33 @@ import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 
 import styles from './index.module.css';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import CodeBlock from "@theme/CodeBlock";
-import {useTypewriter} from "@site/src/api/GitHubApi";
+
+const useTypewriter = (text: string, speed: number = 50) => {
+    const [displayText, setDisplayText] = useState('');
+
+    useEffect(() => {
+        setDisplayText('');
+
+        const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+        const typeText = async () => {
+            for (let i = 0; i < text.length; i++) {
+                await sleep(speed);
+                setDisplayText(current => current + text.charAt(i));
+            }
+        };
+
+        typeText();
+
+        return () => {
+            setDisplayText('');
+        };
+    }, [text, speed]);
+
+    return displayText;
+};
 
 function HomepageHeader() {
 
@@ -35,9 +59,8 @@ function HomepageHeader() {
                                 Get Started →
                             </Link>
                             <Link
-                                // change to actual github repository
                                 className="button button--outline button--secondary button--lg"
-                                to="https://github.com/exp/rage4j">
+                                to="https://github.com/explore-de/rage4j">
                                 View on GitHub
                             </Link>
                         </div>

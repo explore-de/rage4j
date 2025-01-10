@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RageAssertTest
 {
+	private static final String MINVALUE = "Answer did not reach required min value!";
 	private static final String QUESTION = "What is the capital of France?";
 	private static final String GROUND_TRUTH = "The capital of France is Paris.";
 	private static final String ANSWER = "The capital of France is Paris.";
@@ -57,7 +58,7 @@ class RageAssertTest
 			Rage4JCorrectnessException.class,
 			() -> testCaseAssertions.assertAnswerCorrectness(0.7));
 
-		assertTrue(ex.getMessage().startsWith("Answer did not reach required min value!"));
+		assertTrue(ex.getMessage().startsWith(MINVALUE));
 	}
 
 	@Test
@@ -90,7 +91,7 @@ class RageAssertTest
 			Rage4JFaithfulnessException.class,
 			() -> testCaseAssertions.assertFaithfulness(1.1));
 
-		assertTrue(ex.getMessage().startsWith("Answer did not reach required min value!"));
+		assertTrue(ex.getMessage().startsWith(MINVALUE));
 	}
 
 	@Test
@@ -121,7 +122,7 @@ class RageAssertTest
 			Rage4JSimilarityException.class,
 			() -> testCaseAssertions.assertSemanticSimilarity(1.1));
 
-		assertTrue(ex.getMessage().startsWith("Answer did not reach required min value!"));
+		assertTrue(ex.getMessage().startsWith(MINVALUE));
 	}
 
 	@Test
@@ -154,6 +155,6 @@ class RageAssertTest
 			Rage4JRelevanceException.class,
 			() -> testCaseAssertions.assertAnswerRelevance(1.1));
 
-		assertTrue(ex.getMessage().startsWith("Answer did not reach required min value!"));
+		assertTrue(ex.getMessage().startsWith(MINVALUE));
 	}
 }

@@ -9,5 +9,6 @@ public class Rage4JCorrectnessException extends RuntimeException
 
 	public Rage4JCorrectnessException()
 	{
+		// empty
 	}
 }

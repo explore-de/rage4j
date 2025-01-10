@@ -5,9 +5,15 @@ import CodeBlock from "@theme/CodeBlock";
 import {formatNumber, getGitHubStats} from "@site/src/api/GitHubApi";
 
 const mavenDependency = `<dependency>
-    <groupId>de.explore</groupId>
+    <groupId>dev.rage4j</groupId>
     <artifactId>rage4j</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
+</dependency>`;
+
+const assertDependency = `<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage4j-assert</artifactId>
+    <version>1.1.0</version>
 </dependency>`;
 
 export default function HomepageFeatures(): JSX.Element {
@@ -68,11 +74,25 @@ export default function HomepageFeatures(): JSX.Element {
                     <div>
                         <Heading as="h2" className={styles.installationTitle}>Installation</Heading>
                         <p className={styles.installationDescription}>
-                            Add the following maven dependency to your project's pom.xml file:
+                            Get started by adding the RAGE4J dependency to your project:
                         </p>
                     </div>
                     <div>
                         <CodeBlock language="xml">{mavenDependency}</CodeBlock>
+                    </div>
+                </div>
+
+                <div style={{height: '4rem'}}></div>
+
+
+                <div className="container">
+                    <div>
+                        <p className={styles.installationDescription}>
+                            Or try our intuitive and user-friendly wrapper for the RAGE4J-Core API:
+                        </p>
+                    </div>
+                    <div>
+                        <CodeBlock language="xml">{assertDependency}</CodeBlock>
                     </div>
                 </div>
 

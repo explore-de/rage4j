@@ -9,5 +9,6 @@ public class Rage4JSimilarityException extends RuntimeException
 
 	public Rage4JSimilarityException()
 	{
+		// empty
 	}
 }

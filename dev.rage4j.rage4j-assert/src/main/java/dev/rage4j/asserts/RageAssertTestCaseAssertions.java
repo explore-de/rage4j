@@ -24,6 +24,8 @@ public class RageAssertTestCaseAssertions
 	private List<String> contextList;
 	private String answer;
 
+	private static final String MINVALUE = "Answer did not reach required min value! Evaluated value: ";
+
 	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, ChatLanguageModel chatLanguageModel, EmbeddingModel embeddingModel)
 	{
 		this.answer = answer;
@@ -47,7 +49,7 @@ public class RageAssertTestCaseAssertions
 
 		if (minValue > evaluation.getValue())
 		{
-			throw new Rage4JFaithfulnessException("Answer did not reach required min value! Evaluated value: " + evaluation.getValue() + " answer: " + answer);
+			throw new Rage4JFaithfulnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
 		}
 		return evaluation;
 	}
@@ -64,7 +66,7 @@ public class RageAssertTestCaseAssertions
 
 		if (minValue > evaluation.getValue())
 		{
-			throw new Rage4JCorrectnessException("Answer did not reach required min value! Evaluated value: " + evaluation.getValue() + " answer: " + answer);
+			throw new Rage4JCorrectnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
 		}
 		return evaluation;
 	}
@@ -81,8 +83,7 @@ public class RageAssertTestCaseAssertions
 
 		if (minValue > evaluation.getValue())
 		{
-			throw new Rage4JRelevanceException("Answer did not reach required min value! Evaluated value: "
-				+ evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
+			throw new Rage4JRelevanceException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
 		return evaluation;
 	}
@@ -98,8 +99,7 @@ public class RageAssertTestCaseAssertions
 
 		if (minValue > evaluation.getValue())
 		{
-			throw new Rage4JSimilarityException("Answer did not reach required min value! Evaluated value: "
-				+ evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
+			throw new Rage4JSimilarityException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
 		return evaluation;
 	}
