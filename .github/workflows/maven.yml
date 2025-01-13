@@ -1,0 +1,28 @@
+name: Publish package to GitHub Packages
+on:
+  push:
+    branches:
+      - main
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Validate, Clean, Package, and Generate BOM
+        env:
+          OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
+        run: |
+          mvn -B formatter:validate
+          mvn -B -U -fae clean package
+          mvn cyclonedx:makeAggregateBom
+      - name: Publish package
+        run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

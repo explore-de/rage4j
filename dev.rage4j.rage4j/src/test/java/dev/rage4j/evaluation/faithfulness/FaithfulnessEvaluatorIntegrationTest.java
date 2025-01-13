@@ -23,7 +23,7 @@ class FaithfulnessEvaluatorIntegrationTest
 	private static final String GROUND_TRUTH = "Paris";
 	private static final List<String> CONTEXTS = List.of("Paris is the capital of France.");
 
-	private static final String OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
+	private static final String OPENAI_API_KEY = System.getenv("OPEN_API_KEY");
 
 	private FaithfulnessEvaluator evaluator;
 

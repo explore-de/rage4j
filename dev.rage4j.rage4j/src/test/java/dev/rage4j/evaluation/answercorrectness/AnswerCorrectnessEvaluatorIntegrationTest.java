@@ -23,7 +23,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	private static final String ANSWER_WITH_FALSE_NEGATIVE = "Paris is the capital.";
 	private static final String QUESTION = "What is the capital of France?";
 
-	private static final String OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
+	private static final String OPENAI_API_KEY = System.getenv("OPEN_API_KEY");
 
 	private AnswerCorrectnessEvaluator evaluator;
 

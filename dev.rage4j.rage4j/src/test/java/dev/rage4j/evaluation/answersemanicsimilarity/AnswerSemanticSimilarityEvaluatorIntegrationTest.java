@@ -22,7 +22,7 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "The capital of France is Paris.";
 
-	private static final String OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
+	private static final String OPENAI_API_KEY = System.getenv("OPEN_API_KEY");
 
 	private AnswerSemanticSimilarityEvaluator evaluator;
 
