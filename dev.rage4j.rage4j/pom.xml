@@ -142,6 +142,7 @@
                     </executions>
                     <configuration>
                         <configFile>${project.basedir}/formatter/java.xml</configFile>
+                        <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
             </plugins>

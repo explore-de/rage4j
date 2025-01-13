@@ -15,7 +15,11 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 
 /**
- * The {@code AnswerRelevanceEvaluator} class evaluates the relevance of an answer by comparing the original question with generated questions derived from the answer. It calculates the cosine similarity between the original question and the generated questions, and returns the mean similarity as the evaluation score.
+ * The {@code AnswerRelevanceEvaluator} class evaluates the relevance of an
+ * answer by comparing the original question with generated questions derived
+ * from the answer. It calculates the cosine similarity between the original
+ * question and the generated questions, and returns the mean similarity as the
+ * evaluation score.
  */
 public class AnswerRelevanceEvaluator implements Evaluator
 {
@@ -26,12 +30,16 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	private final BiFunction<String, String, Double> stringSimilarityComputer;
 
 	/**
-	 * Constructs an {@code AnswerRelevanceEvaluator} using the provided language model and embedding model. The {@code AnswerRelevanceBot} is created using the provided {@code ChatLanguageModel}, and a string similarity computer is initialized using the {@code EmbeddingModel}.
+	 * Constructs an {@code AnswerRelevanceEvaluator} using the provided
+	 * language model and embedding model. The {@code AnswerRelevanceBot} is
+	 * created using the provided {@code ChatLanguageModel}, and a string
+	 * similarity computer is initialized using the {@code EmbeddingModel}.
 	 *
 	 * @param chatModel
-	 * 	The chat language model used to generate the bot.
+	 *            The chat language model used to generate the bot.
 	 * @param embeddingModel
-	 * 	The embedding model used to compute string similarity between questions.
+	 *            The embedding model used to compute string similarity between
+	 *            questions.
 	 */
 	public AnswerRelevanceEvaluator(ChatLanguageModel chatModel, EmbeddingModel embeddingModel)
 	{
@@ -40,12 +48,15 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	}
 
 	/**
-	 * Constructs an {@code AnswerRelevanceEvaluator} with a provided bot and string similarity computer. This constructor is useful for testing, where the bot and similarity computer can be mocked or injected.
+	 * Constructs an {@code AnswerRelevanceEvaluator} with a provided bot and
+	 * string similarity computer. This constructor is useful for testing, where
+	 * the bot and similarity computer can be mocked or injected.
 	 *
 	 * @param bot
-	 * 	The {@code AnswerRelevanceBot} used to generate questions from an answer.
+	 *            The {@code AnswerRelevanceBot} used to generate questions from
+	 *            an answer.
 	 * @param stringSimilarityComputer
-	 * 	A function that computes the similarity between two strings.
+	 *            A function that computes the similarity between two strings.
 	 */
 	public AnswerRelevanceEvaluator(AnswerRelevanceBot bot, BiFunction<String, String, Double> stringSimilarityComputer)
 	{
@@ -54,11 +65,16 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	}
 
 	/**
-	 * Evaluates the relevance of the provided sample's answer by generating questions from the answer, comparing them to the original question, and calculating the mean cosine similarity. If no generated questions are produced, a score of 0 is returned.
+	 * Evaluates the relevance of the provided sample's answer by generating
+	 * questions from the answer, comparing them to the original question, and
+	 * calculating the mean cosine similarity. If no generated questions are
+	 * produced, a score of 0 is returned.
 	 *
 	 * @param sample
-	 * 	The sample containing the original question and answer to be evaluated.
-	 * @return An {@code Evaluation} object containing the metric name and the calculated relevance score.awdawd
+	 *            The sample containing the original question and answer to be
+	 *            evaluated.
+	 * @return An {@code Evaluation} object containing the metric name and the
+	 *         calculated relevance score.awdawd
 	 */
 	public Evaluation evaluate(Sample sample)
 	{
@@ -80,12 +96,14 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	}
 
 	/**
-	 * Computes the mean cosine similarity between the original question and an array of generated questions. The similarities are calculated using a string similarity computer.
+	 * Computes the mean cosine similarity between the original question and an
+	 * array of generated questions. The similarities are calculated using a
+	 * string similarity computer.
 	 *
 	 * @param originalQuestion
-	 * 	The original question in the sample.
+	 *            The original question in the sample.
 	 * @param generatedQuestions
-	 * 	The questions generated from the answer.
+	 *            The questions generated from the answer.
 	 * @return The mean cosine similarity score.
 	 */
 	private double getMeanCosineSimilarity(String originalQuestion, String[] generatedQuestions)
