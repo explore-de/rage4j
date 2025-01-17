@@ -23,7 +23,7 @@ class FaithfulnessEvaluatorIntegrationTest
 	private static final String GROUND_TRUTH = "Paris";
 	private static final List<String> CONTEXTS = List.of("Paris is the capital of France.");
 
-	private static final String OPENAI_API_KEY = System.getenv("OPEN_API_KEY");
+	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 
 	private FaithfulnessEvaluator evaluator;
 
@@ -32,7 +32,7 @@ class FaithfulnessEvaluatorIntegrationTest
 	{
 		// Initialise the evaluator using OpenAIChatModel
 		OpenAiChatModel model = OpenAiChatModel.builder()
-			.apiKey(OPENAI_API_KEY)
+			.apiKey(OPEN_AI_KEY)
 			.modelName(GPT_4_O)
 			.build();
 

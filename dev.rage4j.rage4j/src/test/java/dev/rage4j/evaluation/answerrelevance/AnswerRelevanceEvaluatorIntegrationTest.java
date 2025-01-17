@@ -27,7 +27,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "Paris";
 
-	private static final String OPENAI_API_KEY = System.getenv("OPEN_API_KEY");
+	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 
 	private AnswerRelevanceEvaluator evaluator;
 	private AnswerRelevanceBot mockBot;
@@ -39,14 +39,14 @@ class AnswerRelevanceEvaluatorIntegrationTest
 		// Initialise the evaluator using OpenAIChatModel and
 		// OpenAIEmbeddingModel
 		OpenAiChatModel chatModel = OpenAiChatModel.builder()
-			.apiKey(OPENAI_API_KEY)
+			.apiKey(OPEN_AI_KEY)
 			.modelName(GPT_4_O)
 			.responseFormat("json_object")
 			.build();
 
 		EmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
 			.modelName(TEXT_EMBEDDING_3_LARGE)
-			.apiKey(OPENAI_API_KEY)
+			.apiKey(OPEN_AI_KEY)
 			.build();
 
 		evaluator = new AnswerRelevanceEvaluator(chatModel, embeddingModel);
