@@ -1,4 +1,4 @@
-name: ci
+name: Docusaurus Docker Build and Push
 
 on:
   push:
