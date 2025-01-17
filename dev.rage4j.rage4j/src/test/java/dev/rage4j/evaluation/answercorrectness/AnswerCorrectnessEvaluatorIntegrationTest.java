@@ -23,7 +23,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	private static final String ANSWER_WITH_FALSE_NEGATIVE = "Paris is the capital.";
 	private static final String QUESTION = "What is the capital of France?";
 
-	private static final String OPENAI_API_KEY = System.getenv("OPEN_API_KEY");
+	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 
 	private AnswerCorrectnessEvaluator evaluator;
 
@@ -32,7 +32,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	{
 		// Initialise the evaluator using OpenAIChatModel
 		OpenAiChatModel model = OpenAiChatModel.builder()
-			.apiKey(OPENAI_API_KEY)
+			.apiKey(OPEN_AI_KEY)
 			.modelName(GPT_4)
 			.build();
 		evaluator = new AnswerCorrectnessEvaluator(model);

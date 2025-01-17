@@ -22,7 +22,7 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "The capital of France is Paris.";
 
-	private static final String OPENAI_API_KEY = System.getenv("OPEN_API_KEY");
+	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 
 	private AnswerSemanticSimilarityEvaluator evaluator;
 
@@ -32,7 +32,7 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 		// Initialise the evaluator using OpenAIEmbeddingModel
 		EmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
 			.modelName(TEXT_EMBEDDING_3_LARGE)
-			.apiKey(OPENAI_API_KEY)
+			.apiKey(OPEN_AI_KEY)
 			.build();
 
 		evaluator = new AnswerSemanticSimilarityEvaluator(embeddingModel);
