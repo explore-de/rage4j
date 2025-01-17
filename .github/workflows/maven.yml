@@ -17,7 +17,7 @@ jobs:
           distribution: 'temurin'
       - name: Validate, Clean, Package, and Generate BOM
         env:
-          OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
+          OPEN_API_KEY: ${{ secrets.OPEN_AI_KEY }}
         run: |
           mvn -B formatter:validate
           mvn -B -U -fae clean package
