@@ -1,4 +1,4 @@
-name: Publish package to GitHub Packages
+name: Publish Maven to GitHub Packages
 on:
   push:
     branches:
@@ -17,7 +17,7 @@ jobs:
           distribution: 'temurin'
       - name: Validate, Clean, Package, and Generate BOM
         env:
-          OPEN_API_KEY: ${{ secrets.OPEN_AI_KEY }}
+          OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}
         run: |
           mvn -B formatter:validate
           mvn -B -U -fae clean package
