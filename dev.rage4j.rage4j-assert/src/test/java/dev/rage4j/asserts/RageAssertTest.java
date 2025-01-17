@@ -24,7 +24,7 @@ class RageAssertTest
 	private static final String ANSWER_WRONG_RELEVANCE = "The weather in Paris is nice today.";
 	private static final List<String> CONTEXT = List.of(
 		"Paris is the capital and largest city of France.");
-	private final String key = System.getenv("OPEN_API_KEY");
+	private final String key = System.getenv("OPEN_AI_KEY");
 	private final OpenAiChatModel model = OpenAiChatModel.builder()
 		.apiKey(key)
 		.modelName(GPT_4_O_MINI)
