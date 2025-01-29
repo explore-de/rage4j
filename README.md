@@ -1,4 +1,4 @@
-[![SonarCloud analysis](https://github.com/explore-de/rage4j/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/explore-de/rage4j/actions/workflows/sonarcloud.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=explore-de_rage4j&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=explore-de_rage4j)
 [![Docusaurus](https://github.com/explore-de/rage4j/actions/workflows/docusaurus.yml/badge.svg)](https://github.com/explore-de/rage4j/actions/workflows/docusaurus.yml)
 
 <div align="center">
