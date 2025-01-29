@@ -22,7 +22,8 @@ jobs:
           mvn -B formatter:validate
           mvn -B -U -fae clean package
           mvn cyclonedx:makeAggregateBom
-      - name: Publish package
-        run: mvn --batch-mode deploy
+      - name: Publish packages
+        run: |
+          mvn --batch-mode deploy -pl rage4j,rage4j-assert -am
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
