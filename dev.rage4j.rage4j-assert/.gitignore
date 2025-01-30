@@ -40,3 +40,5 @@ build/
 /.idea/
 
 .env
+
+Jenkinsfile

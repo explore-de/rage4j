@@ -30,10 +30,15 @@
     </dependencyManagement>
 
     <distributionManagement>
-        <repository>
+        <snapshotRepository>
             <id>github</id>
             <name>github</name>
             <url>https://maven.pkg.github.com/explore-de/rage4j</url>
+        </snapshotRepository>
+        <repository>
+            <id>maven-central</id>
+            <name>Central Repository OSSRH</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
@@ -126,6 +131,17 @@
                     <target>21</target>
                 </configuration>
             </plugin>
+            <!-- Plugin for publishing to maven central -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.7.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
+ 
