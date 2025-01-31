@@ -24,6 +24,13 @@ built-in support).
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://ris5266.github.io"><img src="https://avatars.githubusercontent.com/u/86254687?v=4?s=100" width="100px;" alt="richard"/><br /><sub><b>richard</b></sub></a><br /><a href="#code-ris5266" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
