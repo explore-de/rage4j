@@ -15,15 +15,11 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-      - name: Validate, Clean, Package, and Generate BOM
+      - name: Build and Deploy
         env:
           OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn -B formatter:validate
-          mvn -B -U -fae clean package
+          mvn -B -U clean deploy
           mvn cyclonedx:makeAggregateBom
-      - name: Publish packages
-        run: |
-          mvn --batch-mode deploy -pl rage4j,rage4j-assert -am
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
