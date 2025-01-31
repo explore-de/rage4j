@@ -1,4 +1,21 @@
 {
   "projectName": "rage4j",
-  "projectOwner": "exp"
+  "projectOwner": "explore-de",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "ris5266",
+      "name": "richard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/86254687?v=4",
+      "profile": "http://ris5266.github.io",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
