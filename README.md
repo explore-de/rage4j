@@ -28,6 +28,7 @@ built-in support).
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://ris5266.github.io"><img src="https://avatars.githubusercontent.com/u/86254687?v=4?s=100" width="100px;" alt="richard"/><br /><sub><b>richard</b></sub></a><br /><a href="#code-ris5266" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://social.mymiggi.de/@miggi"><img src="https://avatars.githubusercontent.com/u/70092362?v=4?s=100" width="100px;" alt="Michael Hainz"/><br /><sub><b>Michael Hainz</b></sub></a><br /><a href="#code-MiggiV2" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
