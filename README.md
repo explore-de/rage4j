@@ -30,6 +30,7 @@ built-in support).
       <td align="center" valign="top" width="14.28%"><a href="http://ris5266.github.io"><img src="https://avatars.githubusercontent.com/u/86254687?v=4?s=100" width="100px;" alt="richard"/><br /><sub><b>richard</b></sub></a><br /><a href="#code-ris5266" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://social.mymiggi.de/@miggi"><img src="https://avatars.githubusercontent.com/u/70092362?v=4?s=100" width="100px;" alt="Michael Hainz"/><br /><sub><b>Michael Hainz</b></sub></a><br /><a href="#code-MiggiV2" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/vladislavkn"><img src="https://avatars.githubusercontent.com/u/51641565?v=4?s=100" width="100px;" alt="Vladislav Knyshov"/><br /><sub><b>Vladislav Knyshov</b></sub></a><br /><a href="#code-vladislavkn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://explore.de"><img src="https://avatars.githubusercontent.com/u/545499?v=4?s=100" width="100px;" alt="Markus Herhoffer"/><br /><sub><b>Markus Herhoffer</b></sub></a><br /><a href="#projectManagement-d135-1r43" title="Project Management">📆</a></td>
     </tr>
   </tbody>
 </table>
