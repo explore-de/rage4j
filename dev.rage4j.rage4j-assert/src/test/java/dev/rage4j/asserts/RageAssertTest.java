@@ -9,7 +9,6 @@ import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static org.junit.jupiter.api.Assertions.assertThrows;
