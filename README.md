@@ -34,6 +34,7 @@ built-in support).
       <td align="center" valign="top" width="14.28%"><a href="http://explore.de"><img src="https://avatars.githubusercontent.com/u/545499?v=4?s=100" width="100px;" alt="Markus Herhoffer"/><br /><sub><b>Markus Herhoffer</b></sub></a><br /><a href="#projectManagement-d135-1r43" title="Project Management">📆</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/babyygemperor"><img src="https://avatars.githubusercontent.com/u/25747019?v=4?s=100" width="100px;" alt="Aamin Gem"/><br /><sub><b>Aamin Gem</b></sub></a><br /><a href="#code-babyygemperor" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/vvilip"><img src="https://avatars.githubusercontent.com/u/115623345?v=4?s=100" width="100px;" alt="DrBilip"/><br /><sub><b>DrBilip</b></sub></a><br /><a href="#code-vvilip" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Andy1734"><img src="https://avatars.githubusercontent.com/u/94300201?v=4?s=100" width="100px;" alt="Andreas Dinauer"/><br /><sub><b>Andreas Dinauer</b></sub></a><br /><a href="#code-Andy1734" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
