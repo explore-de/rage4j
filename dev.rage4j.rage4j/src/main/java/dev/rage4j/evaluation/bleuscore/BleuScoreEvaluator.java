@@ -9,6 +9,11 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The {@code BleuScoreEvaluator} class implements the BLEU (Bilingual Evaluation Understudy) metric for evaluating the quality of generated text against reference text. It compares n-gram matches between candidate and reference texts to assess translation/generation quality.
+ * <p>
+ * The result is a score between 0 and 1, where 1.0 indicates perfect match with reference 0.0 indicates no matching n-grams.
+ */
 public class BleuScoreEvaluator implements Evaluator
 {
 	private static final String METRIC_NAME = "BLEU score";
@@ -18,6 +23,13 @@ public class BleuScoreEvaluator implements Evaluator
 
 	private static final Logger LOG = LoggerFactory.getLogger(BleuScoreEvaluator.class);
 
+	/**
+	 * Evaluates the quality of generated text against a reference text using the BLEU metric.
+	 *
+	 * @param sample
+	 * 	The sample containing both the generated answer and ground truth
+	 * @return An Evaluation object containing the BLEU score
+	 */
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
@@ -32,6 +44,15 @@ public class BleuScoreEvaluator implements Evaluator
 		return new Evaluation(METRIC_NAME, score);
 	}
 
+	/**
+	 * Calculates the BLEU score between a candidate and reference text.
+	 *
+	 * @param candidate
+	 * 	The generated text to evaluate
+	 * @param reference
+	 * 	The ground truth text to compare against
+	 * @return A score between 0 and 1, where 1 indicates perfect match
+	 */
 	private double calculateBleuScore(String candidate, String reference)
 	{
 		if (candidate.isEmpty())
@@ -76,6 +97,17 @@ public class BleuScoreEvaluator implements Evaluator
 		return brevityPenalty * Math.exp(weightedLogPrecision);
 	}
 
+	/**
+	 * Calculates the clipped n-gram precision for a specific n-gram size. Clipping ensures that we don't over-count n-grams that appear more times in the candidate than in the reference.
+	 *
+	 * @param candidate
+	 * 	Array of words from candidate text
+	 * @param reference
+	 * 	Array of words from reference text
+	 * @param n
+	 * 	The n-gram size to evaluate
+	 * @return The clipped precision score for the given n-gram size
+	 */
 	private double calculateClippedNGramPrecision(String[] candidate, String[] reference, int n)
 	{
 		if (candidate.length < n || reference.length < n)
@@ -101,6 +133,15 @@ public class BleuScoreEvaluator implements Evaluator
 		return totalCount == 0 ? 0.0 : (double)clippedCount / totalCount;
 	}
 
+	/**
+	 * Creates a frequency map of n-grams from an array of tokens.
+	 *
+	 * @param tokens
+	 * 	Array of words to extract n-grams from
+	 * @param n
+	 * 	Size of n-grams to generate
+	 * @return Map containing n-grams and their frequencies
+	 */
 	private Map<String, Integer> getNGramCounts(String[] tokens, int n)
 	{
 		Map<String, Integer> counts = new HashMap<>();
@@ -119,6 +160,15 @@ public class BleuScoreEvaluator implements Evaluator
 		return counts;
 	}
 
+	/**
+	 * Calculates the brevity penalty to penalize short translations.
+	 *
+	 * @param candidateLength
+	 * 	Length of the candidate text
+	 * @param referenceLength
+	 * 	Length of the reference text
+	 * @return Brevity penalty factor between 0 and 1
+	 */
 	private double calculateBrevityPenalty(int candidateLength, int referenceLength)
 	{
 		if (candidateLength >= referenceLength)
