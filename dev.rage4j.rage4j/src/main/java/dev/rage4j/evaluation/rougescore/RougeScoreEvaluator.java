@@ -7,8 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static dev.rage4j.util.NGramUtils.getNGrams;
 
 /**
  * The {@code RougeScoreEvaluator} class implements the ROUGE (Recall-Oriented Understudy for Gisting Evaluation) metric for evaluating the quality of generated text against reference text.
@@ -119,26 +120,6 @@ public class RougeScoreEvaluator implements Evaluator
 		double recall = (double)overlap / referenceNgrams.size();
 
 		return getScore(precision, recall);
-	}
-
-	/**
-	 * Generates n-grams from an array of tokens.
-	 *
-	 * @param tokens
-	 * 	The input array of tokens
-	 * @param n
-	 * 	The size of n-grams to generate
-	 * @return A list of n-gram arrays
-	 */
-	private List<String[]> getNGrams(String[] tokens, int n)
-	{
-		List<String[]> ngrams = new ArrayList<>();
-		for (int i = 0; i <= tokens.length - n; i++)
-		{
-			String[] ngram = Arrays.copyOfRange(tokens, i, i + n);
-			ngrams.add(ngram);
-		}
-		return ngrams;
 	}
 
 	/**
