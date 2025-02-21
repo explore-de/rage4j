@@ -6,8 +6,9 @@ import dev.rage4j.model.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import static dev.rage4j.util.NGramUtils.getNGramCounts;
 
 /**
  * The {@code BleuScoreEvaluator} class implements the BLEU (Bilingual Evaluation Understudy) metric for evaluating the quality of generated text against reference text. It compares n-gram matches between candidate and reference texts to assess translation/generation quality.
@@ -17,9 +18,11 @@ import java.util.Map;
 public class BleuScoreEvaluator implements Evaluator
 {
 	private static final String METRIC_NAME = "BLEU score";
-	private static final double[] WEIGHTS = { 0.25, 0.25, 0.25, 0.25 };
-	private static final int MAX_NGRAM = 4;
 	private static final double EPSILON = 1e-10;
+
+	// maximum n-gram size is 4, with all of them weighted equally
+	private static final int MAX_NGRAM = 4;
+	private static final double[] WEIGHTS = { 0.25, 0.25, 0.25, 0.25 };
 
 	private static final Logger LOG = LoggerFactory.getLogger(BleuScoreEvaluator.class);
 
@@ -55,16 +58,6 @@ public class BleuScoreEvaluator implements Evaluator
 	 */
 	private double calculateBleuScore(String candidate, String reference)
 	{
-		if (candidate.isEmpty())
-		{
-			return 0.0;
-		}
-
-		if (candidate.equals(reference))
-		{
-			return 1.0;
-		}
-
 		String[] candidateWords = candidate.toLowerCase().split("\\s+");
 		String[] referenceWords = reference.toLowerCase().split("\\s+");
 
@@ -92,7 +85,12 @@ public class BleuScoreEvaluator implements Evaluator
 			weightedLogPrecision += WEIGHTS[i] * Math.log(smoothedPrecision);
 		}
 
-		double brevityPenalty = calculateBrevityPenalty(candidateWords.length, referenceWords.length);
+		if (candidateWords.length >= referenceWords.length)
+		{
+			return 1.0;
+		}
+
+		double brevityPenalty = Math.exp(1 - ((double)referenceWords.length / candidateWords.length));
 
 		return brevityPenalty * Math.exp(weightedLogPrecision);
 	}
@@ -131,50 +129,5 @@ public class BleuScoreEvaluator implements Evaluator
 		}
 
 		return totalCount == 0 ? 0.0 : (double)clippedCount / totalCount;
-	}
-
-	/**
-	 * Creates a frequency map of n-grams from an array of tokens.
-	 *
-	 * @param tokens
-	 * 	Array of words to extract n-grams from
-	 * @param n
-	 * 	Size of n-grams to generate
-	 * @return Map containing n-grams and their frequencies
-	 */
-	private Map<String, Integer> getNGramCounts(String[] tokens, int n)
-	{
-		Map<String, Integer> counts = new HashMap<>();
-		if (tokens.length < n) return counts;
-
-		for (int i = 0; i <= tokens.length - n; i++)
-		{
-			StringBuilder ngram = new StringBuilder();
-			for (int j = 0; j < n; j++)
-			{
-				if (j > 0) ngram.append(" ");
-				ngram.append(tokens[i + j]);
-			}
-			counts.merge(ngram.toString(), 1, Integer::sum);
-		}
-		return counts;
-	}
-
-	/**
-	 * Calculates the brevity penalty to penalize short translations.
-	 *
-	 * @param candidateLength
-	 * 	Length of the candidate text
-	 * @param referenceLength
-	 * 	Length of the reference text
-	 * @return Brevity penalty factor between 0 and 1
-	 */
-	private double calculateBrevityPenalty(int candidateLength, int referenceLength)
-	{
-		if (candidateLength >= referenceLength)
-		{
-			return 1.0;
-		}
-		return Math.exp(1 - ((double)referenceLength / candidateLength));
 	}
 }
