@@ -1,11 +1,14 @@
 package dev.rage4j.asserts;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.rage4j.asserts.exception.Rage4JBleuScoreException;
 import dev.rage4j.asserts.exception.Rage4JCorrectnessException;
 import dev.rage4j.asserts.exception.Rage4JFaithfulnessException;
 import dev.rage4j.asserts.exception.Rage4JRelevanceException;
+import dev.rage4j.asserts.exception.Rage4JRougeScoreException;
 import dev.rage4j.asserts.exception.Rage4JSimilarityException;
 import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
+import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -159,15 +162,77 @@ class RageAssertTest
 		assertTrue(ex.getMessage().startsWith(MINVALUE));
 	}
 
+	@Test
+	void testBleuScoreApi()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		rageAssert.given()
+			.question(QUESTION)
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(model::generate)
+			.then()
+			.assertBleuScore(0.7);
+	}
+
+	@Test
+	void shouldThrowBleuScoreException()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
+			.question(QUESTION)
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(a -> ANSWER_WRONG)
+			.then();
+
+		Rage4JBleuScoreException ex = assertThrows(
+			Rage4JBleuScoreException.class,
+			() -> testCaseAssertions.assertBleuScore(1.1));
+
+		assertTrue(ex.getMessage().startsWith(MINVALUE));
+	}
+
+	@Test
+	void testRougeScoreApi()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		rageAssert.given()
+			.question(QUESTION)
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(model::generate)
+			.then()
+			.assertRougeScore(0.7, RougeScoreEvaluator.RougeType.ROUGE1, RougeScoreEvaluator.MeasureType.F1SCORE);
+	}
+
+	@Test
+	void shouldThrowRougeScoreException()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
+			.question(QUESTION)
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(a -> ANSWER_WRONG)
+			.then();
+
+		Rage4JRougeScoreException ex = assertThrows(
+			Rage4JRougeScoreException.class,
+			() -> testCaseAssertions.assertRougeScore(0.9, RougeScoreEvaluator.RougeType.ROUGE1, RougeScoreEvaluator.MeasureType.PRECISION));
+
+		assertTrue(ex.getMessage().startsWith(MINVALUE));
+	}
+
 	private static String obtainOpenAiKey()
 	{
 		String key = System.getProperty("openAiKey");
-		if(key != null && !key.isBlank())
+		if (key != null && !key.isBlank())
 		{
 			return key;
 		}
 		String keyFromEnv = System.getenv("OPEN_AI_KEY");
-		if(keyFromEnv != null && !keyFromEnv.isBlank())
+		if (keyFromEnv != null && !keyFromEnv.isBlank())
 		{
 			return keyFromEnv;
 		}
