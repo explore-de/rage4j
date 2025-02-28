@@ -1,12 +1,15 @@
 package dev.rage4j.evaluation.bleuscore;
 
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
+import dev.rage4j.util.StringSimilarityComputer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import static dev.rage4j.util.NGramUtils.getNGramCounts;
 
@@ -19,12 +22,23 @@ public class BleuScoreEvaluator implements Evaluator
 {
 	private static final String METRIC_NAME = "BLEU score";
 	private static final double EPSILON = 1e-10;
+	private final BiFunction<String, String, Double> stringSimilarityComputer;
 
 	// maximum n-gram size is 4, with all of them weighted equally
 	private static final int MAX_NGRAM = 4;
 	private static final double[] WEIGHTS = { 0.25, 0.25, 0.25, 0.25 };
 
 	private static final Logger LOG = LoggerFactory.getLogger(BleuScoreEvaluator.class);
+
+	public BleuScoreEvaluator(EmbeddingModel embeddingModel)
+	{
+		this.stringSimilarityComputer = new StringSimilarityComputer(embeddingModel);
+	}
+
+	public BleuScoreEvaluator()
+	{
+		this.stringSimilarityComputer = null;
+	}
 
 	/**
 	 * Evaluates the quality of generated text against a reference text using the BLEU metric.

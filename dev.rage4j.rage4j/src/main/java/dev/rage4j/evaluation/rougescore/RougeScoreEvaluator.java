@@ -1,13 +1,16 @@
 package dev.rage4j.evaluation.rougescore;
 
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
+import dev.rage4j.util.StringSimilarityComputer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static dev.rage4j.util.NGramUtils.getNGrams;
 
@@ -18,6 +21,7 @@ public class RougeScoreEvaluator implements Evaluator
 {
 	private static final String METRIC_NAME = "ROUGE score";
 	private static final double EPSILON = 1e-8;
+	private final BiFunction<String, String, Double> stringSimilarityComputer;
 
 	private static final Logger LOG = LoggerFactory.getLogger(RougeScoreEvaluator.class);
 
@@ -34,14 +38,26 @@ public class RougeScoreEvaluator implements Evaluator
 		PRECISION, RECALL, F1SCORE
 	}
 
-	// use ROUGE1 and F1-Score by default
+	public RougeScoreEvaluator(EmbeddingModel embeddingModel)
+	{
+		this(embeddingModel, RougeType.ROUGE1, MeasureType.F1SCORE);
+	}
+
+	public RougeScoreEvaluator(EmbeddingModel embeddingModel, RougeType rougeType, MeasureType measureType)
+	{
+		this.stringSimilarityComputer = new StringSimilarityComputer(embeddingModel);
+		this.rougeType = rougeType;
+		this.measureType = measureType;
+	}
+
 	public RougeScoreEvaluator()
 	{
-		this(RougeType.ROUGE1, MeasureType.F1SCORE);
+		this(null, RougeType.ROUGE1, MeasureType.F1SCORE);
 	}
 
 	public RougeScoreEvaluator(RougeType rougeType, MeasureType measureType)
 	{
+		this.stringSimilarityComputer = null;
 		this.rougeType = rougeType;
 		this.measureType = measureType;
 	}
@@ -56,16 +72,15 @@ public class RougeScoreEvaluator implements Evaluator
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
-		String candidate = sample.getAnswerOrFail();
-		String reference = sample.getGroundTruthOrFail();
-
+		String answer = sample.getAnswerOrFail();
+		String groundTruth = sample.getGroundTruthOrFail();
 		LOG.info("Evaluating new sample");
-		LOG.info("Ground truth: {}", reference);
-		LOG.info("Answer: {}", candidate);
+		LOG.info("Ground truth: {}", groundTruth);
+		LOG.info("Answer: {}", answer);
 
-		double score = calculateRougeScore(candidate, reference);
-		LOG.info("ROUGE score: {}", score);
-		return new Evaluation(METRIC_NAME, score);
+		double score = calculateRougeScore(answer, groundTruth);
+		LOG.info("ROUGE score ({}): {}", rougeType, score);
+		return new Evaluation(METRIC_NAME + " " + rougeType, score);
 	}
 
 	/**
