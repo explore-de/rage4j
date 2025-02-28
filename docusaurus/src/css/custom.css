@@ -17,11 +17,19 @@
     overflow: hidden;
 }
 
-.codeBlockLines_RjmQ {
+.codeBlockLines_e6Vv {
     background: #000000;
     margin: 0 auto;
     white-space: break-spaces;
 }
+
+
+[data-theme='light'] .codeBlockLines_e6Vv {
+    background: #ffffff;
+    border: 1px solid #c4c4c4;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
 
 code {
     transition: background-color var(--theme-transition-duration) ease-in-out,
@@ -133,12 +141,6 @@ nav.navbar {
 
 [data-theme='light'] .navbar__item {
     color: #e3e3e3;
-}
-
-[data-theme='light'] .codeBlockLines_RjmQ {
-    background: #ffffff;
-    border: 1px solid #c4c4c4;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme='light'] .navbar__item:hover {
