@@ -34,9 +34,9 @@
             <version>0.36.2</version>
         </dependency>
         <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j</artifactId>
-            <version>0.36.2</version>
+            <groupId>io.smallrye.config</groupId>
+            <artifactId>smallrye-config-core</artifactId>
+            <version>3.12.4</version>
         </dependency>
 
         <!-- Testing -->
