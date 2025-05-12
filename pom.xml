@@ -4,10 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>Rage4J</name>
+    <description>Rage4J</description>
+    <url>https://github.com/explore-de/rage4j</url>
+
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-reactor</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <scm>
+        <connection>scm:git:https://github.com/explore-de/rage4j.git</connection>
+        <developerConnection>scm:git:git@github.com:explore-de/rage4j.git</developerConnection>
+        <url>https://github.com/explore-de/rage4j</url>
+    </scm>
 
     <modules>
         <module>dev.rage4j.rage4j-assert</module>
@@ -133,6 +143,18 @@
             </plugin>
         </plugins>
     </build>
+
+    <developers>
+        <developer>
+            <id>ris5266</id>
+            <name>Richard Stiglmayr</name>
+            <email>richard.stiglmayr@explore.de</email>
+            <url>https://github.com/ris5266</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <profiles>
         <profile>
