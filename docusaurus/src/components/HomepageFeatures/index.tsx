@@ -7,13 +7,13 @@ import {formatNumber, getGitHubStats} from "@site/src/api/GitHubApi";
 const mavenDependency = `<dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j</artifactId>
-    <version>1.1.0</version>
+    <version>1.0.4</version>
 </dependency>`;
 
 const assertDependency = `<dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-assert</artifactId>
-    <version>1.1.0</version>
+    <version>1.0.1</version>
 </dependency>`;
 
 export default function HomepageFeatures(): JSX.Element {
