@@ -36,7 +36,7 @@ public class RageAssertTestCaseAssertions
 		this.embeddingModel = embeddingModel;
 	}
 
-	public Evaluation assertFaithfulness(double minValue)
+	public AssertionEvaluation assertFaithfulness(double minValue)
 	{
 		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatLanguageModel);
 		Sample sample = Sample.builder()
@@ -51,10 +51,10 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new Rage4JFaithfulnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
 		}
-		return evaluation;
+		return AssertionEvaluation.from(evaluation, this);
 	}
 
-	public Evaluation assertAnswerCorrectness(double minValue)
+	public AssertionEvaluation assertAnswerCorrectness(double minValue)
 	{
 		AnswerCorrectnessEvaluator evaluator = new AnswerCorrectnessEvaluator(chatLanguageModel);
 		Sample sample = Sample.builder()
@@ -68,10 +68,10 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new Rage4JCorrectnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
 		}
-		return evaluation;
+		return AssertionEvaluation.from(evaluation, this);
 	}
 
-	public Evaluation assertAnswerRelevance(double minValue)
+	public AssertionEvaluation assertAnswerRelevance(double minValue)
 	{
 		AnswerRelevanceEvaluator evaluator = new AnswerRelevanceEvaluator(chatLanguageModel, embeddingModel);
 		Sample sample = Sample.builder()
@@ -85,10 +85,10 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new Rage4JRelevanceException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
-		return evaluation;
+		return AssertionEvaluation.from(evaluation, this);
 	}
 
-	public Evaluation assertSemanticSimilarity(double minValue)
+	public AssertionEvaluation assertSemanticSimilarity(double minValue)
 	{
 		AnswerSemanticSimilarityEvaluator evaluator = new AnswerSemanticSimilarityEvaluator(embeddingModel);
 		Sample sample = Sample.builder()
@@ -101,6 +101,6 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new Rage4JSimilarityException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
-		return evaluation;
+		return AssertionEvaluation.from(evaluation, this);
 	}
 }
