@@ -6,7 +6,6 @@ import dev.rage4j.asserts.exception.Rage4JFaithfulnessException;
 import dev.rage4j.asserts.exception.Rage4JRelevanceException;
 import dev.rage4j.asserts.exception.Rage4JSimilarityException;
 import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -162,11 +161,17 @@ class RageAssertTest
 
 	private static String obtainOpenAiKey()
 	{
-		String openAiKey = ConfigProvider.getConfig().getValue("open.ai.key", String.class);
-		if(openAiKey != null)
+		String key = System.getProperty("openAiKey");
+		if(key != null && !key.isBlank())
 		{
-			return openAiKey;
+			return key;
 		}
-		throw new NoSuchElementException("Cannot load open ai key. Set env 'OPEN_AI_KEY'");
+
+		String keyFromEnv = System.getenv("OPEN_AI_KEY");
+		if(keyFromEnv != null && !keyFromEnv.isBlank())
+		{
+			return keyFromEnv;
+		}
+		throw new NoSuchElementException("Cannot load open ai key. Set env 'OPEN_AI_KEY' or system property 'openAiKey'");
 	}
 }
