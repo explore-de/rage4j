@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rage-assert</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <parent>
         <groupId>dev.rage4j</groupId>
         <artifactId>rage4j-reactor</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>dev.rage4j</groupId>
             <artifactId>rage4j</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.5-SNAPSHOT</version>
         </dependency>
 
         <!-- 3rd party -->
