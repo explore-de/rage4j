@@ -31,7 +31,7 @@ RAGE4j provides four built-in evaluators for assessing different aspects of LLM 
 
 ```java
 // 1. Create an evaluator
-Evaluator answerRelevanceEvaluator = new AnswerRelevanceEvaluator(chatModel);
+Evaluator answerRelevanceEvaluator = new AnswerRelevanceEvaluator(chatModel, embeddingModel);
 
 // 2. Create a sample
 Sample sample = Sample.builder()
