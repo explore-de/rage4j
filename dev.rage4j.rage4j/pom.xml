@@ -70,6 +70,14 @@
             <version>3.1.12</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- SLF4J Provider -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.18</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
