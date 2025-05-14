@@ -8,10 +8,10 @@ const config: Config = {
     favicon: "img/favicon.ico",
 
     /* change to actual website */
-    url: "https://andresCh01.github.io",
+    url: "https://explore-de.github.io",
     baseUrl: "/rage4j/",
 
-    organizationName: "andresCh01",
+    organizationName: "explore-de",
     projectName: "rage4j",
 
     trailingSlash: false,
