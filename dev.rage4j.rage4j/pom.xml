@@ -61,8 +61,8 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.17</version>
-            <scope>provided</scope>
+            <version>1.5.18</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.janino</groupId>
