@@ -163,7 +163,7 @@ class RageAssertTest
 	private static String obtainOpenAiKey()
 	{
 		String openAiKey = ConfigProvider.getConfig().getValue("open.ai.key", String.class);
-		if(openAiKey != null)
+		if (openAiKey != null)
 		{
 			return openAiKey;
 		}
