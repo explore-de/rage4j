@@ -8,14 +8,15 @@ public class AssertionEvaluation
 	private final Evaluation evaluation;
 
 	/**
-	 * Constructs a new {@code Evaluation} object with the specified metric name and value.
+	 * Constructs a new {@code Evaluation} object with the specified metric name
+	 * and value.
 	 *
 	 * @param evaluation
-	 * 	The evaluation containing metric name and evaluated value
+	 *            The evaluation containing metric name and evaluated value
 	 * @param assertions
-	 *  The assertions this evaluation can concatenate
+	 *            The assertions this evaluation can concatenate
 	 */
-	private AssertionEvaluation(Evaluation evaluation,RageAssertTestCaseAssertions assertions)
+	private AssertionEvaluation(Evaluation evaluation, RageAssertTestCaseAssertions assertions)
 	{
 		this.evaluation = evaluation;
 		this.assertions = assertions;
@@ -31,7 +32,8 @@ public class AssertionEvaluation
 		return evaluation;
 	}
 
-	public static AssertionEvaluation from(Evaluation evaluation, RageAssertTestCaseAssertions assertions) {
+	public static AssertionEvaluation from(Evaluation evaluation, RageAssertTestCaseAssertions assertions)
+	{
 		return new AssertionEvaluation(evaluation, assertions);
 	}
 }
