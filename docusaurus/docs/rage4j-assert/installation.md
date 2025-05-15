@@ -12,7 +12,7 @@ To start using Rage4J, add the following Maven dependency to your `pom.xml` file
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage-assert</artifactId>
-    <version>1.1.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
