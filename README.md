@@ -8,7 +8,10 @@
 # Rage4J
 
 For specific information about individual parts of the system,
-go to the respective README's in the folders or visit the Rage4J <a href="https://explore-de.github.io/rage4j/">documentation</a>.
+go to the respective README's in the folders.
+
+## Documentation
+Visit our documentation on Github Pages: <a href="https://explore-de.github.io/rage4j/" target="_blank">Visit Docs</a>
 
 ## Requirements
 
