@@ -40,7 +40,7 @@ class RageAssertTest
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.when()
-			.answer(model.generate(QUESTION))
+			.answer(model.chat(QUESTION))
 			.then()
 			.assertAnswerCorrectness(0.7);
 	}
@@ -72,7 +72,7 @@ class RageAssertTest
 			.groundTruth(GROUND_TRUTH)
 			.contextList(List.of(ANSWER))
 			.when()
-			.answer(model::generate)
+			.answer(model::chat)
 			.then()
 			.assertFaithfulness(0.7);
 	}
@@ -104,7 +104,7 @@ class RageAssertTest
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.when()
-			.answer(model::generate)
+			.answer(model::chat)
 			.then()
 			.assertSemanticSimilarity(0.7);
 	}
@@ -136,7 +136,7 @@ class RageAssertTest
 			.groundTruth(GROUND_TRUTH)
 			.contextList(CONTEXT)
 			.when()
-			.answer(model::generate)
+			.answer(model::chat)
 			.then()
 			.assertAnswerRelevance(0.7);
 	}

@@ -1,6 +1,6 @@
 package dev.rage4j.asserts;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 
 import java.util.List;
@@ -10,12 +10,12 @@ public class RageAssertTestCaseBuilder
 	private String question;
 	private String groundTruth;
 	private List<String> contextList;
-	private ChatLanguageModel chatLanguageModel;
+	private ChatModel chatModel;
 	private final EmbeddingModel embeddingModel;
 
-	public RageAssertTestCaseBuilder(ChatLanguageModel chatLanguageModel, EmbeddingModel embeddingModel)
+	public RageAssertTestCaseBuilder(ChatModel chatModel, EmbeddingModel embeddingModel)
 	{
-		this.chatLanguageModel = chatLanguageModel;
+		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
 	}
 
@@ -39,6 +39,6 @@ public class RageAssertTestCaseBuilder
 
 	public RageAssertTestCaseGiven when()
 	{
-		return new RageAssertTestCaseGiven(question, groundTruth, contextList, chatLanguageModel, embeddingModel);
+		return new RageAssertTestCaseGiven(question, groundTruth, contextList, chatModel, embeddingModel);
 	}
 }
