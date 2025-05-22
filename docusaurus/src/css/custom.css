@@ -100,7 +100,7 @@ code {
     background: linear-gradient(45deg, var(--light-red), var(--light-orange), var(--light-peach), white),
     radial-gradient(circle at top right, var(--light-orange), transparent 50%),
     radial-gradient(circle at bottom left, var(--light-red), transparent 50%);
-    animation: pulse 2s infinite;
+    animation: pulse 6s infinite;
 }
 
 [data-theme='light'] .hero > * {
