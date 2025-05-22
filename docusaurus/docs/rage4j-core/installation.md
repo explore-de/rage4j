@@ -12,7 +12,7 @@ To start using Rage4J-Core, add the following Maven dependency to your `pom.xml`
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 </dependency>
 ```
 
