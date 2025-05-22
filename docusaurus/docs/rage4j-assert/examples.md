@@ -73,3 +73,22 @@ rageAssert.given()
 This example uses the [`assertAnswerRelevance`](/docs/rage4j-core/metrics/answer_relevance) feature, checking that the
 model's answer is relevant to the context
 provided, with a relevance score of at least 0.7.
+
+### Example: Concatenation of multiple assertions
+
+``` java
+    RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+    rageAssert.given()
+       .question(QUESTION)
+       .groundTruth(GROUND_TRUTH)
+       .when()
+       .answer(model.generate(QUESTION))
+       .then()
+       .assertAnswerCorrectness(0.7)
+       .then()
+       .assertSemanticSimilarity(0.7);
+```
+
+This example demonstrates how to apply multiple assertions to a single LLM-generated answer.
+Assertions can be chained, allowing you to combine different evaluation metrics such as correctness and semantic similarity.
+This is the recommended approach for testing one answer against multiple metrics.
