@@ -1,6 +1,6 @@
 package dev.rage4j.evaluation.answercorrectness;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
@@ -25,14 +25,14 @@ public class AnswerCorrectnessEvaluator implements Evaluator
 
 	/**
 	 * Constructs an {@code AnswerCorrectnessEvaluator} using a
-	 * {@code ChatLanguageModel}. The evaluator creates an instance of
+	 * {@code ChatModel}. The evaluator creates an instance of
 	 * {@code AnswerCorrectnessBot} to assess the correctness of an answer.
 	 *
 	 * @param model
-	 *            The {@code ChatLanguageModel} used to create the bot for
+	 *            The {@code ChatModel} used to create the bot for
 	 *            evaluation.
 	 */
-	public AnswerCorrectnessEvaluator(ChatLanguageModel model)
+	public AnswerCorrectnessEvaluator(ChatModel model)
 	{
 		bot = AiServices.create(AnswerCorrectnessBot.class, model);
 	}

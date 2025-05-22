@@ -1,6 +1,6 @@
 package dev.rage4j.evaluation.faithfulness;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
@@ -36,7 +36,7 @@ public class FaithfulnessEvaluator implements Evaluator
 	 *            The language model used to power the {@code FaithfulnessBot}
 	 *            for evaluating answers.
 	 */
-	public FaithfulnessEvaluator(ChatLanguageModel model)
+	public FaithfulnessEvaluator(ChatModel model)
 	{
 		bot = AiServices.create(FaithfulnessBot.class, model);
 	}
