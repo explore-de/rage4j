@@ -60,7 +60,7 @@ code {
     right: 0;
     bottom: 0;
     background: radial-gradient(circle at center, rgba(220, 38, 38, 0.3) 0%, transparent 70%);
-    animation: pulse 2s infinite;
+    animation: pulse 6s infinite;
 }
 
 @keyframes flicker {
