@@ -1,6 +1,6 @@
 package dev.rage4j.evaluation.answerrelevance;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
@@ -32,16 +32,16 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	/**
 	 * Constructs an {@code AnswerRelevanceEvaluator} using the provided
 	 * language model and embedding model. The {@code AnswerRelevanceBot} is
-	 * created using the provided {@code ChatLanguageModel}, and a string
+	 * created using the provided {@code ChatModel}, and a string
 	 * similarity computer is initialized using the {@code EmbeddingModel}.
 	 *
 	 * @param chatModel
-	 *            The chat language model used to generate the bot.
+	 *            The chat model used to generate the bot.
 	 * @param embeddingModel
 	 *            The embedding model used to compute string similarity between
 	 *            questions.
 	 */
-	public AnswerRelevanceEvaluator(ChatLanguageModel chatModel, EmbeddingModel embeddingModel)
+	public AnswerRelevanceEvaluator(ChatModel chatModel, EmbeddingModel embeddingModel)
 	{
 		bot = AiServices.create(AnswerRelevanceBot.class, chatModel);
 		stringSimilarityComputer = new StringSimilarityComputer(embeddingModel);

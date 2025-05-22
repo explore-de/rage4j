@@ -1,6 +1,6 @@
 package dev.rage4j.asserts;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.rage4j.asserts.exception.Rage4JCorrectnessException;
 import dev.rage4j.asserts.exception.Rage4JFaithfulnessException;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class RageAssertTestCaseAssertions
 {
-	private ChatLanguageModel chatLanguageModel;
+	private ChatModel chatModel;
 	private EmbeddingModel embeddingModel;
 	private String question;
 	private String groundTruth;
@@ -26,19 +26,19 @@ public class RageAssertTestCaseAssertions
 
 	private static final String MINVALUE = "Answer did not reach required min value! Evaluated value: ";
 
-	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, ChatLanguageModel chatLanguageModel, EmbeddingModel embeddingModel)
+	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, ChatModel chatModel, EmbeddingModel embeddingModel)
 	{
 		this.answer = answer;
 		this.groundTruth = groundTruth;
 		this.question = question;
 		this.contextList = contextList;
-		this.chatLanguageModel = chatLanguageModel;
+		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
 	}
 
 	public AssertionEvaluation assertFaithfulness(double minValue)
 	{
-		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatLanguageModel);
+		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatModel);
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withGroundTruth(groundTruth)
@@ -56,7 +56,7 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertAnswerCorrectness(double minValue)
 	{
-		AnswerCorrectnessEvaluator evaluator = new AnswerCorrectnessEvaluator(chatLanguageModel);
+		AnswerCorrectnessEvaluator evaluator = new AnswerCorrectnessEvaluator(chatModel);
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withGroundTruth(groundTruth)
@@ -73,7 +73,7 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertAnswerRelevance(double minValue)
 	{
-		AnswerRelevanceEvaluator evaluator = new AnswerRelevanceEvaluator(chatLanguageModel, embeddingModel);
+		AnswerRelevanceEvaluator evaluator = new AnswerRelevanceEvaluator(chatModel, embeddingModel);
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withQuestion(question)
