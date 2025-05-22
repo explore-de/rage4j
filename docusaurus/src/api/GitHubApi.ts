@@ -30,7 +30,7 @@ function storeStats(stats: GitHubApi) {
 }
 
 export function getGitHubStats(owner: string, repo: string) {
-    const [stats, setStats] = useState<GitHubApi>({stars: 0, forks: 0, version: '0.0.0'});
+    const [stats, setStats] = useState<GitHubApi>({stars: 0, forks: 0, version: '1.0.4'});
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
