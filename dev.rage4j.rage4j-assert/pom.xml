@@ -4,6 +4,7 @@
 
     <artifactId>rage-assert</artifactId>
     <version>1.0.4-SNAPSHOT</version>
+    <name>Rage4j Assert</name>
 
     <parent>
         <groupId>dev.rage4j</groupId>
