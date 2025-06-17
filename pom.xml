@@ -9,14 +9,14 @@
 
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-reactor</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
         <connection>scm:git:https://github.com/explore-de/rage4j.git</connection>
         <developerConnection>scm:git:git@github.com:explore-de/rage4j.git</developerConnection>
         <url>https://github.com/explore-de/rage4j</url>
-      <tag>rage4j-reactor-1.0.4</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <modules>
