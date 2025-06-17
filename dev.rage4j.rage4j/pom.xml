@@ -5,6 +5,7 @@
 
     <artifactId>rage4j</artifactId>
     <version>1.0.7-SNAPSHOT</version>
+    <name>Rage4j</name>
 
     <parent>
         <groupId>dev.rage4j</groupId>
