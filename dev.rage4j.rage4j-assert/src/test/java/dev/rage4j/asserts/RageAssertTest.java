@@ -171,7 +171,7 @@ class RageAssertTest
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.when()
-			.answer(model::generate)
+			.answer(model::chat)
 			.then()
 			.assertBleuScore(0.7);
 	}
@@ -202,7 +202,7 @@ class RageAssertTest
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.when()
-			.answer(model::generate)
+			.answer(model::chat)
 			.then()
 			.assertRougeScore(0.7, RougeScoreEvaluator.RougeType.ROUGE1, RougeScoreEvaluator.MeasureType.F1SCORE);
 	}
