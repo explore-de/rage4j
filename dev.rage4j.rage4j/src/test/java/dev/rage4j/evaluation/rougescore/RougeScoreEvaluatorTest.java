@@ -76,6 +76,32 @@ class RougeScoreEvaluatorTest
 	}
 
 	@Test
+	void testEvaluateRougeTypeL()
+	{
+		Sample sample = Sample.builder()
+			.withGroundTruth("A B C D\nA B C E")
+			.withAnswer("A B C F\nA B C G")
+			.build();
+
+		RougeScoreEvaluator rougeL = new RougeScoreEvaluator(RougeScoreEvaluator.RougeType.ROUGE_L, RougeScoreEvaluator.MeasureType.F1SCORE);
+
+		assertTrue(rougeL.evaluate(sample).getValue() > 0.74);
+	}
+
+	@Test
+	void testEvaluateRougeTypeLSum()
+	{
+		Sample sample = Sample.builder()
+			.withGroundTruth("A B C D\nA B C E")
+			.withAnswer("A B C F\nA B C G")
+			.build();
+
+		RougeScoreEvaluator rougeL = new RougeScoreEvaluator(RougeScoreEvaluator.RougeType.ROUGE_L_SUM, RougeScoreEvaluator.MeasureType.F1SCORE);
+
+		assertTrue(rougeL.evaluate(sample).getValue() < 0.34);
+	}
+
+	@Test
 	void testEvaluateNullAnswerThrowsException()
 	{
 		Sample sample = Sample.builder()
