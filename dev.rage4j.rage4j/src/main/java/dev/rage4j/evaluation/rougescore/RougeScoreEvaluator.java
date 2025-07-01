@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.BiFunction;
 
+import static dev.rage4j.evaluation.rougescore.rougemetrics.RougeL.calculateRougeL;
+import static dev.rage4j.evaluation.rougescore.rougemetrics.RougeL.calculateRougeLsum;
 import static dev.rage4j.evaluation.rougescore.rougemetrics.RougeN.calculateRougeN;
-
 
 /**
  * The {@code RougeScoreEvaluator} class implements the ROUGE (Recall-Oriented Understudy for Gisting Evaluation) metric for evaluating the quality of generated text against reference text.
@@ -95,15 +96,27 @@ public class RougeScoreEvaluator implements Evaluator
 	 */
 	private double calculateRougeScore(String candidate, String reference)
 	{
-		String[] candidateTokens = candidate.toLowerCase().split("\\s+");
-		String[] referenceTokens = reference.toLowerCase().split("\\s+");
+		String[] candidateTokens = tokenize(candidate);
+		String[] referenceTokens = tokenize(reference);
 
 		return switch (rougeType)
 		{
 			case ROUGE1 -> getScore(calculateRougeN(candidateTokens, referenceTokens, 1));
 			case ROUGE2 -> getScore(calculateRougeN(candidateTokens, referenceTokens, 2));
+			case ROUGE_L -> getScore(calculateRougeL(candidateTokens, referenceTokens));
+			case ROUGE_L_SUM -> getScore(calculateRougeLsum(candidateTokens, referenceTokens));
 			default -> throw new IllegalStateException("Unsupported ROUGE type: " + rougeType);
 		};
+	}
+
+	private String[] tokenize(String text)
+	{
+		if (rougeType == RougeType.ROUGE_L_SUM)
+		{
+			text = text.replaceAll("\n", " \n ");
+			return text.split("[ \\t\\x0B\\f\\r]+");
+		}
+		return text.split("\\s+");
 	}
 
 	/**
