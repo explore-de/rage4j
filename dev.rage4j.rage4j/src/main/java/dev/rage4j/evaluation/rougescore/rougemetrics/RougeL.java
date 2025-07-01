@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class RougeL
 {
-	public static Measurement computeRougeL(String[] candidate, String[] reference) {
+	public static Measurement calculateRougeL(String[] candidate, String[] reference) {
 		int[][] lcsTable = computeLCSTable(candidate, reference);
 		int lcsLength = lcsTable[candidate.length][reference.length];
 		int m = reference.length;
@@ -19,7 +19,7 @@ public class RougeL
 		return getMeasurement(lcsLength, m, n);
 	}
 
-	public static Measurement computeRougeLsum(String[] candidateTokens, String[] referenceTokens) {
+	public static Measurement calculateRougeLsum(String[] candidateTokens, String[] referenceTokens) {
 		List<String[]> candidateSentences = splitIntoSentences(candidateTokens);
 		List<String[]> referenceSentences = splitIntoSentences(referenceTokens);
 
@@ -110,10 +110,6 @@ public class RougeL
 
 		for (String token : tokens) {
 			if (isSentenceBoundary(token)) {
-				String cleaned = token.substring(0, token.length() - 1);
-				if (!cleaned.isEmpty()) {
-					current.add(cleaned);
-				}
 				if (!current.isEmpty()) {
 					sentences.add(current.toArray(new String[0]));
 					current.clear();
@@ -131,8 +127,7 @@ public class RougeL
 		return sentences;
 	}
 
-	//This only works for our current tokenization method of splitting strings by whitespaces
 	private static boolean isSentenceBoundary(String token) {
-		return token.endsWith("\n");
+		return token.equals("\n");
 	}
 }
