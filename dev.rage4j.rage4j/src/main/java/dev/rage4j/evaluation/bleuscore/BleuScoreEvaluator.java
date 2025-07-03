@@ -20,10 +20,6 @@ import static dev.rage4j.util.NGramUtils.getNGramCounts;
  */
 public class BleuScoreEvaluator implements Evaluator
 {
-	//todo maybe implement sacrebleu
-	//todo allow for multiple answers
-
-	//todo maybe allow the user to define these constant values in the function call
 	private static final String METRIC_NAME = "BLEU score";
 	private static final double EPSILON = 1e-10;
 	private final BiFunction<String, String, Double> stringSimilarityComputer;

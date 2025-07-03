@@ -29,7 +29,6 @@ public class RougeScoreEvaluator implements Evaluator
 	private final RougeType rougeType;
 	private final MeasureType measureType;
 
-	//todo add more rouge types
 	public enum RougeType
 	{
 		ROUGE1, ROUGE2, ROUGE_L, ROUGE_L_SUM
