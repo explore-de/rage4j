@@ -32,8 +32,8 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	/**
 	 * Constructs an {@code AnswerRelevanceEvaluator} using the provided
 	 * language model and embedding model. The {@code AnswerRelevanceBot} is
-	 * created using the provided {@code ChatModel}, and a string
-	 * similarity computer is initialized using the {@code EmbeddingModel}.
+	 * created using the provided {@code ChatModel}, and a string similarity
+	 * computer is initialized using the {@code EmbeddingModel}.
 	 *
 	 * @param chatModel
 	 *            The chat model used to generate the bot.

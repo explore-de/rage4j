@@ -89,6 +89,11 @@ provided, with a relevance score of at least 0.7.
        .assertSemanticSimilarity(0.7);
 ```
 
+<!---
+TODO: add new metrics
+-->
+
 This example demonstrates how to apply multiple assertions to a single LLM-generated answer.
-Assertions can be chained, allowing you to combine different evaluation metrics such as correctness and semantic similarity.
+Assertions can be chained, allowing you to combine different evaluation metrics such as correctness and semantic
+similarity.
 This is the recommended approach for testing one answer against multiple metrics.

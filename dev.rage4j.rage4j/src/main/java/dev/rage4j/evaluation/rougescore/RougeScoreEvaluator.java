@@ -25,7 +25,6 @@ public class RougeScoreEvaluator implements Evaluator
 	private final BiFunction<String, String, Double> stringSimilarityComputer;
 
 	private static final Logger LOG = LoggerFactory.getLogger(RougeScoreEvaluator.class);
-
 	private final RougeType rougeType;
 	private final MeasureType measureType;
 
