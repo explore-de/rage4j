@@ -29,8 +29,7 @@ public class AnswerCorrectnessEvaluator implements Evaluator
 	 * {@code AnswerCorrectnessBot} to assess the correctness of an answer.
 	 *
 	 * @param model
-	 *            The {@code ChatModel} used to create the bot for
-	 *            evaluation.
+	 *            The {@code ChatModel} used to create the bot for evaluation.
 	 */
 	public AnswerCorrectnessEvaluator(ChatModel model)
 	{

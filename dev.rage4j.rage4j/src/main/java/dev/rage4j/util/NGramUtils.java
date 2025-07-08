@@ -13,9 +13,9 @@ public class NGramUtils
 	 * Generates n-grams from an array of tokens.
 	 *
 	 * @param tokens
-	 * 	The input array of tokens
+	 *            The input array of tokens
 	 * @param n
-	 * 	The size of n-grams to generate
+	 *            The size of n-grams to generate
 	 * @return A list of n-gram string arrays
 	 */
 	public static List<String[]> getNGrams(String[] tokens, int n)
@@ -45,9 +45,9 @@ public class NGramUtils
 	 * Creates a frequency map of n-grams from an array of tokens.
 	 *
 	 * @param tokens
-	 * 	The input array of tokens
+	 *            The input array of tokens
 	 * @param n
-	 * 	The size of n-grams to generate
+	 *            The size of n-grams to generate
 	 * @return A map of n-gram strings to their frequency counts
 	 */
 	public static Map<String, Integer> getNGramCounts(String[] tokens, int n)
@@ -57,7 +57,6 @@ public class NGramUtils
 			.collect(Collectors.groupingBy(
 				s -> s,
 				HashMap::new,
-				Collectors.collectingAndThen(Collectors.counting(), Long::intValue)
-			));
+				Collectors.collectingAndThen(Collectors.counting(), Long::intValue)));
 	}
 }

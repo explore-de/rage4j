@@ -22,6 +22,7 @@ public class BleuScoreEvaluator implements Evaluator
 {
 	private static final String METRIC_NAME = "BLEU score";
 	private static final double EPSILON = 1e-10;
+	//todo check if you can remove this from here and from the rouge score evaluator
 	private final BiFunction<String, String, Double> stringSimilarityComputer;
 
 	// maximum n-gram size is 4, with all of them weighted equally
@@ -72,7 +73,6 @@ public class BleuScoreEvaluator implements Evaluator
 	 */
 	private double calculateBleuScore(String candidate, String reference)
 	{
-		//todo use a tokenizer here
 		String[] candidateWords = candidate.toLowerCase().split("\\s+");
 		String[] referenceWords = reference.toLowerCase().split("\\s+");
 
