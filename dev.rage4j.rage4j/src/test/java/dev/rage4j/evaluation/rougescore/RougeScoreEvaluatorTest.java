@@ -85,7 +85,7 @@ class RougeScoreEvaluatorTest
 
 		RougeScoreEvaluator rougeL = new RougeScoreEvaluator(RougeScoreEvaluator.RougeType.ROUGE_L, RougeScoreEvaluator.MeasureType.F1SCORE);
 
-		assertTrue(rougeL.evaluate(sample).getValue() > 0.74);
+		assertEquals(0.75, rougeL.evaluate(sample).getValue(), 0.01);
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class RougeScoreEvaluatorTest
 
 		RougeScoreEvaluator rougeL = new RougeScoreEvaluator(RougeScoreEvaluator.RougeType.ROUGE_L_SUM, RougeScoreEvaluator.MeasureType.F1SCORE);
 
-		assertTrue(rougeL.evaluate(sample).getValue() > 0.99);
+		assertEquals(1.0, rougeL.evaluate(sample).getValue(), 0.01);
 	}
 
 	@Test
