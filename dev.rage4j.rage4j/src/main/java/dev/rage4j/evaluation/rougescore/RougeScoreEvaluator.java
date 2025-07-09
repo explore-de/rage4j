@@ -1,15 +1,11 @@
 package dev.rage4j.evaluation.rougescore;
 
-import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.evaluation.rougescore.model.Measurement;
 import dev.rage4j.model.Sample;
-import dev.rage4j.util.StringSimilarityComputer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.BiFunction;
 
 import static dev.rage4j.evaluation.rougescore.rougemetrics.RougeL.calculateRougeL;
 import static dev.rage4j.evaluation.rougescore.rougemetrics.RougeL.calculateRougeLsum;
@@ -22,7 +18,6 @@ public class RougeScoreEvaluator implements Evaluator
 {
 	private static final String METRIC_NAME = "ROUGE score";
 	private static final double EPSILON = 1e-8;
-	private final BiFunction<String, String, Double> stringSimilarityComputer;
 
 	private static final Logger LOG = LoggerFactory.getLogger(RougeScoreEvaluator.class);
 	private final RougeType rougeType;
@@ -38,28 +33,15 @@ public class RougeScoreEvaluator implements Evaluator
 		PRECISION, RECALL, F1SCORE
 	}
 
-	public RougeScoreEvaluator(EmbeddingModel embeddingModel)
+	public RougeScoreEvaluator(RougeType rougeType, MeasureType measureType)
 	{
-		this(embeddingModel, RougeType.ROUGE1, MeasureType.F1SCORE);
-	}
-
-	public RougeScoreEvaluator(EmbeddingModel embeddingModel, RougeType rougeType, MeasureType measureType)
-	{
-		this.stringSimilarityComputer = new StringSimilarityComputer(embeddingModel);
 		this.rougeType = rougeType;
 		this.measureType = measureType;
 	}
 
 	public RougeScoreEvaluator()
 	{
-		this(null, RougeType.ROUGE1, MeasureType.F1SCORE);
-	}
-
-	public RougeScoreEvaluator(RougeType rougeType, MeasureType measureType)
-	{
-		this.stringSimilarityComputer = null;
-		this.rougeType = rougeType;
-		this.measureType = measureType;
+		this(RougeType.ROUGE1, MeasureType.F1SCORE);
 	}
 
 	/**
@@ -107,16 +89,6 @@ public class RougeScoreEvaluator implements Evaluator
 		};
 	}
 
-	private String[] tokenize(String text)
-	{
-		if (rougeType == RougeType.ROUGE_L_SUM)
-		{
-			text = text.replaceAll("\n", " \n ");
-			return text.split("[ \\t\\x0B\\f\\r]+");
-		}
-		return text.split("\\s+");
-	}
-
 	/**
 	 * Calculates the F1 score based on the provided precision and recall values.
 	 *
@@ -143,5 +115,22 @@ public class RougeScoreEvaluator implements Evaluator
 			}
 			default -> throw new IllegalStateException("Unsupported measure type: " + measureType);
 		};
+	}
+
+	/**
+	 * Divides a string into different tokens by splitting it by whitespaces. In the case of Rouge-Lsum metric we leave \n characters as tokens so that they can be used as sentence boundaries.
+	 *
+	 * @param text
+	 * 	The string that has to be tokenized
+	 * @return A list of strings where each string is a token
+	 */
+	private String[] tokenize(String text)
+	{
+		if (rougeType == RougeType.ROUGE_L_SUM)
+		{
+			text = text.replaceAll("\n", " \n ");
+			return text.split("[ \\t\\x0B\\f\\r]+");
+		}
+		return text.split("\\s+");
 	}
 }

@@ -53,5 +53,7 @@ additional features from the core API, including:
 - `assertAnswerCorrectness(double minValue)`
 - `assertAnswerRelevance(double minValue)`
 - `assertSemanticSimilarity(double minValue)`
-
+- `asserBleuScore(double minValue)`
+-
+`assertRougeScore(double minValue, RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)`
 If you're eager to explore more examples, check out the [examples on the next page](/docs/rage4j-assert/examples)! 😊

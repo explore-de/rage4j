@@ -108,9 +108,9 @@ public class RageAssertTestCaseAssertions
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
-	public Evaluation assertBleuScore(double minValue)
+	public AssertionEvaluation assertBleuScore(double minValue)
 	{
-		BleuScoreEvaluator evaluator = new BleuScoreEvaluator(embeddingModel);
+		BleuScoreEvaluator evaluator = new BleuScoreEvaluator();
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withGroundTruth(groundTruth)
@@ -121,12 +121,12 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new Rage4JBleuScoreException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
-		return evaluation;
+		return AssertionEvaluation.from(evaluation, this);
 	}
 
-	public Evaluation assertRougeScore(double minValue, RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)
+	public AssertionEvaluation assertRougeScore(double minValue, RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)
 	{
-		RougeScoreEvaluator evaluator = new RougeScoreEvaluator(embeddingModel, rougeType, measureType);
+		RougeScoreEvaluator evaluator = new RougeScoreEvaluator(rougeType, measureType);
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withGroundTruth(groundTruth)
@@ -137,6 +137,6 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new Rage4JRougeScoreException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
-		return evaluation;
+		return AssertionEvaluation.from(evaluation, this);
 	}
 }
