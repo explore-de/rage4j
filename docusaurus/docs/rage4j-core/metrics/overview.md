@@ -22,4 +22,5 @@ response quality and is implemented through a dedicated evaluator.
     - **ROUGE-2** (bigrams): Captures word order and fluency.
     - **ROUGE-L**: Longest common subsequence (LCS) at the sentence level.
     - **ROUGE-Lsum**: LCS across sentence pairs (summary-level).
-      Each variant provides **Precision**, **Recall**, and **F1** scores.
+
+  Each variant provides **Precision**, **Recall**, and **F1** scores.
