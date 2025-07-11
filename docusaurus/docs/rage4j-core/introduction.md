@@ -53,10 +53,6 @@ Sample sample = Sample.builder()
 Evaluation result = answerRelevanceEvaluator.evaluate(sample);
 
 // 4. Get our score
-System.out.
+System.out.println("Metric name: "+result.getName()); // Metric name: Answer relevance
+System.out.println("Metric score: "+result.getName()); // Metric score: 1.0
 
-println("Metric name: "+result.getName()); // Metric name: Answer relevance
-	System.out.
-
-println("Metric score: "+result.getName()); // Metric score: 1.0
-```

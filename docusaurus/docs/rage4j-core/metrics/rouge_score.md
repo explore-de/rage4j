@@ -53,11 +53,20 @@ By default, it uses **ROUGE-1 F1 score**, which balances unigram precision and r
 
 ## Score Interpretation
 
+## Score Interpretation
+
 - **Range**: `0.0` (no overlap) to `1.0` (perfect match)
-- **Higher scores** indicate better content overlap with the reference.
-- `ROUGE-LSum` is especially useful for summarization, as it considers sentence-level structure and content coverage.
-- Use `F1SCORE` for a balanced measure, `PRECISION` when brevity is preferred, and `RECALL` when completeness matters
-  more.
+- **Higher scores** indicate stronger content overlap between the LLM-generated answer and the reference.
+
+- **ROUGE-1** – A high score indicates strong alignment with the important words used in the reference.
+
+- **ROUGE-2** – A high score suggests the answer closely follows the phrasing and local word order of the reference.
+
+- **ROUGE-L** – A high score reflects that the answer preserves the overall structure and ordering of content from the
+  reference.
+
+- **ROUGE-LSum** – A high score means the answer captures the main ideas and preserves the overall flow of information
+  across sentences, making it especially useful for evaluating summaries.
 
 ---
 
