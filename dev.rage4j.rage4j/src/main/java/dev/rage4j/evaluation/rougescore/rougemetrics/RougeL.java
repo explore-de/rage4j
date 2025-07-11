@@ -1,15 +1,24 @@
 package dev.rage4j.evaluation.rougescore.rougemetrics;
 
 import dev.rage4j.evaluation.rougescore.model.Measurement;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import static dev.rage4j.evaluation.rougescore.util.LCS.computeLCSTable;
+import static dev.rage4j.evaluation.rougescore.util.LCS.computeUnionLCS;
 
 public class RougeL
 {
+	/**
+	 * Calculates ROUGE-L precision and recall scores based on the longest common subsequence between the candidate and reference token arrays.
+	 *
+	 * @param candidate
+	 * 	An array of tokens from the candidate text.
+	 * @param reference
+	 * 	An array of tokens from the reference text.
+	 * @return A {@link Measurement} object containing precision and recall scores.
+	 */
 	public static Measurement calculateRougeL(String[] candidate, String[] reference)
 	{
 		int[][] lcsTable = computeLCSTable(candidate, reference);
@@ -20,6 +29,15 @@ public class RougeL
 		return getMeasurement(lcsLength, m, n);
 	}
 
+	/**
+	 * Calculates ROUGE-LSum by computing the union of LCS lengths over sentences in the candidate and reference texts. Sentence boundaries are identified by newline tokens ("\n").
+	 *
+	 * @param candidateTokens
+	 * 	Token array from the candidate text, including "\n" for sentence breaks.
+	 * @param referenceTokens
+	 * 	Token array from the reference text, including "\n" for sentence breaks.
+	 * @return A {@link Measurement} object containing precision and recall scores.
+	 */
 	public static Measurement calculateRougeLsum(String[] candidateTokens, String[] referenceTokens)
 	{
 		List<String[]> candidateSentences = splitIntoSentences(candidateTokens);
@@ -36,7 +54,17 @@ public class RougeL
 		return getMeasurement(unionLCS, totalRefTokens, totalCandTokens);
 	}
 
-	@NotNull
+	/**
+	 * Computes precision and recall based on LCS length and the sizes of the reference and candidate texts.
+	 *
+	 * @param lcsLength
+	 * 	Length of the longest common subsequence.
+	 * @param m
+	 * 	Number of tokens in the reference text.
+	 * @param n
+	 * 	Number of tokens in the candidate text.
+	 * @return A {@link Measurement} object containing precision and recall.
+	 */
 	private static Measurement getMeasurement(double lcsLength, int m, int n)
 	{
 		if (m == 0 || n == 0)
@@ -50,119 +78,13 @@ public class RougeL
 		return new Measurement(precision, recall);
 	}
 
-	private static int[][] computeLCSTable(String[] a, String[] b)
-	{
-		int m = a.length;
-		int n = b.length;
-		int[][] dp = new int[m + 1][n + 1];
-
-		for (int i = 1; i <= m; i++)
-		{
-			String wa = a[i - 1];
-			for (int j = 1; j <= n; j++)
-			{
-				String wb = b[j - 1];
-				if (wa.equals(wb))
-				{
-					dp[i][j] = dp[i - 1][j - 1] + 1;
-				}
-				else
-				{
-					dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-				}
-			}
-		}
-
-		return dp;
-	}
-
-	private static List<int[]> backtrackLCS(String[] a, String[] b, int[][] dp)
-	{
-		List<int[]> positions = new ArrayList<>();
-		int i = a.length;
-		int j = b.length;
-
-		while (i > 0 && j > 0)
-		{
-			if (a[i - 1].equals(b[j - 1]))
-			{
-				positions.add(new int[] { i - 1, j - 1 });
-				i--;
-				j--;
-			}
-			else if (dp[i - 1][j] >= dp[i][j - 1])
-			{
-				i--;
-			}
-			else
-			{
-				j--;
-			}
-		}
-
-		return positions;
-	}
-
-	private static int computeUnionLCS(List<String[]> referenceSentences,
-		List<String[]> candidateSentences)
-	{
-
-		int[] refOffsets = buildOffsets(referenceSentences);
-		int[] candOffsets = buildOffsets(candidateSentences);
-
-		Set<Integer> usedRef = new HashSet<>();
-		Set<Integer> usedCand = new HashSet<>();
-
-		int union = 0;
-
-		for (int r = 0; r < referenceSentences.size(); r++)
-		{
-			String[] ref = referenceSentences.get(r);
-			for (int c = 0; c < candidateSentences.size(); c++)
-			{
-				union += countFreshMatches(ref, candidateSentences.get(c),
-					refOffsets[r], candOffsets[c],
-					usedRef, usedCand);
-			}
-		}
-		return union;
-	}
-
-	private static int[] buildOffsets(List<String[]> sentences)
-	{
-		int[] offsets = new int[sentences.size()];
-		int cursor = 0;
-		for (int i = 0; i < sentences.size(); i++)
-		{
-			offsets[i] = cursor;
-			cursor += sentences.get(i).length;
-		}
-		return offsets;
-	}
-
-	private static int countFreshMatches(String[] refSent, String[] candSent,
-		int refOffset, int candOffset,
-		Set<Integer> usedRef, Set<Integer> usedCand)
-	{
-		int[][] dp = computeLCSTable(refSent, candSent);
-		List<int[]> matches = backtrackLCS(refSent, candSent, dp);
-
-		int fresh = 0;
-		for (int[] pos : matches)
-		{
-			int globalRef = refOffset + pos[0];
-			int globalCand = candOffset + pos[1];
-
-			if (!usedRef.contains(globalRef) && !usedCand.contains(globalCand))
-			{
-				usedRef.add(globalRef);
-				usedCand.add(globalCand);
-				fresh++;
-			}
-		}
-		return fresh;
-	}
-
+	/**
+	 * Splits an array of tokens into individual sentences using "\n" as the sentence boundary marker.
+	 *
+	 * @param tokens
+	 * 	The full token array, including "\n" as sentence breaks.
+	 * @return A list of string arrays, each representing a sentence.
+	 */
 	private static List<String[]> splitIntoSentences(String[] tokens)
 	{
 		List<String[]> sentences = new ArrayList<>();
@@ -192,12 +114,19 @@ public class RougeL
 		return sentences;
 	}
 
+	/**
+	 * Determines whether a given token marks the end of a sentence. Currently, uses "\n" as the sentence boundary marker.
+	 *
+	 * @param token
+	 * 	The token to check.
+	 * @return {@code true} if the token is a sentence boundary; otherwise {@code false}.
+	 */
 	private static boolean isSentenceBoundary(String token)
 	{
 		return token.equals("\n");
 	}
 
-	public static String[] removeString(String[] array, String toRemove)
+	private static String[] removeString(String[] array, String toRemove)
 	{
 		if (array == null || toRemove == null) return array;
 

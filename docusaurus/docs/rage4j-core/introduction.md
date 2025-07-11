@@ -19,7 +19,7 @@ This section provides documentation about the **RAGE4j-core**.
 
 ## Key Features
 
-RAGE4j provides four built-in evaluators for assessing different aspects of LLM responses:
+RAGE4j provides six built-in evaluators for assessing different aspects of LLM responses:
 
 1. **Answer Relevance**: Evaluates how well an answer addresses the original question by generating potential questions
    from the answer and comparing them to the original question.
@@ -53,8 +53,10 @@ Sample sample = Sample.builder()
 Evaluation result = answerRelevanceEvaluator.evaluate(sample);
 
 // 4. Get our score
-System.out.println("Metric name: "+result.getName()); // Metric name: Answer relevance
-	
-    
-    System.out.println("Metric score: "+result.getName()); // Metric score: 1.0
+System.out.
+
+println("Metric name: "+result.getName()); // Metric name: Answer relevance
+	System.out.
+
+println("Metric score: "+result.getName()); // Metric score: 1.0
 ```
