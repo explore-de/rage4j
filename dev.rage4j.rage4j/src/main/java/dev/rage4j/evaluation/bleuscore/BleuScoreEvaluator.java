@@ -65,6 +65,11 @@ public class BleuScoreEvaluator implements Evaluator
 		String[] candidateWords = candidate.toLowerCase().split("\\s+");
 		String[] referenceWords = reference.toLowerCase().split("\\s+");
 
+		if (candidateWords.length == 0)
+		{
+			return 0.0;
+		}
+
 		double[] precisions = new double[MAX_NGRAM];
 		for (int n = 0; n < MAX_NGRAM; n++)
 		{
@@ -87,11 +92,6 @@ public class BleuScoreEvaluator implements Evaluator
 		{
 			double smoothedPrecision = precisions[i] + EPSILON;
 			weightedLogPrecision += WEIGHTS[i] * Math.log(smoothedPrecision);
-		}
-
-		if (candidateWords.length >= referenceWords.length)
-		{
-			return 1.0;
 		}
 
 		double brevityPenalty = Math.exp(1 - ((double)referenceWords.length / candidateWords.length));
