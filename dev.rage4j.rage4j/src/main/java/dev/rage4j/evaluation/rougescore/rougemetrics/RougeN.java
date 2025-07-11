@@ -10,23 +10,21 @@ import static dev.rage4j.util.NGramUtils.getNGrams;
 public class RougeN
 {
 	/**
-	 * Calculates ROUGE-N score by comparing n-grams between candidate and
-	 * reference texts.
+	 * Calculates ROUGE-N score by comparing n-grams between candidate and reference texts.
 	 *
 	 * @param candidate
-	 *            Array of tokens from the candidate text
+	 * 	Array of tokens from the candidate text
 	 * @param reference
-	 *            Array of tokens from the reference text
+	 * 	Array of tokens from the reference text
 	 * @param n
-	 *            The size of n-grams to consider (1 for unigrams, 2 for
-	 *            bigrams, etc.)
+	 * 	The size of n-grams to consider (1 for unigrams, 2 for bigrams, etc.)
 	 * @return The ROUGE-N score based on the configured measure type
 	 */
 	public static Measurement calculateRougeN(String[] candidate, String[] reference, int n)
 	{
 		if (candidate.length < n || reference.length < n)
 		{
-			new Measurement(0, 0);
+			return new Measurement(0, 0);
 		}
 
 		List<String[]> candidateNgrams = getNGrams(candidate, n);
@@ -41,13 +39,12 @@ public class RougeN
 	}
 
 	/**
-	 * Counts the overlap between two collections of n-grams based on the
-	 * configured counting mode.
+	 * Counts the overlap between two collections of n-grams based on the configured counting mode.
 	 *
 	 * @param candidateNgrams
-	 *            List of candidate n-grams as strings
+	 * 	List of candidate n-grams as strings
 	 * @param referenceNgrams
-	 *            List of reference n-grams as strings
+	 * 	List of reference n-grams as strings
 	 * @return Number of matching n-grams
 	 */
 	private static int calculateNgramOverlap(List<String[]> candidateNgrams, List<String[]> referenceNgrams)
@@ -71,11 +68,10 @@ public class RougeN
 	}
 
 	/**
-	 * Converts an array of tokens representing an n-gram into a string
-	 * representation. Used for comparison and counting of n-grams.
+	 * Converts an array of tokens representing an n-gram into a string representation. Used for comparison and counting of n-grams.
 	 *
 	 * @param ngrams
-	 *            List of tokens forming an n-gram
+	 * 	List of tokens forming an n-gram
 	 * @return String representation of the n-gram
 	 */
 	private static List<String> ngramsToStrings(List<String[]> ngrams)
