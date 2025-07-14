@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Metrics overview
 
-RAGE4j-Core provides four primary metrics for evaluating LLM responses. Each metric focuses on a different aspect of
+RAGE4j-Core provides six primary metrics for evaluating LLM responses. Each metric focuses on a different aspect of
 response quality and is implemented through a dedicated evaluator.
 
 ## Basic understanding of the metrics

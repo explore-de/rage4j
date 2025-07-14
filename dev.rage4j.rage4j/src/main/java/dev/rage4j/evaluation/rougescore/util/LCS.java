@@ -115,25 +115,6 @@ public class LCS
 	}
 
 	/**
-	 * Builds an array of token offsets for each sentence in a document, allowing mapping of local sentence token indices to global document indices.
-	 *
-	 * @param sentences
-	 * 	List of token arrays representing individual sentences.
-	 * @return Array of global token offsets for each sentence.
-	 */
-	private static int[] buildOffsets(List<String[]> sentences)
-	{
-		int[] offsets = new int[sentences.size()];
-		int cursor = 0;
-		for (int i = 0; i < sentences.size(); i++)
-		{
-			offsets[i] = cursor;
-			cursor += sentences.get(i).length;
-		}
-		return offsets;
-	}
-
-	/**
 	 * Counts the number of unique LCS token matches between a reference and candidate sentence pair, while ensuring tokens are not reused (clipped matching).
 	 *
 	 * @param refSent
@@ -171,5 +152,24 @@ public class LCS
 			}
 		}
 		return fresh;
+	}
+
+	/**
+	 * Builds an array of token offsets for each sentence in a document, allowing mapping of local sentence token indices to global document indices.
+	 *
+	 * @param sentences
+	 * 	List of token arrays representing individual sentences.
+	 * @return Array of global token offsets for each sentence.
+	 */
+	private static int[] buildOffsets(List<String[]> sentences)
+	{
+		int[] offsets = new int[sentences.size()];
+		int cursor = 0;
+		for (int i = 0; i < sentences.size(); i++)
+		{
+			offsets[i] = cursor;
+			cursor += sentences.get(i).length;
+		}
+		return offsets;
 	}
 }
