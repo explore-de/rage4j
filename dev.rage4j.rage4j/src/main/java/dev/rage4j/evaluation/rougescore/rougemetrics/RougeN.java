@@ -4,6 +4,7 @@ import dev.rage4j.evaluation.rougescore.model.Measurement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static dev.rage4j.util.NGramUtils.getNGrams;
 
@@ -76,11 +77,8 @@ public class RougeN
 	 */
 	private static List<String> ngramsToStrings(List<String[]> ngrams)
 	{
-		List<String> result = new ArrayList<>();
-		for (String[] ngram : ngrams)
-		{
-			result.add(String.join(" ", ngram));
-		}
-		return result;
+		return ngrams.stream()
+			.map(ngram -> String.join(" ", ngram))
+			.collect(Collectors.toList());
 	}
 }

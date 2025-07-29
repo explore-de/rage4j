@@ -35,6 +35,7 @@ public class RougeScoreEvaluator implements Evaluator
 
 	public RougeScoreEvaluator(RougeType rougeType, MeasureType measureType)
 	{
+
 		this.rougeType = rougeType;
 		this.measureType = measureType;
 	}
