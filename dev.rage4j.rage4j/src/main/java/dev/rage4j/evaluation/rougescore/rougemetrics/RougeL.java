@@ -3,6 +3,7 @@ package dev.rage4j.evaluation.rougescore.rougemetrics;
 import dev.rage4j.evaluation.rougescore.model.Measurement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static dev.rage4j.evaluation.rougescore.util.LCS.computeLCSTable;
@@ -126,18 +127,12 @@ public class RougeL
 		return token.equals("\n");
 	}
 
-	private static String[] removeString(String[] array, String toRemove)
-	{
-		if (array == null || toRemove == null) return array;
-
-		List<String> result = new ArrayList<>();
-		for (String s : array)
-		{
-			if (!toRemove.equals(s))
-			{
-				result.add(s);
-			}
+	private static String[] removeString(String[] array, String toRemove) {
+		if (array == null || toRemove == null) {
+			return array;
 		}
-		return result.toArray(new String[0]);
+		return Arrays.stream(array)
+			.filter(s -> !toRemove.equals(s))
+			.toArray(String[]::new);
 	}
 }

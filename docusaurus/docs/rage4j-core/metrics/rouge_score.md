@@ -11,9 +11,9 @@ By default, it uses **ROUGE-1 F1 score**, which balances unigram precision and r
 ## Supported ROUGE Types
 
 - `ROUGE-1` – Unigram overlap (individual words)
-- `ROUGE-` – Bigram overlap (pairs of words)
+- `ROUGE-2` – Bigram overlap (pairs of words)
 - `ROUGE-L` – Longest common subsequence (LCS)
-- `ROUGE-LSum` – LCS-based score optimized for multi-sentence summaries (used in summarization tasks)
+- `ROUGE_L_SUM` – LCS-based score optimized for multi-sentence summaries (used in summarization tasks)
 
 ## Supported Measure Types
 
@@ -32,7 +32,7 @@ By default, it uses **ROUGE-1 F1 score**, which balances unigram precision and r
 2. Based on the selected `RougeType`:
     - `ROUGE-1` and `ROUGE-2` compare n-gram overlap.
     - `ROUGE-L` computes the longest common subsequence (LCS).
-    - `ROUGE-LSum` groups the tokens into sentences using '\n' as sentence boundary and applies LCS across all answer
+    - `ROUGE_L_SUM` groups the tokens into sentences using '\n' as sentence boundary and applies LCS across all answer
       and ground truth sentence pairs.
 3. Calculates:
     - **Precision**: proportion of overlapping units in the answer.
@@ -65,7 +65,7 @@ RougeScoreEvaluator evaluator = new RougeScoreEvaluator();
 RougeScoreEvaluator customEvaluator = new RougeScoreEvaluator(RougeType.ROUGE2, MeasureType.PRECISION);
 
 // Custom: ROUGE-LSum Recall
-RougeScoreEvaluator summaryEvaluator = new RougeScoreEvaluator(RougeType.ROUGELSUM, MeasureType.RECALL);
+RougeScoreEvaluator summaryEvaluator = new RougeScoreEvaluator(RougeType.ROUGE_L_SUM, MeasureType.RECALL);
 
 Evaluation result = evaluator.evaluate(sample);
 double rougeScore = result.getValue();

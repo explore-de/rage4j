@@ -25,7 +25,7 @@ RAGE4J helps you assess LLM outputs across six key dimensions:
 - **Faithfulness**: Checks if the LLM's statements are supported by the provided context
 - **Semantic Similarity**: Computes how closely the meaning matches a reference answer
 - **Bleu score**: Computes how close an LLM's response is to a ground truth using n-gram overlap.
-- **Rouge score**: Provides multiple metrics to evaluate recall, precision and F1 score of unigram, bigram and LCS
+- **Rouge score**: Provides multiple metrics to evaluate recall, precision and F1 score of unigram, bigram, and LCS
   overlap between an LLM response and a ground truth.
 
 ## Library Structure

@@ -86,9 +86,9 @@ rageAssert.given()
     .assertBleuScore(0.7);
 ```
 
-This example uses the [`assertBleuScore`](/docs/rage4j-core/metrics/bleu_score) feature, checking that the exact n-gram
+This example uses the [`assertBleuScore`](/docs/rage4j-core/metrics/bleu_score) feature, testing that the exact n-gram
 overlap
-of the model's answer against a ground truth, with a precision of at least 0.7.
+of the model's answer against a ground truth has a precision of at least 0.7.
 
 ### Example: Testing Rouge Score
 
@@ -100,10 +100,10 @@ rageAssert.given()
     .when()
     .answer(model::generate)
     .then()
-    assertRougeScore(0.9, RougeScoreEvaluator.RougeType.ROUGELsum, RougeScoreEvaluator.MeasureType.PRECISION));
+    assertRougeScore(0.9, RougeScoreEvaluator.RougeType.ROUGE_L_SUM, RougeScoreEvaluator.MeasureType.PRECISION));
 ```
 
-This example uses the [`assertRougeScore`](/docs/rage4j-core/metrics/rouge_score) feature, with the **ROUGE-LSum**
+This example uses the [`assertRougeScore`](/docs/rage4j-core/metrics/rouge_score) feature, with the **ROUGE_L_SUM**
 metric. This example makes sure that the LCS across multiple sentences yields a precision of 0.9.
 
 ### Example: Concatenation of multiple assertions
