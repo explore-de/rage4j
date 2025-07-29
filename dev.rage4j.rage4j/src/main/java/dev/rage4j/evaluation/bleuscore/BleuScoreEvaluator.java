@@ -6,6 +6,7 @@ import dev.rage4j.model.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static dev.rage4j.util.NGramUtils.getNGramCounts;
@@ -24,11 +25,13 @@ public class BleuScoreEvaluator implements Evaluator
 	private static final int MAX_NGRAM = 4;
 	private static final double[] WEIGHTS = { 0.25, 0.25, 0.25, 0.25 };
 
-	private static final Logger LOG = LoggerFactory.getLogger(BleuScoreEvaluator.class);
-
-	public BleuScoreEvaluator()
-	{
+	static {
+		if (MAX_NGRAM != WEIGHTS.length) {
+			throw new IllegalStateException("MAX_NGRAM must be equal to WEIGHTS.length");
+		}
 	}
+
+	private static final Logger LOG = LoggerFactory.getLogger(BleuScoreEvaluator.class);
 
 	/**
 	 * Evaluates the quality of generated text against a reference text using the BLEU metric.
@@ -65,7 +68,7 @@ public class BleuScoreEvaluator implements Evaluator
 		String[] candidateWords = candidate.toLowerCase().split("\\s+");
 		String[] referenceWords = reference.toLowerCase().split("\\s+");
 
-		if (candidateWords.length == 0)
+		if (candidateWords.length == 0 || referenceWords.length == 0)
 		{
 			return 0.0;
 		}
@@ -76,16 +79,9 @@ public class BleuScoreEvaluator implements Evaluator
 			precisions[n] = calculateClippedNGramPrecision(candidateWords, referenceWords, n + 1);
 		}
 
-		boolean allZeros = true;
-		for (double precision : precisions)
-		{
-			if (precision > 0)
-			{
-				allZeros = false;
-				break;
-			}
+		if (Arrays.stream(precisions).noneMatch(p -> p > 0)) {
+			return 0.0;
 		}
-		if (allZeros) return 0.0;
 
 		double weightedLogPrecision = 0.0;
 		for (int i = 0; i < MAX_NGRAM; i++)

@@ -1,11 +1,13 @@
 package dev.rage4j.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class NGramUtils
 {
@@ -18,27 +20,19 @@ public class NGramUtils
 	 *            The size of n-grams to generate
 	 * @return A list of n-gram string arrays
 	 */
-	public static List<String[]> getNGrams(String[] tokens, int n)
-	{
-		if (tokens == null || tokens.length == 0)
-		{
-			throw new IllegalArgumentException("Tokens array cannot be null or empty");
+	public static List<String[]> getNGrams(String[] tokens, int n) {
+		Objects.requireNonNull(tokens, "Tokens array cannot be null");
+		if (n <= 0) {
+			throw new IllegalArgumentException("n must be positive");
 		}
-		if (n <= 0)
-		{
-			throw new IllegalArgumentException("N must be positive");
-		}
-		if (tokens.length < n)
-		{
-			return new ArrayList<>();
+		if (tokens.length < n) {
+			return Collections.emptyList();
 		}
 
-		List<String[]> ngrams = new ArrayList<>();
-		for (int i = 0; i <= tokens.length - n; i++)
-		{
-			ngrams.add(Arrays.copyOfRange(tokens, i, i + n));
-		}
-		return ngrams;
+		return IntStream
+			.rangeClosed(0, tokens.length - n)
+			.mapToObj(i -> Arrays.copyOfRange(tokens, i, i + n))
+			.collect(Collectors.toList());
 	}
 
 	/**
