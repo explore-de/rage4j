@@ -12,13 +12,15 @@ import static dev.rage4j.evaluation.rougescore.util.LCS.computeUnionLCS;
 public class RougeL
 {
 	/**
-	 * Calculates ROUGE-L precision and recall scores based on the longest common subsequence between the candidate and reference token arrays.
+	 * Calculates ROUGE-L precision and recall scores based on the longest
+	 * common subsequence between the candidate and reference token arrays.
 	 *
 	 * @param candidate
-	 * 	An array of tokens from the candidate text.
+	 *            An array of tokens from the candidate text.
 	 * @param reference
-	 * 	An array of tokens from the reference text.
-	 * @return A {@link Measurement} object containing precision and recall scores.
+	 *            An array of tokens from the reference text.
+	 * @return A {@link Measurement} object containing precision and recall
+	 *         scores.
 	 */
 	public static Measurement calculateRougeL(String[] candidate, String[] reference)
 	{
@@ -31,13 +33,18 @@ public class RougeL
 	}
 
 	/**
-	 * Calculates ROUGE-LSum by computing the union of LCS lengths over sentences in the candidate and reference texts. Sentence boundaries are identified by newline tokens ("\n").
+	 * Calculates ROUGE-LSum by computing the union of LCS lengths over
+	 * sentences in the candidate and reference texts. Sentence boundaries are
+	 * identified by newline tokens ("\n").
 	 *
 	 * @param candidateTokens
-	 * 	Token array from the candidate text, including "\n" for sentence breaks.
+	 *            Token array from the candidate text, including "\n" for
+	 *            sentence breaks.
 	 * @param referenceTokens
-	 * 	Token array from the reference text, including "\n" for sentence breaks.
-	 * @return A {@link Measurement} object containing precision and recall scores.
+	 *            Token array from the reference text, including "\n" for
+	 *            sentence breaks.
+	 * @return A {@link Measurement} object containing precision and recall
+	 *         scores.
 	 */
 	public static Measurement calculateRougeLsum(String[] candidateTokens, String[] referenceTokens)
 	{
@@ -56,14 +63,15 @@ public class RougeL
 	}
 
 	/**
-	 * Computes precision and recall based on LCS length and the sizes of the reference and candidate texts.
+	 * Computes precision and recall based on LCS length and the sizes of the
+	 * reference and candidate texts.
 	 *
 	 * @param lcsLength
-	 * 	Length of the longest common subsequence.
+	 *            Length of the longest common subsequence.
 	 * @param m
-	 * 	Number of tokens in the reference text.
+	 *            Number of tokens in the reference text.
 	 * @param n
-	 * 	Number of tokens in the candidate text.
+	 *            Number of tokens in the candidate text.
 	 * @return A {@link Measurement} object containing precision and recall.
 	 */
 	private static Measurement getMeasurement(double lcsLength, int m, int n)
@@ -80,10 +88,11 @@ public class RougeL
 	}
 
 	/**
-	 * Splits an array of tokens into individual sentences using "\n" as the sentence boundary marker.
+	 * Splits an array of tokens into individual sentences using "\n" as the
+	 * sentence boundary marker.
 	 *
 	 * @param tokens
-	 * 	The full token array, including "\n" as sentence breaks.
+	 *            The full token array, including "\n" as sentence breaks.
 	 * @return A list of string arrays, each representing a sentence.
 	 */
 	private static List<String[]> splitIntoSentences(String[] tokens)
@@ -116,19 +125,23 @@ public class RougeL
 	}
 
 	/**
-	 * Determines whether a given token marks the end of a sentence. Currently, uses "\n" as the sentence boundary marker.
+	 * Determines whether a given token marks the end of a sentence. Currently,
+	 * uses "\n" as the sentence boundary marker.
 	 *
 	 * @param token
-	 * 	The token to check.
-	 * @return {@code true} if the token is a sentence boundary; otherwise {@code false}.
+	 *            The token to check.
+	 * @return {@code true} if the token is a sentence boundary; otherwise
+	 *         {@code false}.
 	 */
 	private static boolean isSentenceBoundary(String token)
 	{
 		return token.equals("\n");
 	}
 
-	private static String[] removeString(String[] array, String toRemove) {
-		if (array == null || toRemove == null) {
+	private static String[] removeString(String[] array, String toRemove)
+	{
+		if (array == null || toRemove == null)
+		{
 			return array;
 		}
 		return Arrays.stream(array)

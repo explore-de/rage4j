@@ -12,9 +12,13 @@ import java.util.Map;
 import static dev.rage4j.util.NGramUtils.getNGramCounts;
 
 /**
- * The {@code BleuScoreEvaluator} class implements the BLEU (Bilingual Evaluation Understudy) metric for evaluating the quality of generated text against reference text. It compares n-gram matches between candidate and reference texts to assess translation/generation quality.
+ * The {@code BleuScoreEvaluator} class implements the BLEU (Bilingual
+ * Evaluation Understudy) metric for evaluating the quality of generated text
+ * against reference text. It compares n-gram matches between candidate and
+ * reference texts to assess translation/generation quality.
  * <p>
- * The result is a score between 0 and 1, where 1.0 indicates perfect match with reference 0.0 indicates no matching n-grams.
+ * The result is a score between 0 and 1, where 1.0 indicates perfect match with
+ * reference 0.0 indicates no matching n-grams.
  */
 public class BleuScoreEvaluator implements Evaluator
 {
@@ -25,8 +29,10 @@ public class BleuScoreEvaluator implements Evaluator
 	private static final int MAX_NGRAM = 4;
 	private static final double[] WEIGHTS = { 0.25, 0.25, 0.25, 0.25 };
 
-	static {
-		if (MAX_NGRAM != WEIGHTS.length) {
+	static
+	{
+		if (MAX_NGRAM != WEIGHTS.length)
+		{
 			throw new IllegalStateException("MAX_NGRAM must be equal to WEIGHTS.length");
 		}
 	}
@@ -34,10 +40,12 @@ public class BleuScoreEvaluator implements Evaluator
 	private static final Logger LOG = LoggerFactory.getLogger(BleuScoreEvaluator.class);
 
 	/**
-	 * Evaluates the quality of generated text against a reference text using the BLEU metric.
+	 * Evaluates the quality of generated text against a reference text using
+	 * the BLEU metric.
 	 *
 	 * @param sample
-	 * 	The sample containing both the generated answer and ground truth
+	 *            The sample containing both the generated answer and ground
+	 *            truth
 	 * @return An Evaluation object containing the BLEU score
 	 */
 	@Override
@@ -58,9 +66,9 @@ public class BleuScoreEvaluator implements Evaluator
 	 * Calculates the BLEU score between a candidate and reference text.
 	 *
 	 * @param candidate
-	 * 	The generated text to evaluate
+	 *            The generated text to evaluate
 	 * @param reference
-	 * 	The ground truth text to compare against
+	 *            The ground truth text to compare against
 	 * @return A score between 0 and 1, where 1 indicates perfect match
 	 */
 	private double calculateBleuScore(String candidate, String reference)
@@ -79,7 +87,8 @@ public class BleuScoreEvaluator implements Evaluator
 			precisions[n] = calculateClippedNGramPrecision(candidateWords, referenceWords, n + 1);
 		}
 
-		if (Arrays.stream(precisions).noneMatch(p -> p > 0)) {
+		if (Arrays.stream(precisions).noneMatch(p -> p > 0))
+		{
 			return 0.0;
 		}
 
@@ -96,14 +105,16 @@ public class BleuScoreEvaluator implements Evaluator
 	}
 
 	/**
-	 * Calculates the clipped n-gram precision for a specific n-gram size. Clipping ensures that we don't over-count n-grams that appear more times in the candidate than in the reference.
+	 * Calculates the clipped n-gram precision for a specific n-gram size.
+	 * Clipping ensures that we don't over-count n-grams that appear more times
+	 * in the candidate than in the reference.
 	 *
 	 * @param candidate
-	 * 	Array of words from candidate text
+	 *            Array of words from candidate text
 	 * @param reference
-	 * 	Array of words from reference text
+	 *            Array of words from reference text
 	 * @param n
-	 * 	The n-gram size to evaluate
+	 *            The n-gram size to evaluate
 	 * @return The clipped precision score for the given n-gram size
 	 */
 	private double calculateClippedNGramPrecision(String[] candidate, String[] reference, int n)
