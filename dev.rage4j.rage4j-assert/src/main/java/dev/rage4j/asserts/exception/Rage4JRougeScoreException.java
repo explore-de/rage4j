@@ -11,5 +11,4 @@ public class Rage4JRougeScoreException extends RuntimeException
 	{
 		// empty
 	}
-
 }
