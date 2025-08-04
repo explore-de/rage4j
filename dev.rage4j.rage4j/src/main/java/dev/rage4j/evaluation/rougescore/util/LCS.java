@@ -8,13 +8,16 @@ import java.util.Set;
 public class LCS
 {
 	/**
-	 * Computes the dynamic programming table for the Longest Common Subsequence (LCS) between two token sequences.
+	 * Computes the dynamic programming table for the Longest Common Subsequence
+	 * (LCS) between two token sequences.
 	 *
 	 * @param a
-	 * 	First sequence of tokens.
+	 *            First sequence of tokens.
 	 * @param b
-	 * 	Second sequence of tokens.
-	 * @return A 2D table where cell [i][j] represents the length of the LCS between the first i tokens of {@code a} and the first j tokens of {@code b}.
+	 *            Second sequence of tokens.
+	 * @return A 2D table where cell [i][j] represents the length of the LCS
+	 *         between the first i tokens of {@code a} and the first j tokens of
+	 *         {@code b}.
 	 */
 	public static int[][] computeLCSTable(String[] a, String[] b)
 	{
@@ -43,13 +46,16 @@ public class LCS
 	}
 
 	/**
-	 * Computes the union of LCS matches across all sentence pairs between reference and candidate texts, ensuring no duplicate matches. Used for ROUGE-LSum.
+	 * Computes the union of LCS matches across all sentence pairs between
+	 * reference and candidate texts, ensuring no duplicate matches. Used for
+	 * ROUGE-LSum.
 	 *
 	 * @param referenceSentences
-	 * 	List of reference sentences, each as a token array.
+	 *            List of reference sentences, each as a token array.
 	 * @param candidateSentences
-	 * 	List of candidate sentences, each as a token array.
-	 * @return Total number of non-overlapping LCS token matches across all pairs.
+	 *            List of candidate sentences, each as a token array.
+	 * @return Total number of non-overlapping LCS token matches across all
+	 *         pairs.
 	 */
 	public static int computeUnionLCS(List<String[]> referenceSentences,
 		List<String[]> candidateSentences)
@@ -77,15 +83,17 @@ public class LCS
 	}
 
 	/**
-	 * Reconstructs the LCS match positions from a filled LCS table for two token sequences.
+	 * Reconstructs the LCS match positions from a filled LCS table for two
+	 * token sequences.
 	 *
 	 * @param a
-	 * 	First sequence of tokens.
+	 *            First sequence of tokens.
 	 * @param b
-	 * 	Second sequence of tokens.
+	 *            Second sequence of tokens.
 	 * @param dp
-	 * 	Precomputed LCS table (from {@link #computeLCSTable}).
-	 * @return A list of int pairs [i, j] indicating matched token positions in {@code a} and {@code b}.
+	 *            Precomputed LCS table (from {@link #computeLCSTable}).
+	 * @return A list of int pairs [i, j] indicating matched token positions in
+	 *         {@code a} and {@code b}.
 	 */
 	private static List<int[]> backtrackLCS(String[] a, String[] b, int[][] dp)
 	{
@@ -115,20 +123,22 @@ public class LCS
 	}
 
 	/**
-	 * Counts the number of unique LCS token matches between a reference and candidate sentence pair, while ensuring tokens are not reused (clipped matching).
+	 * Counts the number of unique LCS token matches between a reference and
+	 * candidate sentence pair, while ensuring tokens are not reused (clipped
+	 * matching).
 	 *
 	 * @param refSent
-	 * 	Token array of the reference sentence.
+	 *            Token array of the reference sentence.
 	 * @param candSent
-	 * 	Token array of the candidate sentence.
+	 *            Token array of the candidate sentence.
 	 * @param refOffset
-	 * 	Global token offset for the reference sentence.
+	 *            Global token offset for the reference sentence.
 	 * @param candOffset
-	 * 	Global token offset for the candidate sentence.
+	 *            Global token offset for the candidate sentence.
 	 * @param usedRef
-	 * 	Set of already matched reference token indices (global).
+	 *            Set of already matched reference token indices (global).
 	 * @param usedCand
-	 * 	Set of already matched candidate token indices (global).
+	 *            Set of already matched candidate token indices (global).
 	 * @return Number of fresh (non-overlapping) LCS matches.
 	 */
 	private static int countFreshMatches(String[] refSent, String[] candSent,
@@ -155,10 +165,12 @@ public class LCS
 	}
 
 	/**
-	 * Builds an array of token offsets for each sentence in a document, allowing mapping of local sentence token indices to global document indices.
+	 * Builds an array of token offsets for each sentence in a document,
+	 * allowing mapping of local sentence token indices to global document
+	 * indices.
 	 *
 	 * @param sentences
-	 * 	List of token arrays representing individual sentences.
+	 *            List of token arrays representing individual sentences.
 	 * @return Array of global token offsets for each sentence.
 	 */
 	private static int[] buildOffsets(List<String[]> sentences)

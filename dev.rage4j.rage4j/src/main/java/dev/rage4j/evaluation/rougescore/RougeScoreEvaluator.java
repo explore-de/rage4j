@@ -12,7 +12,9 @@ import static dev.rage4j.evaluation.rougescore.rougemetrics.RougeL.calculateRoug
 import static dev.rage4j.evaluation.rougescore.rougemetrics.RougeN.calculateRougeN;
 
 /**
- * The {@code RougeScoreEvaluator} class implements the ROUGE (Recall-Oriented Understudy for Gisting Evaluation) metric for evaluating the quality of generated text against reference text.
+ * The {@code RougeScoreEvaluator} class implements the ROUGE (Recall-Oriented
+ * Understudy for Gisting Evaluation) metric for evaluating the quality of
+ * generated text against reference text.
  */
 public class RougeScoreEvaluator implements Evaluator
 {
@@ -46,10 +48,11 @@ public class RougeScoreEvaluator implements Evaluator
 	}
 
 	/**
-	 * Evaluates a sample by comparing the candidate text against the reference text using ROUGE metrics.
+	 * Evaluates a sample by comparing the candidate text against the reference
+	 * text using ROUGE metrics.
 	 *
 	 * @param sample
-	 * 	The sample containing both the candidate and reference texts
+	 *            The sample containing both the candidate and reference texts
 	 * @return An Evaluation object containing the ROUGE score
 	 */
 	@Override
@@ -67,12 +70,13 @@ public class RougeScoreEvaluator implements Evaluator
 	}
 
 	/**
-	 * Calculates the appropriate ROUGE score based on the configured rouge type.
+	 * Calculates the appropriate ROUGE score based on the configured rouge
+	 * type.
 	 *
 	 * @param candidate
-	 * 	The generated text to evaluate
+	 *            The generated text to evaluate
 	 * @param reference
-	 * 	The reference text to compare against
+	 *            The reference text to compare against
 	 * @return The calculated ROUGE score as a double
 	 */
 	private double calculateRougeScore(String candidate, String reference)
@@ -91,10 +95,11 @@ public class RougeScoreEvaluator implements Evaluator
 	}
 
 	/**
-	 * Calculates the F1 score based on the provided precision and recall values.
+	 * Calculates the F1 score based on the provided precision and recall
+	 * values.
 	 *
 	 * @param measurement
-	 * 	Measurement containing precision and recall values
+	 *            Measurement containing precision and recall values
 	 * @return Returns the F1 score
 	 */
 	private double getScore(Measurement measurement)
@@ -119,10 +124,12 @@ public class RougeScoreEvaluator implements Evaluator
 	}
 
 	/**
-	 * Divides a string into different tokens by splitting it by whitespaces. In the case of Rouge-Lsum metric we leave \n characters as tokens so that they can be used as sentence boundaries.
+	 * Divides a string into different tokens by splitting it by whitespaces. In
+	 * the case of Rouge-Lsum metric we leave \n characters as tokens so that
+	 * they can be used as sentence boundaries.
 	 *
 	 * @param text
-	 * 	The string that has to be tokenized
+	 *            The string that has to be tokenized
 	 * @return A list of strings where each string is a token
 	 */
 	private String[] tokenize(String text)

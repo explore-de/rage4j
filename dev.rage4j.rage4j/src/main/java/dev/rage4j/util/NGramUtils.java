@@ -20,12 +20,15 @@ public class NGramUtils
 	 *            The size of n-grams to generate
 	 * @return A list of n-gram string arrays
 	 */
-	public static List<String[]> getNGrams(String[] tokens, int n) {
+	public static List<String[]> getNGrams(String[] tokens, int n)
+	{
 		Objects.requireNonNull(tokens, "Tokens array cannot be null");
-		if (n <= 0) {
+		if (n <= 0)
+		{
 			throw new IllegalArgumentException("n must be positive");
 		}
-		if (tokens.length < n) {
+		if (tokens.length < n)
+		{
 			return Collections.emptyList();
 		}
 
