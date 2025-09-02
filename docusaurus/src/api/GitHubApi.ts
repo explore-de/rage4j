@@ -56,10 +56,19 @@ export function getGitHubStats(owner: string, repo: string) {
                 return Promise.all([repoResponse.json(), releaseResponse.json()]);
             })
             .then(([repoData, releaseData]) => {
+                let version = '0.0.0';
+                if (releaseData.tag_name) {
+                    let tagName = releaseData.tag_name.replace(/^v/i, '');
+                    const versionMatch = tagName.match(/\d+\.\d+\.\d+/);
+                    if (versionMatch) {
+                        version = versionMatch[0];
+                    }
+                }
+
                 const newStats = {
                     stars: repoData.stargazers_count || 0,
                     forks: repoData.forks_count || 0,
-                    version: releaseData.tag_name?.replace('v', '') || '0.0.0'
+                    version: version
                 };
                 setStats(newStats);
                 storeStats(newStats);
