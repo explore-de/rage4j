@@ -9,9 +9,9 @@
     --glass-border: rgba(255, 255, 255, 0.2);
     --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
     --shadow-glow: 0 0 40px rgba(203, 30, 30, 0.3);
+    --ifm-background-color: #000000;
 }
 
-/* Theme Transition Wall Effect */
 #theme-transition-overlay {
     position: fixed;
     top: 0;
@@ -82,7 +82,6 @@ code {
     color var(--theme-transition-duration) ease-in-out;
 }
 
-/* Vereinheitlichte Titel-Styles für Dark Mode - Enhanced */
 .heroTitle {
     user-select: none;
     font-size: 5rem;
@@ -145,7 +144,6 @@ code {
     }
 }
 
-/* Vereinheitlichte Beschreibungs-Styles für beide Modi */
 .heroDescription {
     user-select: none;
     font-size: 1.8rem;
@@ -178,7 +176,6 @@ code {
     }
 }
 
-/* Light Mode Redesign */
 [data-theme='light'] .hero {
     position: relative;
     background: #ffffff;
@@ -202,7 +199,6 @@ code {
     z-index: 1;
 }
 
-/* Light Mode Titel-Styles - Nur animierte Farben, kein Glow */
 [data-theme='light'] .heroTitle {
 
     animation: lightColorAnimation 12s ease-in-out infinite;
@@ -251,7 +247,6 @@ code {
     }
 }
 
-/* Einheitliche Beschreibungs-Styles für Light Mode */
 [data-theme='light'] .heroDescription {
     color: #2d3748;
     text-shadow: none;
@@ -437,7 +432,6 @@ nav.navbar {
     0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Specific targeting for "Visit Get Started" button only - Enhanced */
 a[href="/docs/intro"].button--secondary {
     background: linear-gradient(135deg, var(--ifm-color-primary), rgba(164, 38, 30, 0.9)) !important;
     border: none !important;
@@ -472,7 +466,6 @@ a[href="/docs/intro"].button--secondary:hover {
     0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Enhanced outline button styles */
 .button--outline.button--secondary {
     background: transparent !important;
     border: 2px solid var(--ifm-color-primary) !important;
@@ -493,7 +486,6 @@ h1 {
     margin: -4px 0 0 0;
 }
 
-/* Global hover effects for Getting Started, RAGE4j-Core, and RAGE4j-Assert text */
 a[href*="/docs/intro"]:hover,
 a[href*="/docs/category/rage4j-core"]:hover,
 a[href*="/docs/category/rage4j-assert"]:hover {
@@ -501,19 +493,16 @@ a[href*="/docs/category/rage4j-assert"]:hover {
     transition: color 0.3s ease;
 }
 
-/* Dropdown menu items */
 .dropdown__link:hover {
     color: #cb1e1e !important;
 }
 
-/* Button hover effects - ensuring readability with smooth animations */
 .button:hover {
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Specific targeting for buttons with "Get Started" text */
 .button[href*="/docs/intro"]:hover {
     background-color: #cb1e1e !important;
     color: white !important;
@@ -522,7 +511,6 @@ a[href*="/docs/category/rage4j-assert"]:hover {
     box-shadow: 0 4px 12px rgba(203, 30, 30, 0.3);
 }
 
-/* Navigation bar links */
 .navbar__link:hover {
     color: #cb1e1e !important;
 }
@@ -548,7 +536,6 @@ article,
     background-color var(--theme-transition-duration) ease-in-out;
 }
 
-/* Responsive Design Improvements */
 @media (prefers-reduced-motion: reduce) {
     .heroTitle {
         animation: none;
@@ -561,58 +548,52 @@ article,
 
 @media screen and (max-width: 996px) {
     .heroTitle {
-        font-size: 4.5rem; /* Größer gemacht für mobile */
+        font-size: 4.5rem;
         padding: 0.05em 0.03em;
         text-shadow: 0 0 60px rgba(203, 30, 30, 0.4),
         0 15px 30px rgba(0, 0, 0, 0.3);
     }
 
     [data-theme='light'] .heroTitle {
-        font-size: 4.5rem; /* Größer gemacht für mobile */
+        font-size: 4.5rem;
     }
 
     .heroDescription {
-        font-size: 1.3rem; /* Kleiner gemacht */
+        font-size: 1.3rem;
     }
 
     .hero {
         min-height: 60vh;
         padding: 2rem 1rem;
-        background: #000000; /* Schwarz für Dark Mode */
+        background: #000000;
     }
 
     .container {
         padding: 0 1rem;
     }
 
-    /* Verbesserte Touch-Targets */
     .navbar__item {
         padding: 0.5rem;
     }
 
-    /* Bessere Sidebar auf mobilen Geräten */
     .menu {
         padding: 1rem;
     }
 
-    /* Responsive Tabellen */
     .table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
 
-    /* Bessere Button-Größen für Touch */
     .button {
         min-height: 44px;
         padding: 0.75rem 1.5rem;
     }
 
-    /* Verbesserte Card-Layouts */
     .card {
         margin-bottom: 1rem;
     }
 
-    /* Responsive Text-Größen */
     h1 {
         font-size: 2rem;
     }
@@ -629,7 +610,6 @@ article,
         font-size: 1.25rem;
     }
 
-    /* Verbesserte Abstände */
     .margin-bottom--lg {
         margin-bottom: 2rem !important;
     }
@@ -641,7 +621,7 @@ article,
 
 @media (max-width: 768px) {
     .heroTitle {
-        font-size: 3.2rem; /* Größer gemacht für mobile */
+        font-size: 3.2rem;
         line-height: 1.2;
         padding: 0.05em 0.02em;
         text-shadow: 0 0 40px rgba(203, 30, 30, 0.3),
@@ -649,38 +629,34 @@ article,
     }
 
     [data-theme='light'] .heroTitle {
-        font-size: 3.2rem; /* Größer gemacht für mobile */
+        font-size: 3.2rem;
     }
 
     .heroDescription {
-        font-size: 1.1rem; /* Kleiner gemacht */
+        font-size: 1.1rem;
     }
 
     .hero {
         min-height: 50vh;
         padding: 1.5rem 0.5rem;
-        background: #000000; /* Schwarz für Dark Mode */
+        background: #000000;
     }
 
-    /* Bessere Lesbarkeit für Code-Blöcke auf mobilen Geräten */
     .codeBlockLines_e6Vv {
         font-size: 0.8rem;
         overflow-x: auto;
         white-space: pre;
     }
 
-    /* Navigation verbessert für Touch */
     .navbar {
         padding: 0.5rem 1rem;
     }
 
-    /* Footer responsiver */
     .footer__links {
         flex-direction: column;
         gap: 2rem;
     }
 
-    /* Bessere Abstände für mobile Geräte */
     .container {
         padding: 0 0.75rem;
     }
@@ -688,7 +664,7 @@ article,
 
 @media (max-width: 480px) {
     .heroTitle {
-        font-size: 2.4rem; /* Größer gemacht für mobile */
+        font-size: 2.4rem;
         line-height: 1.3;
         padding: 0.03em 0.01em;
         text-shadow: 0 0 30px rgba(203, 30, 30, 0.3),
@@ -697,16 +673,15 @@ article,
     }
 
     .heroDescription {
-        font-size: 1rem; /* Kleiner gemacht */
+        font-size: 1rem;
     }
 
     .hero {
         min-height: 40vh;
         padding: 1rem 0.25rem;
-        background: #000000; /* Schwarz für Dark Mode */
+        background: #000000;
     }
 
-    /* Vereinfachte Animation für mobile Geräte */
     @keyframes titlePresenceMobile {
         0%, 100% {
             background-position: 0% 50%;
@@ -723,36 +698,29 @@ article,
     }
 }
 
-/* Allgemeine mobile Verbesserungen */
 @media (max-width: 996px) {
-    /* Verbesserte Touch-Targets */
     .navbar__item {
         padding: 0.5rem;
     }
 
-    /* Bessere Sidebar auf mobilen Geräten */
     .menu {
         padding: 1rem;
     }
 
-    /* Responsive Tabellen */
     .table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
 
-    /* Bessere Button-Größen für Touch */
     .button {
         min-height: 44px;
         padding: 0.75rem 1.5rem;
     }
 
-    /* Verbesserte Card-Layouts */
     .card {
         margin-bottom: 1rem;
     }
 
-    /* Responsive Text-Größen */
     h1 {
         font-size: 2rem;
     }
@@ -765,7 +733,6 @@ article,
         font-size: 1.25rem;
     }
 
-    /* Verbesserte Abstände */
     .margin-bottom--lg {
         margin-bottom: 2rem !important;
     }
@@ -775,7 +742,6 @@ article,
     }
 }
 
-/* Additional code block selectors for dark theme */
 [data-theme='dark'] pre,
 [data-theme='dark'] .prism-code,
 [data-theme='dark'] code[class*="language-"],
@@ -783,7 +749,40 @@ article,
     background: #000000 !important;
 }
 
-/* Ensure code blocks in dark theme are black */
 [data-theme='dark'] {
     --prism-background-color: #000000;
+    --ifm-background-color: #000000;
+    --ifm-background-surface-color: #000000;
+    --ifm-card-background-color: #000000;
+    --ifm-hero-background-color: #000000;
+    --ifm-navbar-background-color: #000000;
+    --ifm-footer-background-color: #000000;
+    --ifm-menu-color-background-active: rgba(255, 255, 255, 0.05);
+    --ifm-menu-color-background-hover: rgba(255, 255, 255, 0.1);
 }
+
+/* Force black background for main content areas */
+[data-theme='dark'] body,
+[data-theme='dark'] .main-wrapper,
+[data-theme='dark'] main,
+[data-theme='dark'] article,
+[data-theme='dark'] .container,
+[data-theme='dark'] .row,
+[data-theme='dark'] .col {
+    background-color: #000000 !important;
+}
+
+/* Force black background for documentation pages */
+[data-theme='dark'] .docusaurus-highlight-code-line,
+[data-theme='dark'] .markdown,
+[data-theme='dark'] .theme-doc-markdown,
+[data-theme='dark'] .theme-doc-sidebar-container,
+[data-theme='dark'] .menu,
+[data-theme='dark'] .thin-scrollbar {
+    background-color: #000000 !important;
+}
+
+[data-theme='light'] {
+    --ifm-background-color: white;
+}
+

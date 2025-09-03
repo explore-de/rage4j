@@ -5,7 +5,7 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import ThemeToggleHandler from '@site/src/components/ThemeToggleHandler';
 
 import styles from './index.module.css';
-import React, {useEffect, useState} from 'react';
+import React, {JSX, useEffect, useState} from 'react';
 import CodeBlock from "@theme/CodeBlock";
 
 const useTypewriter = (text: string, speed: number = 50) => {
