@@ -7,7 +7,6 @@ const config: Config = {
     tagline: "Comprehensive RAG Evaluation Library for Java",
     favicon: "img/favicon.ico",
 
-    /* change to actual website */
     url: "https://explore-de.github.io",
     baseUrl: "/rage4j/",
 
@@ -41,6 +40,37 @@ const config: Config = {
     ],
 
     themeConfig: {
+        image: 'img/rage4j.png',
+        metadata: [
+            {
+                name: 'description',
+                content: 'Rage4J - Comprehensive RAG Evaluation Library for Java. Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
+            },
+            {property: 'og:title', content: 'Rage4J - RAG Evaluation Library for Java'},
+            {
+                property: 'og:description',
+                content: 'Comprehensive RAG Evaluation Library for Java. Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
+            },
+            {property: 'og:url', content: 'https://explore-de.github.io/rage4j/'},
+            {property: 'og:type', content: 'website'},
+            {property: 'og:image', content: 'https://explore-de.github.io/rage4j/img/opengraph.jpg'},
+            {property: 'og:image:alt', content: 'Rage4J Logo - RAG Evaluation Library for Java'},
+            {property: 'og:site_name', content: 'Rage4J'},
+            {property: 'og:locale', content: 'en_US'},
+            {name: 'twitter:card', content: 'summary_large_image'},
+            {name: 'twitter:title', content: 'Rage4J - RAG Evaluation Library for Java'},
+            {
+                name: 'twitter:description',
+                content: 'Comprehensive RAG Evaluation Library for Java. Evaluate RAG systems with multiple metrics.'
+            },
+            {name: 'twitter:image', content: 'https://explore-de.github.io/rage4j/img/opengraph.jpg'},
+            {name: 'twitter:image:alt', content: 'Rage4J Logo - RAG Evaluation Library for Java'},
+            {
+                name: 'keywords',
+                content: 'RAG, Retrieval Augmented Generation, Java, Evaluation, Metrics, AI, Machine Learning'
+            },
+            {name: 'author', content: 'EXP Software GmbH'},
+        ],
         navbar: {
             items: [
                 {
@@ -100,7 +130,94 @@ const config: Config = {
         },
         prism: {
             theme: prismThemes.github,
-            darkTheme: prismThemes.dracula,
+            darkTheme: {
+                "plain": {
+                    "color": "#F8F8F2"
+                },
+                "styles": [
+                    {
+                        "types": [
+                            "prolog",
+                            "constant",
+                            "builtin"
+                        ],
+                        "style": {
+                            "color": "rgb(189, 147, 249)"
+                        }
+                    },
+                    {
+                        "types": [
+                            "inserted",
+                            "function"
+                        ],
+                        "style": {
+                            "color": "rgb(80, 250, 123)"
+                        }
+                    },
+                    {
+                        "types": [
+                            "deleted"
+                        ],
+                        "style": {
+                            "color": "rgb(255, 85, 85)"
+                        }
+                    },
+                    {
+                        "types": [
+                            "changed"
+                        ],
+                        "style": {
+                            "color": "rgb(255, 184, 108)"
+                        }
+                    },
+                    {
+                        "types": [
+                            "punctuation",
+                            "symbol"
+                        ],
+                        "style": {
+                            "color": "rgb(248, 248, 242)"
+                        }
+                    },
+                    {
+                        "types": [
+                            "string",
+                            "char",
+                            "tag",
+                            "selector"
+                        ],
+                        "style": {
+                            "color": "rgb(255, 121, 198)"
+                        }
+                    },
+                    {
+                        "types": [
+                            "keyword",
+                            "variable"
+                        ],
+                        "style": {
+                            "color": "rgb(189, 147, 249)",
+                            "fontStyle": "italic"
+                        }
+                    },
+                    {
+                        "types": [
+                            "comment"
+                        ],
+                        "style": {
+                            "color": "rgb(98, 114, 164)"
+                        }
+                    },
+                    {
+                        "types": [
+                            "attr-name"
+                        ],
+                        "style": {
+                            "color": "rgb(241, 250, 140)"
+                        }
+                    }
+                ]
+            },
             additionalLanguages: ["java", "scala"],
         },
     } satisfies Preset.ThemeConfig,
