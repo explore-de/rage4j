@@ -23,6 +23,86 @@ const config: Config = {
         locales: ["en"],
     },
 
+    headTags: [
+        {
+            tagName: 'meta',
+            attributes: {
+                name: 'description',
+                content: 'Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                property: 'og:title',
+                content: 'Rage4J - RAG Evaluation Library for Java',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                property: 'og:description',
+                content: 'Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                property: 'og:image',
+                content: 'https://explore-de.github.io/rage4j/img/opengraph.png',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                property: 'og:type',
+                content: 'website',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                property: 'og:url',
+                content: 'https://explore-de.github.io/rage4j/',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                name: 'twitter:card',
+                content: 'summary_large_image',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                name: 'twitter:title',
+                content: 'Rage4J - RAG Evaluation Library for Java',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                name: 'twitter:description',
+                content: 'Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                name: 'twitter:image',
+                content: 'https://explore-de.github.io/rage4j/img/opengraph.png',
+            },
+        },
+        {
+            tagName: 'meta',
+            attributes: {
+                name: 'twitter:image:alt',
+                content: 'Rage4J - RAG Evaluation Library for Java',
+            },
+        },
+    ],
+
     presets: [
         [
             "classic",
@@ -40,20 +120,20 @@ const config: Config = {
     ],
 
     themeConfig: {
-        image: 'img/rage4j.png',
+        image: 'img/opengraph.png',
         metadata: [
             {
                 name: 'description',
-                content: 'Rage4J - Comprehensive RAG Evaluation Library for Java. Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
+                content: 'Rage4J - Comprehensive RAG Evaluation Library for Java. Evaluate your Retrieval-Augmented Generation systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
             },
             {property: 'og:title', content: 'Rage4J - RAG Evaluation Library for Java'},
             {
                 property: 'og:description',
-                content: 'Comprehensive RAG Evaluation Library for Java. Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
+                content: 'Comprehensive RAG Evaluation Library for Java. Evaluate your Retrieval-Augmented Generation systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
             },
             {property: 'og:url', content: 'https://explore-de.github.io/rage4j/'},
             {property: 'og:type', content: 'website'},
-            {property: 'og:image', content: 'https://explore-de.github.io/rage4j/img/opengraph.jpg'},
+            {property: 'og:image', content: 'https://explore-de.github.io/rage4j/img/rage4j.png'},
             {property: 'og:image:alt', content: 'Rage4J Logo - RAG Evaluation Library for Java'},
             {property: 'og:site_name', content: 'Rage4J'},
             {property: 'og:locale', content: 'en_US'},
@@ -61,13 +141,13 @@ const config: Config = {
             {name: 'twitter:title', content: 'Rage4J - RAG Evaluation Library for Java'},
             {
                 name: 'twitter:description',
-                content: 'Comprehensive RAG Evaluation Library for Java. Evaluate RAG systems with multiple metrics.'
+                content: 'Comprehensive RAG Evaluation Library for Java. Evaluate your Retrieval-Augmented Generation systems with multiple metrics.'
             },
-            {name: 'twitter:image', content: 'https://explore-de.github.io/rage4j/img/opengraph.jpg'},
+            {name: 'twitter:image', content: 'https://explore-de.github.io/rage4j/img/rage4j.png'},
             {name: 'twitter:image:alt', content: 'Rage4J Logo - RAG Evaluation Library for Java'},
             {
                 name: 'keywords',
-                content: 'RAG, Retrieval Augmented Generation, Java, Evaluation, Metrics, AI, Machine Learning'
+                content: 'RAG, Retrieval Augmented Generation, Java, Evaluation, Metrics, AI, Machine Learning, NLP'
             },
             {name: 'author', content: 'EXP Software GmbH'},
         ],
