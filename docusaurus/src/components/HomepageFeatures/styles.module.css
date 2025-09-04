@@ -1,34 +1,18 @@
 :root {
     --section-bg: #070707;
+    --glass-light: rgba(255, 255, 255, 0.7);
+    --glass-light-border: rgba(203, 30, 30, 0.1);
+    --shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.1);
+    --gradient-light: linear-gradient(135deg, rgba(203, 30, 30, 0.05) 0%, rgba(255, 92, 92, 0.03) 100%);
+    --light-red: rgba(255, 99, 71, 0.8);
+    --light-orange: rgba(255, 165, 0, 0.6);
+    --light-peach: rgba(255, 218, 185, 0.4);
 }
 
-/* Stats Styles */
+/* Stats Section */
 .statsSection {
-    background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9));
     padding: 6rem 0;
-}
-
-.statsCard {
-    background: rgba(220, 38, 38, 0.1);
-    backdrop-filter: blur(10px);
-    color: white;
-    padding: 2rem;
-    text-align: center;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    animation: fadeIn 0.6s ease-out;
-}
-
-.statsValue {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: white;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 2.5rem;
-    font-weight: 700;
-    transition: all 0.3s ease;
+    position: relative;
 }
 
 .statsGrid {
@@ -37,149 +21,500 @@
     gap: 2rem;
     max-width: 1000px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
-.statsCard:hover {
-    transform: translateY(-5px);
-}
-
-.statsIcon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.statsLabel {
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-[data-theme='light'] .statsSection {
-    background: #ffffff;
+.statsCard {
+    background: var(--ifm-card-background-color);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--ifm-global-shadow-lw);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(40, 10, 10, 0.8) 50%, rgba(0, 0, 0, 0.9) 100%);
+    border: none;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
 }
 
 [data-theme='light'] .statsCard {
-    background: rgba(255, 68, 0, 0.18);
+    background: white;
 }
 
 [data-theme='light'] .statsValue {
-    -webkit-text-fill-color: black;
+    color: rgba(0, 0, 0, 0.7);
 }
 
 [data-theme='light'] .statsLabel {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.visible .statsCard {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.visible .animateCard1 {
+    transition-delay: 0.1s;
+}
+
+.visible .animateCard2 {
+    transition-delay: 0.2s;
+}
+
+.visible .animateCard3 {
+    transition-delay: 0.3s;
+}
+
+.statsCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--ifm-global-shadow-md);
+}
+
+.statsIcon {
+    user-select: none;
+
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    display: block;
+    line-height: 1;
+}
+
+.statsValue {
+    user-select: none;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.statsLabel {
+    user-select: none;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+/* Learn More Section */
+
+.learnMoreText {
+    user-select: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+[data-theme='light'] .learnMoreText {
     color: black;
 }
 
-/* Features Styles */
-.quickStartSection {
-    background: var(--section-bg);
-}
-
-.featuresSection {
-    padding: 4rem 0;
-    position: relative;
-    background: black;
-}
-
-.featuresTitle {
-    text-align: center;
-    margin-bottom: 3rem;
-    font-size: 2.5rem;
-    background: var(--rage-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.featureCard {
-    background: black;
-}
-
-.featureGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin: 0 auto;
-    max-width: 1200px;
-}
-
-[data-theme='light'] .featuresSection {
-    background: black;
-}
-
-[data-theme='light'] .featureCard {
-    background: rgba(255, 255, 255, 0);
-    -webkit-text-fill-color: white;
-}
-
-[data-theme='light'] .featuresTitle {
-    -webkit-text-fill-color: #cb2c2c;
-}
-
-/* Installation Styles */
-.installationTitle {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 5rem;
-    text-align: center;
-}
+/* Installation Section */
 
 .installationSection {
     padding: 4rem 0;
-    background: var(--section-bg);
-}
-
-.installationDescription {
-    max-width: 800px;
-    margin: 0 0 0 0;
-    margin-bottom: 5px;
-    text-align: left;
-}
-
-[data-theme='light'] .installationSection {
-    background: #ffffff;
-}
-
-/* Learn More Styles */
-.learnMoreSection {
-    text-align: center;
-    margin-top: 2rem;
-}
-
-.learnMoreDescription {
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-}
-
-.getStartedButton {
     position: relative;
-    overflow: hidden;
+}
+
+.installationTitle {
+    user-select: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+[data-theme='light'] .installationTitle {
+    color: rgba(0, 0, 0, 0.8);
+
+}
+
+[data-theme='light'] .installationSubtitle {
+    color: rgba(0, 0, 0, 0.8);
+
+}
+
+[data-theme='light'] .alternativeText {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.installationSubtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alternativeText {
+    user-select: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.installationSection .row {
+    display: flex;
+    justify-content: center;
+}
+
+.installationSection .col {
+    max-width: 600px;
+    width: 100%;
+}
+
+.installationCard {
+    padding: 2rem;
+    border-radius: 12px;
+    border: none;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.3s ease;
+}
+
+.installationCard .prism-code,
+.installationCard pre,
+.installationCard [class*="codeBlock"] {
+    margin: 0 auto;
+    display: block;
+    max-width: 500px;
+}
+
+.visible .installationCard {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.visible .installationSection .col:nth-child(1) .installationCard {
+    transition-delay: 0.1s;
+}
+
+.visible .installationSection .col:nth-child(2) .installationCard {
+    transition-delay: 0.3s;
+}
+
+.installationCard h3 {
+    color: var(--ifm-color-primary);
+    margin-bottom: 1rem;
+}
+
+.installationCard p {
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    flex-grow: 1;
+}
+
+.installationCard .button {
+    margin-top: auto;
+}
+
+/* Feature Cards */
+.features {
+    padding: 4rem 0;
+    position: relative;
+}
+
+.featuresTitle {
+    user-select: none;
+    color: var(--ifm-color-primary);
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    font-weight: 700;
+}
+
+.features .col {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.features .col > div {
+    padding: 2rem;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    backdrop-filter: blur(10px);
+    height: 100%;
     transition: all 0.3s ease;
 }
 
-.getStartedButton:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(220, 38, 38, 0.2);
-    background: var(--ifm-color-primary);
-    color: white;
-    border-color: var(--ifm-color-primary);
+.features .col > div:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);
+    border-color: rgba(255, 59, 48, 0.4);
 }
 
-[data-theme='light'] .getStartedButton {
-    color: white;
-    background: black;
+.featureCard {
+    user-select: none;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-[data-theme='light'] .getStartedButton:hover {
-    background: var(--ifm-color-primary);
+.featureCard.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#feature-1.visible {
+    transition-delay: 0.1s;
+}
+
+#feature-2.visible {
+    transition-delay: 0.2s;
+}
+
+#feature-3.visible {
+    transition-delay: 0.3s;
+}
+
+/* Other */
+.scroll-animate {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-animate.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.1s;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.2s;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.3s;
+}
+
+.sectionDivider {
+    height: 2px;
+    background: #333333;
+    max-width: 200px;
+    margin: 0 auto;
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 996px) {
+    .statsGrid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+
+    .features {
+        padding: 3rem 1rem;
+    }
+
+    .installationSection {
+        padding: 3rem 1rem;
+    }
+
+    .installationTitle {
+        font-size: 2rem;
+    }
+
+    .installationCard {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+    }
+
+    .features .col > div {
+        padding: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .sectionDivider {
+        background: none;
+    }
+
+    [data-theme='light'] .statsSection {
+        background: white;
+    }
+
+    [data-theme='light'] .features {
+        background: white;
+    }
+
+    [data-theme='light'] .installationSection {
+        background: white;
+    }
+
+    .learnMoreSection {
+        margin-top: 0 !important;
+    }
+
+    .statsSection {
+        padding: 4rem 0;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .statsCard {
+        padding: 1.5rem;
+    }
+
+    .statsIcon {
+        font-size: 2rem;
+    }
+
+    .statsValue {
+        font-size: 2rem;
+    }
+
+    .featureIcon {
+        font-size: 2.5rem;
+    }
+
+    .features .col > div {
+        padding: 1.25rem;
+    }
+
+    .installationSection {
+        padding: 2.5rem 0.5rem;
+    }
+
+    .installationTitle {
+        font-size: 1.75rem;
+    }
+
+    .installationSubtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .installationCard {
+        padding: 1.25rem;
+    }
+
+    .installationCard .prism-code,
+    .installationCard pre,
+    .installationCard [class*="codeBlock"] {
+        font-size: 0.85rem;
+        overflow-x: auto;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .statsSection {
+        padding: 3rem 0;
+    }
+
+    .statsCard {
+        padding: 1rem;
+    }
+
+    .statsIcon {
+        font-size: 1.8rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .statsValue {
+        font-size: 1.75rem;
+    }
+
+    .statsLabel {
+        font-size: 0.9rem;
+    }
+
+    .features {
+        padding: 2.5rem 0.5rem;
+    }
+
+    .featuresTitle {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .featureIcon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .features .col > div {
+        padding: 1rem;
+    }
+
+    .installationSection {
+        padding: 2rem 0.25rem;
+    }
+
+    .installationTitle {
+        font-size: 1.5rem;
+    }
+
+    .installationSubtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .installationCard {
+        padding: 1rem;
+    }
+
+    .installationCard h3 {
+        font-size: 1.25rem;
+    }
+
+    .installationCard p {
+        font-size: 0.9rem;
+    }
+
+    .installationCard .prism-code,
+    .installationCard pre,
+    .installationCard [class*="codeBlock"] {
+        font-size: 0.8rem;
+        padding: 0.75rem;
+    }
+
+    .alternativeText,
+    .learnMoreText {
+        font-size: 0.9rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scroll-animate,
+    .statsCard,
+    .features .col,
+    .installationCard {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .statsCard:hover,
+    .features .col > div:hover,
+    .installationCard:hover {
+        transform: none;
+    }
 }
