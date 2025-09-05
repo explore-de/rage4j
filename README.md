@@ -40,6 +40,7 @@ built-in support).
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kmscheuer"><img src="https://avatars.githubusercontent.com/u/3342781?v=4?s=100" width="100px;" alt="Klaus-Martin Fink"/><br /><sub><b>Klaus-Martin Fink</b></sub></a><br /><a href="#code-kmscheuer" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/andresCh01"><img src="https://avatars.githubusercontent.com/u/196327563?v=4?s=100" width="100px;" alt="andresCh01"/><br /><sub><b>andresCh01</b></sub></a><br /><a href="#code-andresCh01" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
