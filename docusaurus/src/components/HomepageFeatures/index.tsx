@@ -13,7 +13,7 @@ const getMavenDependency = (version: string) => `<dependency>
 
 const getAssertDependency = (version: string) => `<dependency>
     <groupId>dev.rage4j</groupId>
-    <artifactId>rage4j-assert</artifactId>
+    <artifactId>rage-assert</artifactId>
     <version>${version}</version>
 </dependency>`;
 
