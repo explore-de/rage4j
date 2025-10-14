@@ -96,7 +96,8 @@ public class AxcelEvaluator implements Evaluator
 		chatMemory.add(exampleResponseAiResponse);
 
 		log.info("Start Axcel evaluation...");
-		String actualStDtPair = buildFewShotExemplars(buildContext(sample), sample.getAnswerOrFail());
+		String context = buildContext(sample);
+		String actualStDtPair = buildFewShotExemplars(context, sample.getAnswerOrFail());
 		List<AxcelFactEvaluation> parsedFacts = bot.evaluate(actualStDtPair);
 		double score = normalizeScore(parsedFacts);
 		logDebug(parsedFacts);
