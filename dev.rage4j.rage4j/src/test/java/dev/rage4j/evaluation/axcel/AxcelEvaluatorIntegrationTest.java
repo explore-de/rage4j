@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 
-import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4;
+import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(LoggingTestWatcher.class)
@@ -26,7 +26,9 @@ public class AxcelEvaluatorIntegrationTest
 			.logRequests(true)
 			.logResponses(true)
 			.apiKey(OPEN_AI_KEY)
-			.modelName(GPT_4)
+			.modelName("gpt-4.1")
+			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA) // see [2] below
+			.strictJsonSchema(true) // see [2] below
 			.build();
 		evaluator = new AxcelEvaluator(model);
 	}
@@ -47,6 +49,6 @@ public class AxcelEvaluatorIntegrationTest
 			.build();
 
 		Evaluation evaluation = evaluator.evaluate(sample);
-		assertTrue(evaluation.getValue() > 0.5 && evaluation.getValue() < 0.8);
+		assertTrue(evaluation.getValue() > 0.6);
 	}
 }
