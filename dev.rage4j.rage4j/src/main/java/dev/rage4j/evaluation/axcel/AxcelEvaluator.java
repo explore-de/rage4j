@@ -11,80 +11,50 @@ import dev.rage4j.model.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.Objects;
+
 public class AxcelEvaluator implements Evaluator
 {
 	private static final Logger log = LoggerFactory.getLogger(AxcelEvaluator.class);
+	private static final String METRIC_NAME = "Axcel factual alignment";
+	private static final double MAX_RATING = 5.0;
+	private static final String EXAMPLE_RESPONSE_PATH = "exampleResponse";
+	private static final AxcelResponseParser RESPONSE_PARSER = new AxcelResponseParser();
 	private final AxcelBot bot;
 
-	private static final String exampleSt = """
-		Manchester City
-		are keen to sign Anderlecht teenager
-		Evangelos Patoulidis. The 14-year-old
-		playmaker is regarded as one of the best
-		talents to emerge from Anderlecht’s youth
-		set-up and has also attracted attention
-		from Arsenal and Barcelona. The Belgian
-		starlet rejected a move to Barcelona’s
-		La Masia academy when he was 12 as
-		his family wanted him to continue his
-		studies . He has continued to impress
-		and City have held discussions with
-		Anderlecht chairman Roger Vanden Stock
-		in the hope of agreeing a compensation
-		package. Manuel Pellegrini is looked to
-		build for the future by snapping up hot
-		property Evangelos Patoulidis.
+	private static final String EXAMPLE_SOURCE_TEXT = """
+		User: Hello, my name is John.
+		AI: Hello John, how can I assist you today?
+		User: Can you tell me a joke?
+		AI: Sure! Why don't scientists trust atoms? Because they make up everything!
+		User: Good one! Do you know any facts about space?
 		""";
 
-	private static final String exampleDt = """
-		Evangelos patoulidis is regarded as one of
-		the best players to emerge from anderlecht
-		youth. He has also attracted attention
-		from arsenal and barcelona. The belgian
-		starlet rejected a move to barcelona
-		’s la masia academy. The 14-year-old
-		has attracted interest from barcelona to
-		barcelona.
+	private static final String EXAMPLE_DERIVED_TEXT = """
+		Sure thing John! Here are some facts about space...
 		""";
 
-	private static final String exampleResponse = """
-		Let’s verify the factual
-		accuracy of the derived text step by step:
-		1. Evangelos Patoulidis is Regarded as
-		One of the Best Players to Emerge from
-		Anderlecht Youth:
-		- **Derived Text:** Evangelos Patoulidis
-		is regarded as one of the best players to
-		emerge from Anderlecht youth.
-		- **Source Text:** The source text states
-		that Patoulidis is regarded as "one of the
-		best talents to emerge from Anderlecht’s
-		youth set-up".
+	private static final String EXAMPLE_RESPONSE_AI_RESPONSE = """
+		Let's verify the factual accuracy of the derived text step by step:
+		
+		1. John is interacting with an AI:
+		- **Derived Text:** Sure thing John! Here are some facts about space..."
+		- **Source Text:** User: Hello, my name is John. AI: Hello John, how can I assist you today?
 		- **Verification:** Correct. Rating: 5
-		2. He Has Also Attracted Attention from
-		Arsenal and Barcelona:
-		- **Derived Text:** He has also attracted
-		attention from Arsenal and Barcelona.
-		- **Source Text:** This fact is mentioned
-		verbatim in the source text.
-		- **Verification:** Correct. Rating: 5
-		3. The Belgian Starlet Rejected a Move
-		to Barcelona’s La Masia Academy:
-		- **Derived Text:** The Belgian starlet
-		rejected a move to Barcelona’s La Masia
-		academy.
-		- **Source Text:** The source text
-		confirms this fact.
-		- **Verification:** Correct. Rating: 5
-		4. The 14-Year-Old Has Attracted
-		Interest from Barcelona to Barcelona:
-		- **Derived Text:** The 14-year-old has
-		attracted interest from Barcelona to
-		Barcelona.
-		- **Source Text:** This statement is
-		confusing and not supported by the source
-		text.
-		- **Verification:** Incorrect. Rating: 1
+		
+		2. The AI is providing facts about space to John:
+		- **Derived Text:** Sure thing John! Here are some facts about space..."
+		- **Source Text:** User: Good one! Do you know any facts about space?
+		- **Verification:** The derived text makes a claim about providing facts, but the source text does not provide any actual facts about space. Therefore, this cannot be verified. Rating: 1
+		
+		3. The AI told a joke to John:
+		- **Derived Text:** Sure thing John! Here are some facts about space..."
+		- **Source Text:** User: Can you tell me a joke? AI: Sure! Why don't scientists trust atoms? Because they make up everything!
+		- **Verification:** The derived text does not mention this fact. Rating: N/A
+		
+		Overall, we can conclude that some of the facts presented in the derived text are aligned with the source. For the fact that cannot be verified, we are assuming that the factual information isn't provided in the source text.
 		""";
 
 	public AxcelEvaluator(ChatModel model)
@@ -95,8 +65,8 @@ public class AxcelEvaluator implements Evaluator
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
-		ChatMessage exampleUserMsg = UserMessage.from(buildFewShotExemplars(exampleSt, exampleDt));
-		ChatMessage exampleResponseAiResponse = AiMessage.from(exampleResponse);
+		ChatMessage exampleUserMsg = UserMessage.from(buildFewShotExemplars(EXAMPLE_SOURCE_TEXT, EXAMPLE_DERIVED_TEXT));
+		ChatMessage exampleResponseAiResponse = AiMessage.from(EXAMPLE_RESPONSE_AI_RESPONSE);
 		StringBuilder sb = new StringBuilder();
 		for (String context : sample.getContextsListOrFail())
 		{
@@ -107,9 +77,16 @@ public class AxcelEvaluator implements Evaluator
 		ChatMessage actualUserMsg = UserMessage.from(buildFewShotExemplars(contexts, sample.getAnswerOrFail()));
 		log.info("Start Axcel evaluation...");
 		String evaluation = bot.evaluate(exampleUserMsg, exampleResponseAiResponse, actualUserMsg);
-		log.info("Axcel evaluation completed.");
-		// dummy
-		return new Evaluation("axcel", 99);
+		List<AxcelFactEvaluation> parsedFacts = RESPONSE_PARSER.parse(evaluation);
+		double score = normalizeScore(parsedFacts);
+		if (log.isDebugEnabled())
+		{
+			parsedFacts.forEach(fact ->
+				log.debug("Fact {} rating: {} -> {}", fact.title(), fact.rating(), fact.verification())
+			);
+		}
+		log.info("Axcel evaluation completed. Score: {}", score);
+		return new Evaluation(METRIC_NAME, score);
 	}
 
 	private String buildFewShotExemplars(String exampleSt, String exampleDt)
@@ -121,5 +98,29 @@ public class AxcelEvaluator implements Evaluator
 		sb.append("Derived Text: ");
 		sb.append(exampleDt);
 		return sb.toString();
+	}
+
+	private double normalizeScore(List<AxcelFactEvaluation> facts)
+	{
+		DoubleSummaryStatistics stats = facts.stream()
+			.map(AxcelFactEvaluation::rating)
+			.filter(Objects::nonNull)
+			.mapToDouble(Integer::doubleValue)
+			.summaryStatistics();
+
+		if (stats.getCount() == 0)
+		{
+			log.warn("Axcel response did not include any numeric ratings. Returning score 0.");
+			return 0.0;
+		}
+
+		double averageRating = stats.getAverage();
+		double normalized = averageRating / MAX_RATING;
+		return clamp(normalized, 0.0, 1.0);
+	}
+
+	private double clamp(double value, double min, double max)
+	{
+		return Math.max(min, Math.min(max, value));
 	}
 }

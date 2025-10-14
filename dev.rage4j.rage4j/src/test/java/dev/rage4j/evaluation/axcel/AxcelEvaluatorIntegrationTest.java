@@ -2,6 +2,7 @@ package dev.rage4j.evaluation.axcel;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.List;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(LoggingTestWatcher.class)
 public class AxcelEvaluatorIntegrationTest
@@ -42,8 +44,8 @@ public class AxcelEvaluatorIntegrationTest
 			.withAnswer("Sure thing John! Here are some facts about space...")
 			.withContextsList(context)
 			.build();
-		System.out.println("Test");
 
-		evaluator.evaluate(sample);
+		Evaluation evaluation = evaluator.evaluate(sample);
+		assertTrue(evaluation.getValue() >= 0 && evaluation.getValue() <= 1.0);
 	}
 }
