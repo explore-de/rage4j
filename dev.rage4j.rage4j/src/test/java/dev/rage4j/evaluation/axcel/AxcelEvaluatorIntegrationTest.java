@@ -24,6 +24,7 @@ public class AxcelEvaluatorIntegrationTest
 	{
 		OpenAiChatModel model = OpenAiChatModel.builder()
 			.logRequests(true)
+			.logResponses(true)
 			.apiKey(OPEN_AI_KEY)
 			.modelName(GPT_4)
 			.build();
@@ -46,6 +47,6 @@ public class AxcelEvaluatorIntegrationTest
 			.build();
 
 		Evaluation evaluation = evaluator.evaluate(sample);
-		assertTrue(evaluation.getValue() >= 0 && evaluation.getValue() <= 1.0);
+		assertTrue(evaluation.getValue() > 0.5 && evaluation.getValue() < 0.8);
 	}
 }
