@@ -25,7 +25,7 @@ public class AxcelEvaluatorIntegrationTest
 	{
 		OpenAiChatModel model = OpenAiChatModel.builder()
 			.logRequests(true)
-			.logResponses(true)
+			//.logResponses(true)
 			.apiKey(OPEN_AI_KEY)
 			.modelName("gpt-4.1")
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
@@ -45,12 +45,31 @@ public class AxcelEvaluatorIntegrationTest
 			"AI: Sure! Why don't scientists trust atoms? Because they make up everything!");
 
 		Sample sample = Sample.builder()
-			.withQuestion("Good one! Do you know any facts about space?")
-			.withAnswer("Sure thing John! Here are some facts about space...")
+			.withQuestion("Good one! Do you remember my name?")
+			.withAnswer("Yes, your name is John.")
 			.withContextsList(context)
 			.build();
 
 		Evaluation evaluation = evaluator.evaluate(sample);
-		assertTrue(evaluation.getValue() >= 0.6);
+		assertTrue(evaluation.getValue() >= 0.8);
+	}
+
+	@Test
+	@Tag("integration")
+	void testEvaluateFail()
+	{
+		List<String> context = List.of("User: Hello, my name is John.",
+			"AI: Hello John, how can I assist you today?",
+			"User: Can you tell me a joke?",
+			"AI: Sure! Why don't scientists trust atoms? Because they make up everything!");
+
+		Sample sample = Sample.builder()
+			.withQuestion("Good one! Do you remember my name?")
+			.withAnswer("Ready for a next joke?")
+			.withContextsList(context)
+			.build();
+
+		Evaluation evaluation = evaluator.evaluate(sample);
+		assertTrue(evaluation.getValue() <= 0.33);
 	}
 }
