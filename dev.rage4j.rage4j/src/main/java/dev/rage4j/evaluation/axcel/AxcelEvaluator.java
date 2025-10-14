@@ -4,14 +4,16 @@ import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.chat.request.ChatRequest;
 import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AxcelEvaluator implements Evaluator
 {
+	private static final Logger log = LoggerFactory.getLogger(AxcelEvaluator.class);
 	private final AxcelBot bot;
 
 	private static final String exampleSt = """
@@ -93,16 +95,19 @@ public class AxcelEvaluator implements Evaluator
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
-		ChatRequest chatRequest = ChatRequest.builder()
-			.messages()
-			.build();
-
 		ChatMessage exampleUserMsg = UserMessage.from(buildFewShotExemplars(exampleSt, exampleDt));
 		ChatMessage exampleResponseAiResponse = AiMessage.from(exampleResponse);
-		ChatMessage actualUserMsg = UserMessage.from(buildFewShotExemplars(sample.getContextsListOrFail().getFirst(), sample.getQuestionOrFail()));
+		StringBuilder sb = new StringBuilder();
+		for (String context : sample.getContextsListOrFail())
+		{
+			sb.append(context).append("\n");
+		}
+		String contexts = sb.toString();
+		ChatMessage actualUserMsg = UserMessage.from(buildFewShotExemplars(contexts, sample.getQuestionOrFail()));
 		ChatMessage actualAiResponse = AiMessage.from(sample.getAnswerOrFail());
-
-		String evaluation = bot.evaluate(exampleUserMsg, exampleResponseAiResponse, actualUserMsg, actualAiResponse);
+		log.info("Start Axcel evaluation...");
+		//String evaluation = bot.evaluate(exampleUserMsg, exampleResponseAiResponse, actualUserMsg, actualAiResponse);
+		log.info("Axcel evaluation completed.");
 		// dummy
 		return new Evaluation("axcel", 99);
 	}
