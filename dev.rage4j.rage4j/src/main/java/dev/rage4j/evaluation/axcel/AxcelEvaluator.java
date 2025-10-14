@@ -102,11 +102,11 @@ public class AxcelEvaluator implements Evaluator
 		{
 			sb.append(context).append("\n");
 		}
+		sb.append("User: ").append(sample.getQuestionOrFail());
 		String contexts = sb.toString();
-		ChatMessage actualUserMsg = UserMessage.from(buildFewShotExemplars(contexts, sample.getQuestionOrFail()));
-		ChatMessage actualAiResponse = AiMessage.from(sample.getAnswerOrFail());
+		ChatMessage actualUserMsg = UserMessage.from(buildFewShotExemplars(contexts, sample.getAnswerOrFail()));
 		log.info("Start Axcel evaluation...");
-		//String evaluation = bot.evaluate(exampleUserMsg, exampleResponseAiResponse, actualUserMsg, actualAiResponse);
+		String evaluation = bot.evaluate(exampleUserMsg, exampleResponseAiResponse, actualUserMsg);
 		log.info("Axcel evaluation completed.");
 		// dummy
 		return new Evaluation("axcel", 99);
