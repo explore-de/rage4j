@@ -8,6 +8,7 @@ import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,26 +68,38 @@ public class AxcelEvaluator implements Evaluator
 	{
 		ChatMessage exampleUserMsg = UserMessage.from(buildFewShotExemplars(EXAMPLE_SOURCE_TEXT, EXAMPLE_DERIVED_TEXT));
 		ChatMessage exampleResponseAiResponse = AiMessage.from(EXAMPLE_RESPONSE_AI_RESPONSE);
+		String contexts = buildContextFromHistory(sample);
+		ChatMessage actualUserMsg = UserMessage.from(buildFewShotExemplars(contexts, sample.getAnswerOrFail()));
+
+		log.info("Start Axcel evaluation...");
+		String evaluation = bot.evaluate(exampleUserMsg, exampleResponseAiResponse, actualUserMsg);
+		List<AxcelFactEvaluation> parsedFacts = RESPONSE_PARSER.parse(evaluation);
+		double score = normalizeScore(parsedFacts);
+		logDebug(parsedFacts);
+		log.info("Axcel evaluation completed. Score: {}", score);
+
+		return new Evaluation(METRIC_NAME, score);
+	}
+
+	private static @NotNull String buildContextFromHistory(Sample sample)
+	{
 		StringBuilder sb = new StringBuilder();
 		for (String context : sample.getContextsListOrFail())
 		{
 			sb.append(context).append("\n");
 		}
 		sb.append("User: ").append(sample.getQuestionOrFail());
-		String contexts = sb.toString();
-		ChatMessage actualUserMsg = UserMessage.from(buildFewShotExemplars(contexts, sample.getAnswerOrFail()));
-		log.info("Start Axcel evaluation...");
-		String evaluation = bot.evaluate(exampleUserMsg, exampleResponseAiResponse, actualUserMsg);
-		List<AxcelFactEvaluation> parsedFacts = RESPONSE_PARSER.parse(evaluation);
-		double score = normalizeScore(parsedFacts);
+		return sb.toString();
+	}
+
+	private static void logDebug(List<AxcelFactEvaluation> parsedFacts)
+	{
 		if (log.isDebugEnabled())
 		{
 			parsedFacts.forEach(fact ->
 				log.debug("Fact {} rating: {} -> {}", fact.title(), fact.rating(), fact.verification())
 			);
 		}
-		log.info("Axcel evaluation completed. Score: {}", score);
-		return new Evaluation(METRIC_NAME, score);
 	}
 
 	private String buildFewShotExemplars(String exampleSt, String exampleDt)
