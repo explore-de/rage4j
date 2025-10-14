@@ -6,6 +6,10 @@ import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.request.ChatRequest;
+import dev.langchain4j.model.chat.request.ResponseFormat;
+import dev.langchain4j.model.chat.request.json.JsonObjectSchema;
+import dev.langchain4j.model.chat.request.json.JsonSchema;
 import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
@@ -17,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Objects;
+
+import static dev.langchain4j.model.chat.request.ResponseFormatType.JSON;
 
 public class AxcelEvaluator implements Evaluator
 {
@@ -85,6 +91,22 @@ public class AxcelEvaluator implements Evaluator
 			.build();
 	}
 
+	// Example of how to set up structured response parsing with LangChain4j
+	//
+	// ResponseFormat responseFormat = ResponseFormat.builder()
+	//        .type(JSON) // type can be either TEXT (default) or JSON
+	//        .jsonSchema(JsonSchema.builder()
+	//                .name("Person") // OpenAI requires specifying the name for the schema
+	//                .rootElement(JsonObjectSchema.builder() // see [1] below
+	//                        .addStringProperty("name")
+	//                        .addIntegerProperty("age")
+	//                        .addNumberProperty("height")
+	//                        .addBooleanProperty("married")
+	//                        .required("name", "age", "height", "married") // see [2] below
+	//                        .build())
+	//                .build())
+	//        .build();
+
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
@@ -92,15 +114,36 @@ public class AxcelEvaluator implements Evaluator
 		UserMessage exampleStDtPair = UserMessage.from(buildFewShotExemplars(EXAMPLE_SOURCE_TEXT, EXAMPLE_DERIVED_TEXT));
 		AiMessage exampleResponseAiResponse = AiMessage.from(EXAMPLE_RESPONSE_AI_RESPONSE);
 
+		ResponseFormat responseFormat = ResponseFormat.builder()
+			.type(JSON) // type can be either TEXT (default) or JSON
+			.jsonSchema(JsonSchema.builder()
+				.name("AxcelFactEvaluation") // OpenAI requires specifying the name for the schema
+				.rootElement(JsonObjectSchema.builder() // see [1] below
+					.addIntegerProperty("index")
+					.addStringProperty("title")
+					.addStringProperty("derivedText")
+					.addStringProperty("sourceText")
+					.addStringProperty("verification")
+					.addIntegerProperty("rating")
+					.required("index", "title", "derivedText", "sourceText", "verification", "rating") // see [2] below
+					.build())
+				.build())
+			.build();
+
 		chatMemory.clear();
 		chatMemory.add(systemMessage);
 		chatMemory.add(exampleStDtPair);
 		chatMemory.add(exampleResponseAiResponse);
 
-		log.info("Start Axcel evaluation...");
 		String actualStDtPair = buildFewShotExemplars(buildContext(sample), sample.getAnswerOrFail());
-		String evaluation = bot.evaluate(actualStDtPair);
-		List<AxcelFactEvaluation> parsedFacts = RESPONSE_PARSER.parse(evaluation);
+		UserMessage userMessage = UserMessage.from(actualStDtPair);
+		ChatRequest chatRequest = ChatRequest.builder()
+			.messages(userMessage)
+			.responseFormat(responseFormat)
+			.build();
+
+		log.info("Start Axcel evaluation...");
+		List<AxcelFactEvaluation> parsedFacts = bot.evaluate(actualStDtPair);
 		double score = normalizeScore(parsedFacts);
 		logDebug(parsedFacts);
 		log.info("Axcel evaluation completed. Score: {}", score);
