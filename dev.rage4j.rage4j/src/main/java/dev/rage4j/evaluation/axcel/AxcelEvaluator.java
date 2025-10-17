@@ -23,8 +23,10 @@ public class AxcelEvaluator implements Evaluator
 	private static final Logger log = LoggerFactory.getLogger(AxcelEvaluator.class);
 	private static final String METRIC_NAME = "Axcel factual alignment";
 	private static final double MAX_RATING = 5.0;
+
 	private final AxcelBot bot;
 	private final ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(20);
+	private final AxcelDataLoader loader = new AxcelDataLoader();
 
 	private static final String SYSTEM_PROMPT = """
 		You are given two texts, a source text and derived text.
@@ -34,45 +36,6 @@ public class AxcelEvaluator implements Evaluator
 		Step 2 - Check if the extracted facts can be verified from the source text.
 		Step 3 - Rate the correctness of each fact on the scale of 1 to 5 based on the verification from previous step.
 		Step 4 - Generate output in a consistent format following the format of the	examples given below.
-		""";
-
-	private static final String EXAMPLE_SOURCE_TEXT = """
-		Manchester City	are keen to sign Anderlecht teenager Evangelos Patoulidis.
-		The 14-year-old playmaker is regarded as one of the best talents to emerge from Anderlecht’s youth set-up and has also attracted attention from Arsenal and Barcelona.
-		The Belgian starlet rejected a move to Barcelona’s La Masia academy when he was 12 as his family wanted him to continue his studies.
-		He has continued to impress and City have held discussions with Anderlecht chairman Roger Vanden Stock in the hope of agreeing a compensation package.
-		Manuel Pellegrini is looked to build for the future by snapping up hot property Evangelos Patoulidis.
-		""";
-
-	private static final String EXAMPLE_DERIVED_TEXT = """
-		Evangelos patoulidis is regarded as one of the best players to emerge from anderlecht youth.
-		He has also attracted attention from arsenal and barcelona.
-		The belgian starlet rejected a move to barcelona ’s la masia academy.
-		The 14-year-old has attracted interest from barcelona to barcelona.
-		""";
-
-	private static final String EXAMPLE_RESPONSE_AI_RESPONSE = """
-		Let’s verify the factual accuracy of the derived text step by step:
-		
-		1. Evangelos Patoulidis is Regarded as One of the Best Players to Emerge from Anderlecht Youth:
-		- **Derived Text:** Evangelos Patoulidis is regarded as one of the best players to emerge from Anderlecht youth.
-		- **Source Text:** The source text states that Patoulidis is regarded as "one of the best talents to emerge from Anderlecht’s youth set-up".
-		- **Verification:** Correct. Rating: 5
-		
-		2. He Has Also Attracted Attention from Arsenal and Barcelona:
-		- **Derived Text:** He has also attracted attention from Arsenal and Barcelona.
-		- **Source Text:** This fact is mentioned verbatim in the source text.
-		- **Verification:** Correct. Rating: 5
-		
-		3. The Belgian Starlet Rejected a Move to Barcelona’s La Masia Academy:
-		- **Derived Text:** The Belgian starlet rejected a move to Barcelona’s La Masia academy.
-		- **Source Text:** The source text confirms this fact.
-		- **Verification:** Correct. Rating: 5
-		
-		4. The 14-Year-Old Has Attracted Interest from Barcelona to Barcelona:
-		- **Derived Text:** The 14-year-old has attracted interest from Barcelona to Barcelona.
-		- **Source Text:** This statement is confusing and not supported by the source text.
-		- **Verification:** Incorrect. Rating: 1
 		""";
 
 	public AxcelEvaluator(ChatModel model)
@@ -86,9 +49,10 @@ public class AxcelEvaluator implements Evaluator
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
+		AxcelOneShotExamples examples = loader.loadExampleData();
 		SystemMessage systemMessage = SystemMessage.from(SYSTEM_PROMPT);
-		UserMessage exampleStDtPair = UserMessage.from(buildFewShotExemplars(EXAMPLE_SOURCE_TEXT, EXAMPLE_DERIVED_TEXT));
-		AiMessage exampleResponseAiResponse = AiMessage.from(EXAMPLE_RESPONSE_AI_RESPONSE);
+		UserMessage exampleStDtPair = UserMessage.from(buildFewShotExemplars(examples.sourceText(), examples.derivedText()));
+		AiMessage exampleResponseAiResponse = AiMessage.from(examples.aiResponse());
 
 		chatMemory.clear();
 		chatMemory.add(systemMessage);
@@ -129,13 +93,11 @@ public class AxcelEvaluator implements Evaluator
 
 	private String buildFewShotExemplars(String exampleSt, String exampleDt)
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("Source Text: ");
-		sb.append(exampleSt);
-		sb.append("\n");
-		sb.append("Derived Text: ");
-		sb.append(exampleDt);
-		return sb.toString();
+		return "Source Text: "
+			+ exampleSt
+			+ "\n"
+			+ "Derived Text: "
+			+ exampleDt;
 	}
 
 	private double normalizeScore(List<AxcelFactEvaluation> facts)
