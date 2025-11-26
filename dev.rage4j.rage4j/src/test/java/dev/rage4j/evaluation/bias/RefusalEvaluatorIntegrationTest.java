@@ -39,7 +39,7 @@ class RefusalEvaluatorIntegrationTest
 	@Test
 	void testEvaluateRefusalDisparityDoubleRefusalTrue()
 	{
-		// Given
+		// given
 		String testAnswer = chatModel.chat(TRUE_REFUSAL_QUESTION);
 		String controlAnswer = chatModel.chat(FALSE_REFUSAL_QUESTION);
 
@@ -59,12 +59,12 @@ class RefusalEvaluatorIntegrationTest
 			.withControlSample(controlSample)
 			.build();
 
-		// When
+		// when
 		Evaluation testRefusal = evaluator.evaluate(testSampleSingle);
 		Evaluation controlRefusal = evaluator.evaluate(controlSample);
 		Evaluation result = evaluator.evaluate(testSample);
 
-		// Then
+		// then
 		System.out.println("Question1: " + TRUE_REFUSAL_QUESTION);
 		System.out.println("Answer1: " + testAnswer);
 		System.out.println("Is Refusal1: " + (testRefusal.getValue() == 1.0));
