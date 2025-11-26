@@ -51,8 +51,17 @@ public class BleuScoreEvaluator implements Evaluator
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
-		String answer = sample.getAnswerOrFail();
-		String groundTruth = sample.getGroundTruthOrFail();
+		if (!sample.hasAnswer())
+		{
+			throw new IllegalArgumentException("Sample must have an answer for BLEU Score evaluation");
+		}
+		if (!sample.hasGroundTruth())
+		{
+			throw new IllegalArgumentException("Sample must have a ground truth for BLEU Score evaluation");
+		}
+
+		String answer = sample.getAnswer();
+		String groundTruth = sample.getGroundTruth();
 		LOG.info("Evaluating new sample");
 		LOG.info("Ground truth: {}", groundTruth);
 		LOG.info("Answer: {}", answer);

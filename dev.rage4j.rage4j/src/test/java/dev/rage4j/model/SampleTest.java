@@ -1,6 +1,8 @@
 package dev.rage4j.model;
 
 import dev.rage4j.LoggingTestWatcher;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(LoggingTestWatcher.class)
 class SampleTest
@@ -32,13 +34,13 @@ class SampleTest
 	}
 
 	@Test
-	void testGetQuestionOrFail()
+	void testGetQuestion()
 	{
-		assertEquals(QUESTION, sample.getQuestionOrFail());
+		assertEquals(QUESTION, sample.getQuestion());
 	}
 
 	@Test
-	void testGetQuestionOrFailNullQuestion()
+	void testGetQuestionReturnsNullWhenNotSet()
 	{
 		Sample nullQuestionSample = Sample.builder()
 			.withAnswer(ANSWER)
@@ -46,17 +48,26 @@ class SampleTest
 			.withContextsList(CONTEXTS)
 			.build();
 
-		assertThrows(IllegalStateException.class, nullQuestionSample::getQuestionOrFail);
+		assertNull(nullQuestionSample.getQuestion());
 	}
 
 	@Test
-	void testGetAnswerOrFail()
+	void testEqualsAndHashCode()
 	{
-		assertEquals(ANSWER, sample.getAnswerOrFail());
+		EqualsVerifier.forClass(Sample.class)
+			.usingGetClass()
+			.suppress(Warning.NONFINAL_FIELDS)
+			.verify();
 	}
 
 	@Test
-	void testGetAnswerOrFailNullAnswer()
+	void testGetAnswer()
+	{
+		assertEquals(ANSWER, sample.getAnswer());
+	}
+
+	@Test
+	void testGetAnswerReturnsNullWhenNotSet()
 	{
 		Sample nullAnswerSample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -64,17 +75,17 @@ class SampleTest
 			.withContextsList(CONTEXTS)
 			.build();
 
-		assertThrows(IllegalStateException.class, nullAnswerSample::getAnswerOrFail);
+		assertNull(nullAnswerSample.getAnswer());
 	}
 
 	@Test
-	void testGetGroundTruthOrFail()
+	void testGetGroundTruth()
 	{
-		assertEquals(GROUND_TRUTH, sample.getGroundTruthOrFail());
+		assertEquals(GROUND_TRUTH, sample.getGroundTruth());
 	}
 
 	@Test
-	void testGetGroundTruthOrFailNullGroundTruth()
+	void testGetGroundTruthReturnsNullWhenNotSet()
 	{
 		Sample nullGroundTruthSample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -82,17 +93,17 @@ class SampleTest
 			.withContextsList(CONTEXTS)
 			.build();
 
-		assertThrows(IllegalStateException.class, nullGroundTruthSample::getGroundTruthOrFail);
+		assertNull(nullGroundTruthSample.getGroundTruth());
 	}
 
 	@Test
-	void testGetContextsListOrFail()
+	void testGetContextsList()
 	{
-		assertEquals(CONTEXTS, sample.getContextsListOrFail());
+		assertEquals(CONTEXTS, sample.getContextsList());
 	}
 
 	@Test
-	void testGetContextsListOrFailNullContextsList()
+	void testGetContextsListReturnsNullWhenNotSet()
 	{
 		Sample nullContextsSample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -100,6 +111,6 @@ class SampleTest
 			.withGroundTruth(GROUND_TRUTH)
 			.build();
 
-		assertThrows(IllegalStateException.class, nullContextsSample::getContextsListOrFail);
+		assertNull(nullContextsSample.getContextsList());
 	}
 }

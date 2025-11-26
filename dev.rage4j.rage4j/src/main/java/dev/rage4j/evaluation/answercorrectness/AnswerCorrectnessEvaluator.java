@@ -67,8 +67,17 @@ public class AnswerCorrectnessEvaluator implements Evaluator
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
-		String groundTruth = sample.getGroundTruthOrFail();
-		String answer = sample.getAnswerOrFail();
+		if (!sample.hasAnswer())
+		{
+			throw new IllegalArgumentException("Sample must have an answer for Answer Correctness evaluation");
+		}
+		if (!sample.hasGroundTruth())
+		{
+			throw new IllegalArgumentException("Sample must have a ground truth for Answer Correctness evaluation");
+		}
+
+		String groundTruth = sample.getGroundTruth();
+		String answer = sample.getAnswer();
 		LOG.info("Evaluating new sample");
 		LOG.info("Ground truth: {}", groundTruth);
 		LOG.info("Answer: {}", answer);
