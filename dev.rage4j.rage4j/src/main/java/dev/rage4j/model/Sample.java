@@ -18,6 +18,7 @@ public class Sample
 	private final String answer;
 	private final String groundTruth;
 	private final List<String> contextsList;
+	private final Sample controlSample;
 
 	/**
 	 * Private constructor to initialize a {@code Sample} object using a
@@ -33,6 +34,7 @@ public class Sample
 		this.answer = builder.answer;
 		this.groundTruth = builder.groundTruth;
 		this.contextsList = builder.contextsList;
+		this.controlSample = builder.controlSample;
 	}
 
 	/**
@@ -136,6 +138,24 @@ public class Sample
 	}
 
 	/**
+	 * Returns the control sample.
+	 *
+	 * @return The control sample.
+	 */
+	public Sample getControlSample()
+	{
+		return controlSample;
+	}
+
+	/**
+	 * @return whether the sample has a control sample.
+	 */
+	public boolean hasControlSample()
+	{
+		return controlSample != null;
+	}
+
+	/**
 	 * Helper method to throw an exception when a required attribute is not
 	 * found.
 	 *
@@ -171,6 +191,7 @@ public class Sample
 		private String answer;
 		private String groundTruth;
 		private List<String> contextsList;
+		private Sample controlSample;
 
 		/**
 		 * Sets the question for the {@code Sample}.
@@ -222,6 +243,19 @@ public class Sample
 		public SampleBuilder withContextsList(List<String> contextsList)
 		{
 			this.contextsList = contextsList;
+			return this;
+		}
+
+		/**
+		 * Sets the control sample for the {@code Sample}.
+		 *
+		 * @param controlSample
+		 *            The control sample to be compared against.
+		 * @return The current instance of {@code SampleBuilder}.
+		 */
+		public SampleBuilder withControlSample(Sample controlSample)
+		{
+			this.controlSample = controlSample;
 			return this;
 		}
 
