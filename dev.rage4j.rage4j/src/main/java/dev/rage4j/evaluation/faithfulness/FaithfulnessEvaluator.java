@@ -71,10 +71,19 @@ public class FaithfulnessEvaluator implements Evaluator
 	 */
 	public Evaluation evaluate(Sample sample)
 	{
+		if (!sample.hasAnswer())
+		{
+			throw new IllegalArgumentException("Sample must have an answer for Faithfulness evaluation");
+		}
+		if (!sample.hasContextsList())
+		{
+			throw new IllegalArgumentException("Sample must have a contexts list for Faithfulness evaluation");
+		}
+
 		LOG.info("Evaluating new sample");
-		String answer = sample.getAnswerOrFail();
+		String answer = sample.getAnswer();
 		LOG.info("Answer: {}", answer);
-		List<String> contextsList = sample.getContextsListOrFail();
+		List<String> contextsList = sample.getContextsList();
 		String context = String.join(System.lineSeparator(), contextsList);
 		LOG.info("Context: {}", context);
 		String[] answerClaims = bot.extractClaims(answer).getItems();

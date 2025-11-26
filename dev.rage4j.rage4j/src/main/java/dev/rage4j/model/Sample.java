@@ -14,10 +14,10 @@ import java.util.Objects;
  */
 public class Sample
 {
-	private final String question;
-	private final String answer;
-	private final String groundTruth;
-	private final List<String> contextsList;
+	protected String question;
+	protected String answer;
+	protected String groundTruth;
+	protected List<String> contextsList;
 
 	/**
 	 * Private constructor to initialize a {@code Sample} object using a
@@ -36,19 +36,12 @@ public class Sample
 	}
 
 	/**
-	 * Returns the question of the sample. If the question is not set, throws an
-	 * exception.
+	 * Returns the question of the sample.
 	 *
-	 * @return The question of the sample.
-	 * @throws IllegalStateException
-	 *             if the question is not set.
+	 * @return The question of the sample, or null if not set.
 	 */
-	public String getQuestionOrFail()
+	public String getQuestion()
 	{
-		if (Objects.isNull(question))
-		{
-			throwAttributeNotFound("question");
-		}
 		return question;
 	}
 
@@ -61,19 +54,12 @@ public class Sample
 	}
 
 	/**
-	 * Returns the answer of the sample. If the answer is not set, throws an
-	 * exception.
+	 * Returns the answer of the sample.
 	 *
-	 * @return The answer of the sample.
-	 * @throws IllegalStateException
-	 *             if the answer is not set.
+	 * @return The answer of the sample, or null if not set.
 	 */
-	public String getAnswerOrFail()
+	public String getAnswer()
 	{
-		if (Objects.isNull(answer))
-		{
-			throwAttributeNotFound("answer");
-		}
 		return answer;
 	}
 
@@ -86,19 +72,12 @@ public class Sample
 	}
 
 	/**
-	 * Returns the ground truth of the sample. If the ground truth is not set,
-	 * throws an exception.
+	 * Returns the ground truth of the sample.
 	 *
-	 * @return The ground truth of the sample.
-	 * @throws IllegalStateException
-	 *             if the ground truth is not set.
+	 * @return The ground truth of the sample, or null if not set.
 	 */
-	public String getGroundTruthOrFail()
+	public String getGroundTruth()
 	{
-		if (Objects.isNull(groundTruth))
-		{
-			throwAttributeNotFound("groundTruth");
-		}
 		return groundTruth;
 	}
 
@@ -111,19 +90,12 @@ public class Sample
 	}
 
 	/**
-	 * Returns the list of contexts for the sample. If the contexts list is not
-	 * set, throws an exception.
+	 * Returns the list of contexts for the sample.
 	 *
-	 * @return The list of contexts for the sample.
-	 * @throws IllegalStateException
-	 *             if the contexts list is not set.
+	 * @return The list of contexts for the sample, or null if not set.
 	 */
-	public List<String> getContextsListOrFail()
+	public List<String> getContextsList()
 	{
-		if (Objects.isNull(contextsList))
-		{
-			throwAttributeNotFound("contextsList");
-		}
 		return contextsList;
 	}
 
@@ -135,18 +107,28 @@ public class Sample
 		return contextsList != null;
 	}
 
-	/**
-	 * Helper method to throw an exception when a required attribute is not
-	 * found.
-	 *
-	 * @param attribute
-	 *            The name of the missing attribute.
-	 * @throws IllegalStateException
-	 *             Always thrown when this method is called.
-	 */
-	private void throwAttributeNotFound(String attribute)
+	@Override
+	public boolean equals(Object o)
 	{
-		throw new IllegalStateException("Attribute not found: " + attribute);
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Sample sample = (Sample) o;
+		return Objects.equals(question, sample.question)
+			&& Objects.equals(answer, sample.answer)
+			&& Objects.equals(groundTruth, sample.groundTruth)
+			&& Objects.equals(contextsList, sample.contextsList);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(question, answer, groundTruth, contextsList);
 	}
 
 	/**

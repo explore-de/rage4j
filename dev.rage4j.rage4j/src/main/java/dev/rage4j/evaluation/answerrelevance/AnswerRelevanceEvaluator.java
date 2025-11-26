@@ -78,8 +78,17 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	 */
 	public Evaluation evaluate(Sample sample)
 	{
-		String answer = sample.getAnswerOrFail();
-		String question = sample.getQuestionOrFail();
+		if (!sample.hasAnswer())
+		{
+			throw new IllegalArgumentException("Sample must have an answer for Answer Relevance evaluation");
+		}
+		if (!sample.hasQuestion())
+		{
+			throw new IllegalArgumentException("Sample must have a question for Answer Relevance evaluation");
+		}
+
+		String answer = sample.getAnswer();
+		String question = sample.getQuestion();
 		LOG.info("Evaluating new sample");
 		LOG.info("Question: {}", question);
 		LOG.info("Answer: {}", answer);
