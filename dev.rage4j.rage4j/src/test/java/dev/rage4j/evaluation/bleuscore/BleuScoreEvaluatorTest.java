@@ -76,8 +76,8 @@ class BleuScoreEvaluatorTest
 			.withAnswer(null)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample));
-		assertEquals("Attribute not found: answer", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(sample));
+		assertEquals("Sample must have an answer for BLEU Score evaluation", exception.getMessage());
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class BleuScoreEvaluatorTest
 			.withGroundTruth(null)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample));
-		assertEquals("Attribute not found: groundTruth", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(sample));
+		assertEquals("Sample must have a ground truth for BLEU Score evaluation", exception.getMessage());
 	}
 }

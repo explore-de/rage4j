@@ -80,8 +80,8 @@ class AnswerSemanticSimilarityEvaluatorTest
 			.withAnswer(null)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(nullAnswerSample));
-		assertEquals("Attribute not found: answer", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullAnswerSample));
+		assertEquals("Sample must have an answer for Answer Semantic Similarity evaluation", exception.getMessage());
 	}
 
 	@Test
@@ -92,7 +92,7 @@ class AnswerSemanticSimilarityEvaluatorTest
 			.withGroundTruth(null)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(nullGroundTruthSample));
-		assertEquals("Attribute not found: groundTruth", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullGroundTruthSample));
+		assertEquals("Sample must have a ground truth for Answer Semantic Similarity evaluation", exception.getMessage());
 	}
 }

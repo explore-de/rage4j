@@ -109,8 +109,8 @@ class RougeScoreEvaluatorTest
 			.withAnswer(null)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample));
-		assertEquals("Attribute not found: answer", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(sample));
+		assertEquals("Sample must have an answer for ROUGE Score evaluation", exception.getMessage());
 	}
 
 	@Test
@@ -121,7 +121,7 @@ class RougeScoreEvaluatorTest
 			.withAnswer(ANSWER)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample));
-		assertEquals("Attribute not found: groundTruth", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(sample));
+		assertEquals("Sample must have a ground truth for ROUGE Score evaluation", exception.getMessage());
 	}
 }
