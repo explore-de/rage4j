@@ -17,6 +17,7 @@ import java.util.Optional;
  */
 public class EvaluationAggregation extends HashMap<String, Double>
 {
+	private static final long serialVersionUID = 1L;
 	private Sample sample;
 
 	/**

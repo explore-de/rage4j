@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -23,7 +21,7 @@ class FaithfulnessEvaluatorTest
 	private static final String QUESTION = "What is the capital of France?";
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "Paris";
-	private static final List<String> CONTEXTS = List.of("Paris is the capital of France.");
+	private static final String CONTEXT = "Paris is the capital of France.";
 	private static final double EXPECTED_SCORE_FULL_MATCH = 1.0;
 	private static final double EXPECTED_SCORE_PARTIAL_MATCH = 0.5;
 	private static final double EXPECTED_SCORE_NO_MATCH = 0.0;
@@ -41,7 +39,7 @@ class FaithfulnessEvaluatorTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 	}
 
@@ -101,11 +99,11 @@ class FaithfulnessEvaluatorTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(null)
+			.withContext(null)
 			.build();
 
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullContextSample));
-		assertEquals("Sample must have a contexts list for Faithfulness evaluation", exception.getMessage());
+		assertEquals("Sample must have a context for Faithfulness evaluation", exception.getMessage());
 	}
 
 	@Test
@@ -115,7 +113,7 @@ class FaithfulnessEvaluatorTest
 			.withQuestion(QUESTION)
 			.withAnswer(null)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullAnswerSample));

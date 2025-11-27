@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.ArrayList;
-
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -146,7 +144,6 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER_CORRECT)
 			.withGroundTruth(ANSWER_CORRECT)
-			.withContextsList(new ArrayList<>())
 			.build();
 
 		assertEquals(1.0, evaluator.evaluate(sample).getValue(), 0.1);
