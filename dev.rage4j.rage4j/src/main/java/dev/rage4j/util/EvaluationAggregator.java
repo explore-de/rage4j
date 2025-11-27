@@ -1,6 +1,5 @@
 package dev.rage4j.util;
 
-import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.EvaluationAggregation;
 import dev.rage4j.model.Sample;
@@ -37,12 +36,11 @@ public class EvaluationAggregator
 	 */
 	public static EvaluationAggregation evaluateAll(Sample sample, Evaluator... evaluators)
 	{
-		EvaluationAggregation.Builder builder = EvaluationAggregation.builder();
+		EvaluationAggregation aggregation = new EvaluationAggregation(sample);
 		for (Evaluator evaluator : evaluators)
 		{
-			Evaluation evaluation = evaluator.evaluate(sample);
-			builder.put(evaluation.getName(), evaluation.getValue());
+			aggregation.put(evaluator.evaluate(sample));
 		}
-		return builder.build();
+		return aggregation;
 	}
 }

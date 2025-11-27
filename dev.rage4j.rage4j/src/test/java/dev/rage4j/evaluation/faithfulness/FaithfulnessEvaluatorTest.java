@@ -104,8 +104,8 @@ class FaithfulnessEvaluatorTest
 			.withContextsList(null)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(nullContextSample));
-		assertEquals("Attribute not found: contextsList", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullContextSample));
+		assertEquals("Sample must have a contexts list for Faithfulness evaluation", exception.getMessage());
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class FaithfulnessEvaluatorTest
 			.withContextsList(CONTEXTS)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(nullAnswerSample));
-		assertEquals("Attribute not found: answer", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullAnswerSample));
+		assertEquals("Sample must have an answer for Faithfulness evaluation", exception.getMessage());
 	}
 }

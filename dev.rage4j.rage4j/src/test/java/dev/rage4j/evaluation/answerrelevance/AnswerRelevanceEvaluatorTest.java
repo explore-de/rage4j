@@ -90,8 +90,8 @@ class AnswerRelevanceEvaluatorTest
 			.withAnswer(null)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(nullAnswerSample));
-		assertEquals("Attribute not found: answer", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullAnswerSample));
+		assertEquals("Sample must have an answer for Answer Relevance evaluation", exception.getMessage());
 	}
 
 	@Test
@@ -102,7 +102,7 @@ class AnswerRelevanceEvaluatorTest
 			.withQuestion(null)
 			.build();
 
-		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(nullQuestionSample));
-		assertEquals("Attribute not found: question", exception.getMessage());
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullQuestionSample));
+		assertEquals("Sample must have a question for Answer Relevance evaluation", exception.getMessage());
 	}
 }

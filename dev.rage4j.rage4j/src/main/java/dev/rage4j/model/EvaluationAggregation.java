@@ -1,145 +1,103 @@
 package dev.rage4j.model;
 
-import org.jetbrains.annotations.NotNull;
+import dev.rage4j.evaluation.Evaluation;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
- * The {@code EvaluationAggregation} class represents an immutable map-like
- * structure that stores a collection of evaluation results, with metric names
- * as keys and their corresponding evaluation values as {@code Double}. This
- * class implements the {@code Map} interface but is immutable, meaning it does
- * not support modifications after construction.
+ * The {@code EvaluationAggregation} class represents a map-like structure that
+ * stores a collection of evaluation results, with metric names as keys and
+ * their corresponding evaluation values as {@code Double}. This class extends
+ * {@code HashMap} and provides mutable map operations.
  * <p>
- * Instances of this class can only be created using the {@code Builder}
- * pattern.
+ * Optionally, an instance can be associated with a {@code Sample} that was
+ * evaluated.
  */
-public class EvaluationAggregation implements Map<String, Double>
+public class EvaluationAggregation extends HashMap<String, Double>
 {
-	private final Map<String, Double> map;
-	private static final String IMMUTABLE_MESSAGE = "EvaluationAggregation is immutable.";
-	private static final String IMMUTABLE_MAP_MESSAGE = "This map is immutable.";
+	private Sample sample;
 
-	private EvaluationAggregation(Map<String, Double> map)
+	/**
+	 * Constructs a new empty {@code EvaluationAggregation}.
+	 */
+	public EvaluationAggregation()
 	{
-		this.map = Collections.unmodifiableMap(new HashMap<>(map));
-	}
-
-	@Override
-	public int size()
-	{
-		return map.size();
-	}
-
-	@Override
-	public boolean isEmpty()
-	{
-		return map.isEmpty();
-	}
-
-	@Override
-	public boolean containsKey(Object key)
-	{
-		return map.containsKey(key);
-	}
-
-	@Override
-	public boolean containsValue(Object value)
-	{
-		return map.containsValue(value);
-	}
-
-	@Override
-	public Double get(Object key)
-	{
-		return map.get(key);
-	}
-
-	@Override
-	@NotNull
-	public Set<Entry<String, Double>> entrySet()
-	{
-		return map.entrySet();
-	}
-
-	@Override
-	@NotNull
-	public Set<String> keySet()
-	{
-		return map.keySet();
-	}
-
-	@Override
-	@NotNull
-	public Collection<Double> values()
-	{
-		return map.values();
-	}
-
-	@Override
-	public Double put(String key, Double value)
-	{
-		throw new UnsupportedOperationException(IMMUTABLE_MAP_MESSAGE);
-	}
-
-	@Override
-	public Double remove(Object key)
-	{
-		throw new UnsupportedOperationException(IMMUTABLE_MESSAGE);
-	}
-
-	@Override
-	public void putAll(@NotNull Map<? extends String, ? extends Double> m)
-	{
-		throw new UnsupportedOperationException(IMMUTABLE_MESSAGE);
-	}
-
-	@Override
-	public void clear()
-	{
-		throw new UnsupportedOperationException(IMMUTABLE_MESSAGE);
-	}
-
-	public static Builder builder()
-	{
-		return new Builder();
+		super();
 	}
 
 	/**
-	 * The {@code Builder} class provides a way to construct an instance of
-	 * {@code EvaluationAggregation} by incrementally adding key-value pairs and
-	 * then calling the {@code build()} method.
+	 * Constructs a new {@code EvaluationAggregation} associated with the
+	 * specified sample.
+	 *
+	 * @param sample
+	 *            The sample that was evaluated.
 	 */
-	public static class Builder
+	public EvaluationAggregation(Sample sample)
 	{
-		private final Map<String, Double> map = new HashMap<>();
+		super();
+		this.sample = sample;
+	}
 
-		/**
-		 * Adds a new evaluation metric and its value to the builder.
-		 *
-		 * @param key
-		 *            The metric name.
-		 * @param value
-		 *            The evaluation value for the metric.
-		 */
-		public void put(String key, Double value)
-		{
-			map.put(key, value);
-		}
+	/**
+	 * Returns the sample associated with this aggregation, if any.
+	 *
+	 * @return An {@code Optional} containing the sample, or empty if no sample
+	 *         is associated.
+	 */
+	public Optional<Sample> getSample()
+	{
+		return Optional.ofNullable(sample);
+	}
 
-		/**
-		 * Builds and returns a new immutable {@code EvaluationAggregation}
-		 * instance containing the added metric-value pairs.
-		 *
-		 * @return A new {@code EvaluationAggregation} instance.
-		 */
-		public EvaluationAggregation build()
+	/**
+	 * Sets the sample associated with this aggregation.
+	 *
+	 * @param sample
+	 *            The sample to associate with this aggregation.
+	 */
+	public void setSample(Sample sample)
+	{
+		this.sample = sample;
+	}
+
+	/**
+	 * Adds an evaluation result to this aggregation. The evaluation's name is
+	 * used as the key and its value as the map value.
+	 *
+	 * @param evaluation
+	 *            The evaluation to add.
+	 * @return The previous value associated with the evaluation's name, or
+	 *         {@code null} if there was no mapping.
+	 */
+	public Double put(Evaluation evaluation)
+	{
+		return put(evaluation.getName(), evaluation.getValue());
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
 		{
-			return new EvaluationAggregation(map);
+			return true;
 		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		if (!super.equals(o))
+		{
+			return false;
+		}
+		EvaluationAggregation that = (EvaluationAggregation) o;
+		return Objects.equals(sample, that.sample);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(super.hashCode(), sample);
 	}
 }
