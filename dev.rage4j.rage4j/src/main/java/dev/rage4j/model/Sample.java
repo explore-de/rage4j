@@ -1,6 +1,6 @@
 package dev.rage4j.model;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -12,12 +12,13 @@ import java.util.Objects;
  * Instances of {@code Sample} are created using the {@code SampleBuilder} class
  * to ensure all necessary fields are properly set before use.
  */
-public class Sample
+public class Sample implements Serializable
 {
+	private static final long serialVersionUID = 1L;
 	protected String question;
 	protected String answer;
 	protected String groundTruth;
-	protected List<String> contextsList;
+	protected String context;
 
 	/**
 	 * Private constructor to initialize a {@code Sample} object using a
@@ -32,7 +33,7 @@ public class Sample
 		this.question = builder.question;
 		this.answer = builder.answer;
 		this.groundTruth = builder.groundTruth;
-		this.contextsList = builder.contextsList;
+		this.context = builder.context;
 	}
 
 	/**
@@ -90,21 +91,21 @@ public class Sample
 	}
 
 	/**
-	 * Returns the list of contexts for the sample.
+	 * Returns the context for the sample.
 	 *
-	 * @return The list of contexts for the sample, or null if not set.
+	 * @return The context for the sample, or null if not set.
 	 */
-	public List<String> getContextsList()
+	public String getContext()
 	{
-		return contextsList;
+		return context;
 	}
 
 	/**
-	 * @return whether the contextsList has a question field.
+	 * @return whether the sample has a context field.
 	 */
-	public boolean hasContextsList()
+	public boolean hasContext()
 	{
-		return contextsList != null;
+		return context != null;
 	}
 
 	@Override
@@ -122,13 +123,13 @@ public class Sample
 		return Objects.equals(question, sample.question)
 			&& Objects.equals(answer, sample.answer)
 			&& Objects.equals(groundTruth, sample.groundTruth)
-			&& Objects.equals(contextsList, sample.contextsList);
+			&& Objects.equals(context, sample.context);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(question, answer, groundTruth, contextsList);
+		return Objects.hash(question, answer, groundTruth, context);
 	}
 
 	/**
@@ -152,7 +153,7 @@ public class Sample
 		private String question;
 		private String answer;
 		private String groundTruth;
-		private List<String> contextsList;
+		private String context;
 
 		/**
 		 * Sets the question for the {@code Sample}.
@@ -194,16 +195,15 @@ public class Sample
 		}
 
 		/**
-		 * Sets the list of contexts for the {@code Sample}.
+		 * Sets the context for the {@code Sample}.
 		 *
-		 * @param contextsList
-		 *            The list of context strings related to the question and
-		 *            answer.
+		 * @param context
+		 *            The context string related to the question and answer.
 		 * @return The current instance of {@code SampleBuilder}.
 		 */
-		public SampleBuilder withContextsList(List<String> contextsList)
+		public SampleBuilder withContext(String context)
 		{
-			this.contextsList = contextsList;
+			this.context = context;
 			return this;
 		}
 

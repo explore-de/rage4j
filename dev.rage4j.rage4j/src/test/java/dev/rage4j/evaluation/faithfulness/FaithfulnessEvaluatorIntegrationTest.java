@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,7 +19,7 @@ class FaithfulnessEvaluatorIntegrationTest
 	private static final String QUESTION = "What is the capital of France?";
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "Paris";
-	private static final List<String> CONTEXTS = List.of("Paris is the capital of France.");
+	private static final String CONTEXT = "Paris is the capital of France.";
 
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 
@@ -47,7 +45,7 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		Evaluation result = evaluator.evaluate(sample);
@@ -64,7 +62,7 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withQuestion(QUESTION)
 			.withAnswer("Paris is the capital of France. London is the capital of England.")
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		Evaluation result = evaluator.evaluate(sample);
@@ -82,7 +80,7 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withQuestion(QUESTION)
 			.withAnswer("London is the capital of England. Berlin is the capital of Germany.")
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		Evaluation result = evaluator.evaluate(sample);
@@ -99,16 +97,16 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(null)
+			.withContext(null)
 			.build();
 
 		try
 		{
 			evaluator.evaluate(sample);
 		}
-		catch (IllegalStateException e)
+		catch (IllegalArgumentException e)
 		{
-			assertEquals("Attribute not found: contextsList", e.getMessage());
+			assertEquals("Sample must have a context for Faithfulness evaluation", e.getMessage());
 		}
 	}
 
@@ -120,16 +118,16 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withQuestion(QUESTION)
 			.withAnswer(null)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		try
 		{
 			evaluator.evaluate(sample);
 		}
-		catch (IllegalStateException e)
+		catch (IllegalArgumentException e)
 		{
-			assertEquals("Attribute not found: answer", e.getMessage());
+			assertEquals("Sample must have an answer for Faithfulness evaluation", e.getMessage());
 		}
 	}
 
@@ -141,7 +139,7 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		assertTrue(evaluator.evaluate(sample).getValue() > 0.8);

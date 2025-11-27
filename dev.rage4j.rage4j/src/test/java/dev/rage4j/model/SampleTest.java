@@ -7,8 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -18,7 +16,7 @@ class SampleTest
 	private static final String QUESTION = "What is the capital of France?";
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "Paris";
-	private static final List<String> CONTEXTS = List.of("Paris is the capital of France.");
+	private static final String CONTEXT = "Paris is the capital of France.";
 
 	private Sample sample;
 
@@ -29,7 +27,7 @@ class SampleTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 	}
 
@@ -45,7 +43,7 @@ class SampleTest
 		Sample nullQuestionSample = Sample.builder()
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		assertNull(nullQuestionSample.getQuestion());
@@ -72,7 +70,7 @@ class SampleTest
 		Sample nullAnswerSample = Sample.builder()
 			.withQuestion(QUESTION)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		assertNull(nullAnswerSample.getAnswer());
@@ -90,27 +88,27 @@ class SampleTest
 		Sample nullGroundTruthSample = Sample.builder()
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		assertNull(nullGroundTruthSample.getGroundTruth());
 	}
 
 	@Test
-	void testGetContextsList()
+	void testGetContext()
 	{
-		assertEquals(CONTEXTS, sample.getContextsList());
+		assertEquals(CONTEXT, sample.getContext());
 	}
 
 	@Test
-	void testGetContextsListReturnsNullWhenNotSet()
+	void testGetContextReturnsNullWhenNotSet()
 	{
-		Sample nullContextsSample = Sample.builder()
+		Sample nullContextSample = Sample.builder()
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
 			.build();
 
-		assertNull(nullContextsSample.getContextsList());
+		assertNull(nullContextSample.getContext());
 	}
 }

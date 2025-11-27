@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.ArrayList;
 import java.util.function.BiFunction;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O;
@@ -146,7 +145,6 @@ class AnswerRelevanceEvaluatorIntegrationTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(new ArrayList<>())
 			.build();
 
 		assertEquals(0.85, evaluator.evaluate(sample).getValue(), 0.15);
