@@ -15,8 +15,9 @@ public class RageAssertTestCaseGiven
 	private ChatModel chatLanguageModel;
 	private EmbeddingModel embeddingModel;
 	private final List<AssertionObserver> observers;
+	private final boolean evaluationMode;
 
-	public RageAssertTestCaseGiven(String question, String groundTruth, List<String> contextList, ChatModel chatLanguageModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers)
+	public RageAssertTestCaseGiven(String question, String groundTruth, List<String> contextList, ChatModel chatLanguageModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers, boolean evaluationMode)
 	{
 		this.question = question;
 		this.groundTruth = groundTruth;
@@ -24,6 +25,7 @@ public class RageAssertTestCaseGiven
 		this.chatLanguageModel = chatLanguageModel;
 		this.embeddingModel = embeddingModel;
 		this.observers = observers;
+		this.evaluationMode = evaluationMode;
 	}
 
 	public RageAssertTestCaseGiven answer(String answer)
@@ -40,6 +42,6 @@ public class RageAssertTestCaseGiven
 
 	public RageAssertTestCaseAssertions then()
 	{
-		return new RageAssertTestCaseAssertions(answer, groundTruth, question, contextList, chatLanguageModel, embeddingModel, observers);
+		return new RageAssertTestCaseAssertions(answer, groundTruth, question, contextList, chatLanguageModel, embeddingModel, observers, evaluationMode);
 	}
 }

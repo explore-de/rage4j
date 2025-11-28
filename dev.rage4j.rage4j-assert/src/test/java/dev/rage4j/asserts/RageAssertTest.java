@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -223,6 +226,102 @@ class RageAssertTest
 			() -> testCaseAssertions.assertRougeScore(0.9, RougeScoreEvaluator.RougeType.ROUGE1, RougeScoreEvaluator.MeasureType.PRECISION));
 
 		assertTrue(ex.getMessage().startsWith(MINVALUE));
+	}
+
+	// ==================== Evaluation Mode Tests ====================
+
+	@Test
+	void testEvaluationModeDisabledByDefault()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		assertFalse(rageAssert.isEvaluationMode());
+	}
+
+	@Test
+	void testEvaluationModeCanBeEnabled()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key).withEvaluationMode();
+		assertTrue(rageAssert.isEvaluationMode());
+	}
+
+	@Test
+	void testEvaluationModeCanBeDisabledWithStrictMode()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key)
+			.withEvaluationMode()
+			.withStrictMode();
+		assertFalse(rageAssert.isEvaluationMode());
+	}
+
+	@Test
+	void testEvaluationModeDoesNotThrowOnFailure()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key).withEvaluationMode();
+
+		// This should NOT throw, even with an impossible threshold
+		AssertionEvaluation result = assertDoesNotThrow(() -> rageAssert.given()
+			.question(QUESTION)
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(a -> ANSWER_WRONG)
+			.then()
+			.assertBleuScore(1.1));
+
+		// Verify we got a result (method completed)
+		assertNotNull(result);
+		assertNotNull(result.getEvaluation());
+	}
+
+	@Test
+	void testEvaluationModeAllowsMethodChaining()
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key).withEvaluationMode();
+
+		// Multiple assertions should all run to completion in evaluation mode
+		AssertionEvaluation result = assertDoesNotThrow(() -> rageAssert.given()
+			.question(QUESTION)
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(a -> ANSWER_WRONG)
+			.then()
+			.assertBleuScore(1.1) // Will fail but not throw
+			.then()
+			.assertRougeScore(1.1, RougeScoreEvaluator.RougeType.ROUGE1, RougeScoreEvaluator.MeasureType.F1SCORE)); // Also
+		// fails
+		// but
+		// not
+		// throw
+
+		assertNotNull(result);
+	}
+
+	@Test
+	void testDifferentInstancesCanHaveDifferentModes()
+	{
+		RageAssert strictAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert evalAssert = new OpenAiLLMBuilder().fromApiKey(key).withEvaluationMode();
+
+		assertFalse(strictAssert.isEvaluationMode());
+		assertTrue(evalAssert.isEvaluationMode());
+
+		// Strict mode throws
+		RageAssertTestCaseAssertions wrongAnswerAssertBuilder = strictAssert.given()
+			.question(QUESTION)
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(a -> ANSWER_WRONG)
+			.then();
+		assertThrows(Rage4JBleuScoreException.class, () -> wrongAnswerAssertBuilder.assertBleuScore(1.1));
+
+		// Evaluation mode does not throw
+		RageAssertTestCaseAssertions wrongAnswerEvalBuilder = evalAssert.given()
+			.question(QUESTION)
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(a -> ANSWER_WRONG)
+			.then();
+		assertDoesNotThrow(() -> wrongAnswerEvalBuilder
+			.assertBleuScore(1.1));
 	}
 
 	private static String obtainOpenAiKey()

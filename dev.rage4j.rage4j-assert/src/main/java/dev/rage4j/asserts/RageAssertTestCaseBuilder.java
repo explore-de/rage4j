@@ -13,12 +13,14 @@ public class RageAssertTestCaseBuilder
 	private ChatModel chatModel;
 	private final EmbeddingModel embeddingModel;
 	private final List<AssertionObserver> observers;
+	private final boolean evaluationMode;
 
-	public RageAssertTestCaseBuilder(ChatModel chatModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers)
+	public RageAssertTestCaseBuilder(ChatModel chatModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers, boolean evaluationMode)
 	{
 		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
 		this.observers = observers;
+		this.evaluationMode = evaluationMode;
 	}
 
 	public RageAssertTestCaseBuilder question(String question)
@@ -41,6 +43,6 @@ public class RageAssertTestCaseBuilder
 
 	public RageAssertTestCaseGiven when()
 	{
-		return new RageAssertTestCaseGiven(question, groundTruth, contextList, chatModel, embeddingModel, observers);
+		return new RageAssertTestCaseGiven(question, groundTruth, contextList, chatModel, embeddingModel, observers, evaluationMode);
 	}
 }
