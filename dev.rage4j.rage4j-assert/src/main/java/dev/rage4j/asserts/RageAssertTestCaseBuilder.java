@@ -10,7 +10,7 @@ public class RageAssertTestCaseBuilder
 	private String question;
 	private String groundTruth;
 	private List<String> contextList;
-	private ChatModel chatModel;
+	private final ChatModel chatModel;
 	private final EmbeddingModel embeddingModel;
 	private final List<AssertionObserver> observers;
 	private final boolean evaluationMode;

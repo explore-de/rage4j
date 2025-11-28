@@ -28,12 +28,12 @@ public class RageAssertTestCaseAssertions
 {
 	private static final Logger LOG = LoggerFactory.getLogger(RageAssertTestCaseAssertions.class);
 
-	private ChatModel chatModel;
-	private EmbeddingModel embeddingModel;
-	private String question;
-	private String groundTruth;
-	private List<String> contextList;
-	private String answer;
+	private final ChatModel chatModel;
+	private final EmbeddingModel embeddingModel;
+	private final String question;
+	private final String groundTruth;
+	private final List<String> contextList;
+	private final String answer;
 	private final List<AssertionObserver> observers;
 	private final boolean evaluationMode;
 

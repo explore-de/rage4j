@@ -8,12 +8,12 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 
 public class RageAssertTestCaseGiven
 {
-	private String question;
-	private String groundTruth;
-	private List<String> contextList;
+	private final String question;
+	private final String groundTruth;
+	private final List<String> contextList;
 	private String answer;
-	private ChatModel chatLanguageModel;
-	private EmbeddingModel embeddingModel;
+	private final ChatModel chatLanguageModel;
+	private final EmbeddingModel embeddingModel;
 	private final List<AssertionObserver> observers;
 	private final boolean evaluationMode;
 
