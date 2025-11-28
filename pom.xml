@@ -20,20 +20,32 @@
     </scm>
 
     <modules>
-        <module>dev.rage4j.rage4j-assert</module>
         <module>dev.rage4j.rage4j</module>
+        <module>dev.rage4j.rage4j-assert</module>
+        <module>dev.rage4j.rage4j-persist</module>
+        <module>dev.rage4j.rage4j-persist-junit5</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>dev.rage4j</groupId>
-                <artifactId>rage4j-core</artifactId>
+                <artifactId>rage4j</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>dev.rage4j</groupId>
-                <artifactId>rage4j-assert</artifactId>
+                <artifactId>rage-assert</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.rage4j</groupId>
+                <artifactId>rage4j-persist</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.rage4j</groupId>
+                <artifactId>rage4j-persist-junit5</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
