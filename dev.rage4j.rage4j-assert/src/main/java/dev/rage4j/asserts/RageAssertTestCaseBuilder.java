@@ -9,7 +9,7 @@ public class RageAssertTestCaseBuilder
 {
 	private String question;
 	private String groundTruth;
-	private List<String> contextList;
+	private String context;
 	private final ChatModel chatModel;
 	private final EmbeddingModel embeddingModel;
 	private final List<AssertionObserver> observers;
@@ -35,14 +35,14 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
-	public RageAssertTestCaseBuilder contextList(List<String> contextList)
+	public RageAssertTestCaseBuilder context(String context)
 	{
-		this.contextList = contextList;
+		this.context = context;
 		return this;
 	}
 
 	public RageAssertTestCaseGiven when()
 	{
-		return new RageAssertTestCaseGiven(question, groundTruth, contextList, chatModel, embeddingModel, observers, evaluationMode);
+		return new RageAssertTestCaseGiven(question, groundTruth, context, chatModel, embeddingModel, observers, evaluationMode);
 	}
 }

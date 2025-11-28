@@ -32,19 +32,19 @@ public class RageAssertTestCaseAssertions
 	private final EmbeddingModel embeddingModel;
 	private final String question;
 	private final String groundTruth;
-	private final List<String> contextList;
+	private final String context;
 	private final String answer;
 	private final List<AssertionObserver> observers;
 	private final boolean evaluationMode;
 
 	private static final String MINVALUE = "Answer did not reach required min value! Evaluated value: ";
 
-	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, ChatModel chatModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers, boolean evaluationMode)
+	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, String context, ChatModel chatModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers, boolean evaluationMode)
 	{
 		this.answer = answer;
 		this.groundTruth = groundTruth;
 		this.question = question;
-		this.contextList = contextList;
+		this.context = context;
 		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
 		this.observers = observers != null ? observers : Collections.emptyList();
@@ -82,15 +82,6 @@ public class RageAssertTestCaseAssertions
 		}
 	}
 
-	private String joinContextList()
-	{
-		if (contextList == null || contextList.isEmpty())
-		{
-			return null;
-		}
-		return String.join("\n", contextList);
-	}
-
 	public AssertionEvaluation assertFaithfulness(double minValue)
 	{
 		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatModel);
@@ -98,7 +89,7 @@ public class RageAssertTestCaseAssertions
 			.withAnswer(answer)
 			.withGroundTruth(groundTruth)
 			.withQuestion(question)
-			.withContext(joinContextList())
+			.withContext(context)
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
@@ -140,7 +131,7 @@ public class RageAssertTestCaseAssertions
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withQuestion(question)
-			.withContext(joinContextList())
+			.withContext(context)
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 

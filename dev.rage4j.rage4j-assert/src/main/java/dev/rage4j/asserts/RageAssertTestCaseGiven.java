@@ -10,18 +10,18 @@ public class RageAssertTestCaseGiven
 {
 	private final String question;
 	private final String groundTruth;
-	private final List<String> contextList;
+	private final String context;
 	private String answer;
 	private final ChatModel chatLanguageModel;
 	private final EmbeddingModel embeddingModel;
 	private final List<AssertionObserver> observers;
 	private final boolean evaluationMode;
 
-	public RageAssertTestCaseGiven(String question, String groundTruth, List<String> contextList, ChatModel chatLanguageModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers, boolean evaluationMode)
+	public RageAssertTestCaseGiven(String question, String groundTruth, String context, ChatModel chatLanguageModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers, boolean evaluationMode)
 	{
 		this.question = question;
 		this.groundTruth = groundTruth;
-		this.contextList = contextList;
+		this.context = context;
 		this.chatLanguageModel = chatLanguageModel;
 		this.embeddingModel = embeddingModel;
 		this.observers = observers;
@@ -42,6 +42,6 @@ public class RageAssertTestCaseGiven
 
 	public RageAssertTestCaseAssertions then()
 	{
-		return new RageAssertTestCaseAssertions(answer, groundTruth, question, contextList, chatLanguageModel, embeddingModel, observers, evaluationMode);
+		return new RageAssertTestCaseAssertions(answer, groundTruth, question, context, chatLanguageModel, embeddingModel, observers, evaluationMode);
 	}
 }
