@@ -1,5 +1,8 @@
 package dev.rage4j.asserts;
 
+import java.util.Collections;
+import java.util.List;
+
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.rage4j.asserts.exception.Rage4JBleuScoreException;
@@ -17,8 +20,6 @@ import dev.rage4j.evaluation.faithfulness.FaithfulnessEvaluator;
 import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
 import dev.rage4j.model.Sample;
 
-import java.util.List;
-
 public class RageAssertTestCaseAssertions
 {
 	private ChatModel chatModel;
@@ -27,10 +28,11 @@ public class RageAssertTestCaseAssertions
 	private String groundTruth;
 	private List<String> contextList;
 	private String answer;
+	private final List<AssertionObserver> observers;
 
 	private static final String MINVALUE = "Answer did not reach required min value! Evaluated value: ";
 
-	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, ChatModel chatModel, EmbeddingModel embeddingModel)
+	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, ChatModel chatModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers)
 	{
 		this.answer = answer;
 		this.groundTruth = groundTruth;
@@ -38,6 +40,24 @@ public class RageAssertTestCaseAssertions
 		this.contextList = contextList;
 		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
+		this.observers = observers != null ? observers : Collections.emptyList();
+	}
+
+	private void notifyObservers(Sample sample, Evaluation evaluation, boolean passed)
+	{
+		for (AssertionObserver observer : observers)
+		{
+			observer.onEvaluation(sample, evaluation, passed);
+		}
+	}
+
+	private String joinContextList()
+	{
+		if (contextList == null || contextList.isEmpty())
+		{
+			return null;
+		}
+		return String.join("\n", contextList);
 	}
 
 	public AssertionEvaluation assertFaithfulness(double minValue)
@@ -47,11 +67,14 @@ public class RageAssertTestCaseAssertions
 			.withAnswer(answer)
 			.withGroundTruth(groundTruth)
 			.withQuestion(question)
-			.withContextsList(contextList)
+			.withContext(joinContextList())
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
-		if (minValue > evaluation.getValue())
+		boolean passed = minValue <= evaluation.getValue();
+		notifyObservers(sample, evaluation, passed);
+
+		if (!passed)
 		{
 			throw new Rage4JFaithfulnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
 		}
@@ -68,7 +91,10 @@ public class RageAssertTestCaseAssertions
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
-		if (minValue > evaluation.getValue())
+		boolean passed = minValue <= evaluation.getValue();
+		notifyObservers(sample, evaluation, passed);
+
+		if (!passed)
 		{
 			throw new Rage4JCorrectnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
 		}
@@ -81,11 +107,14 @@ public class RageAssertTestCaseAssertions
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withQuestion(question)
-			.withContextsList(contextList)
+			.withContext(joinContextList())
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
-		if (minValue > evaluation.getValue())
+		boolean passed = minValue <= evaluation.getValue();
+		notifyObservers(sample, evaluation, passed);
+
+		if (!passed)
 		{
 			throw new Rage4JRelevanceException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
@@ -101,7 +130,10 @@ public class RageAssertTestCaseAssertions
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
-		if (minValue > evaluation.getValue())
+		boolean passed = minValue <= evaluation.getValue();
+		notifyObservers(sample, evaluation, passed);
+
+		if (!passed)
 		{
 			throw new Rage4JSimilarityException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
@@ -117,7 +149,10 @@ public class RageAssertTestCaseAssertions
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
-		if (minValue > evaluation.getValue())
+		boolean passed = minValue <= evaluation.getValue();
+		notifyObservers(sample, evaluation, passed);
+
+		if (!passed)
 		{
 			throw new Rage4JBleuScoreException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
@@ -133,7 +168,10 @@ public class RageAssertTestCaseAssertions
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
-		if (minValue > evaluation.getValue())
+		boolean passed = minValue <= evaluation.getValue();
+		notifyObservers(sample, evaluation, passed);
+
+		if (!passed)
 		{
 			throw new Rage4JRougeScoreException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
