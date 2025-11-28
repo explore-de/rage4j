@@ -16,12 +16,12 @@ import dev.rage4j.model.Sample;
  * rageAssert.addObserver(new PersistingObserver(store));
  *
  * rageAssert.given()
- *     .question("What is AI?")
- *     .groundTruth("...")
- *     .when()
- *     .answer(llm::chat)
- *     .then()
- *     .assertFaithfulness(0.7); // Observer is notified
+ * 	.question("What is AI?")
+ * 	.groundTruth("...")
+ * 	.when()
+ * 	.answer(llm::chat)
+ * 	.then()
+ * 	.assertFaithfulness(0.7); // Observer is notified
  * </pre>
  */
 @FunctionalInterface

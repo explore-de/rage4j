@@ -2,6 +2,10 @@ package dev.rage4j.asserts;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
@@ -22,6 +26,8 @@ import dev.rage4j.model.Sample;
 
 public class RageAssertTestCaseAssertions
 {
+	private static final Logger LOG = LoggerFactory.getLogger(RageAssertTestCaseAssertions.class);
+
 	private ChatModel chatModel;
 	private EmbeddingModel embeddingModel;
 	private String question;
@@ -29,10 +35,11 @@ public class RageAssertTestCaseAssertions
 	private List<String> contextList;
 	private String answer;
 	private final List<AssertionObserver> observers;
+	private final boolean evaluationMode;
 
 	private static final String MINVALUE = "Answer did not reach required min value! Evaluated value: ";
 
-	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, ChatModel chatModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers)
+	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, ChatModel chatModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers, boolean evaluationMode)
 	{
 		this.answer = answer;
 		this.groundTruth = groundTruth;
@@ -41,6 +48,30 @@ public class RageAssertTestCaseAssertions
 		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
 		this.observers = observers != null ? observers : Collections.emptyList();
+		this.evaluationMode = evaluationMode;
+	}
+
+	/**
+	 * Handles assertion failure based on evaluation mode. In evaluation mode,
+	 * logs a warning. Otherwise, throws the provided exception.
+	 *
+	 * @param message
+	 *            The failure message.
+	 * @param metricName
+	 *            The name of the metric that failed.
+	 * @param exceptionSupplier
+	 *            Supplier that creates the exception to throw.
+	 */
+	private void handleAssertionFailure(String message, String metricName, Supplier<RuntimeException> exceptionSupplier)
+	{
+		if (evaluationMode)
+		{
+			LOG.warn("[EVALUATION MODE] {} assertion failed: {}", metricName, message);
+		}
+		else
+		{
+			throw exceptionSupplier.get();
+		}
 	}
 
 	private void notifyObservers(Sample sample, Evaluation evaluation, boolean passed)
@@ -76,7 +107,8 @@ public class RageAssertTestCaseAssertions
 
 		if (!passed)
 		{
-			throw new Rage4JFaithfulnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
+			String message = MINVALUE + evaluation.getValue() + " answer: " + answer;
+			handleAssertionFailure(message, "Faithfulness", () -> new Rage4JFaithfulnessException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
@@ -96,7 +128,8 @@ public class RageAssertTestCaseAssertions
 
 		if (!passed)
 		{
-			throw new Rage4JCorrectnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
+			String message = MINVALUE + evaluation.getValue() + " answer: " + answer;
+			handleAssertionFailure(message, "Answer Correctness", () -> new Rage4JCorrectnessException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
@@ -116,9 +149,15 @@ public class RageAssertTestCaseAssertions
 
 		if (!passed)
 		{
-			throw new Rage4JRelevanceException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
+			String message = assertionFailureMessage(evaluation.getValue(), minValue, answer);
+			handleAssertionFailure(message, "Answer Relevance", () -> new Rage4JRelevanceException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	private String assertionFailureMessage(double value, double minValue, String answer)
+	{
+		return MINVALUE + value + ", Required: " + minValue + ", Answer: " + answer;
 	}
 
 	public AssertionEvaluation assertSemanticSimilarity(double minValue)
@@ -135,7 +174,8 @@ public class RageAssertTestCaseAssertions
 
 		if (!passed)
 		{
-			throw new Rage4JSimilarityException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
+			String message = assertionFailureMessage(evaluation.getValue(), minValue, answer);
+			handleAssertionFailure(message, "Semantic Similarity", () -> new Rage4JSimilarityException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
@@ -154,7 +194,8 @@ public class RageAssertTestCaseAssertions
 
 		if (!passed)
 		{
-			throw new Rage4JBleuScoreException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
+			String message = assertionFailureMessage(evaluation.getValue(), minValue, answer);
+			handleAssertionFailure(message, "BLEU Score", () -> new Rage4JBleuScoreException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
@@ -173,7 +214,8 @@ public class RageAssertTestCaseAssertions
 
 		if (!passed)
 		{
-			throw new Rage4JRougeScoreException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
+			String message = assertionFailureMessage(evaluation.getValue(), minValue, answer);
+			handleAssertionFailure(message, "ROUGE Score", () -> new Rage4JRougeScoreException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
