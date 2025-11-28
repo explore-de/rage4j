@@ -25,9 +25,9 @@ Add this dependency to your pom.xml:
 
 ```java
 import dev.rage4j.asserts.RageAssert;
-import dev.rage4j.asserts.OpenAiLLMBuilder;
+import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
 
-RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(apiKey);
+RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(apiKey);  // Uses default models
 
 rageAssert.given()
     .question("What is the capital of France?")
@@ -37,8 +37,19 @@ rageAssert.given()
     .answer("Paris is the capital of France.")
     .then()
     .assertFaithfulness(0.7)
+    .then()
     .assertAnswerCorrectness(0.8)
+    .then()
     .assertAnswerRelevance(0.7);
+```
+
+### Custom Model Selection
+
+```java
+RageAssert rageAssert = new OpenAiLLMBuilder()
+    .withChatModel("gpt-4o")
+    .withEmbeddingModel("text-embedding-3-large")
+    .fromApiKey(apiKey);
 ```
 
 ### With LLM Integration
@@ -53,6 +64,33 @@ rageAssert.given()
     .assertFaithfulness(0.7);
 ```
 
+### Evaluation Mode
+
+By default, assertion failures throw exceptions. Use **evaluation mode** to log warnings instead, allowing complete evaluation runs for data collection:
+
+```java
+RageAssert rageAssert = new OpenAiLLMBuilder()
+    .fromApiKey(apiKey)
+    .withEvaluationMode();  // Failures log warnings instead of throwing
+
+// Run all evaluations even if some fail
+rageAssert.given()
+    .question("What is AI?")
+    .groundTruth("...")
+    .when()
+    .answer(llm::chat)
+    .then()
+    .assertFaithfulness(0.7)   // Logs warning if below threshold
+    .then()
+    .assertAnswerCorrectness(0.8);  // Still runs even if previous failed
+```
+
+Switch back to strict mode:
+
+```java
+rageAssert.withStrictMode();  // Failures throw exceptions again
+```
+
 ## Available Assertions
 
 | Method | Description |
@@ -64,14 +102,15 @@ rageAssert.given()
 | `assertBleuScore(minValue)` | Calculates BLEU score against ground truth |
 | `assertRougeScore(minValue, rougeType, measureType)` | Calculates ROUGE score |
 
+Each assertion returns an `AssertionEvaluation` that provides access to the raw `Evaluation` result and allows chaining via `.then()`.
+
 ## Observer Pattern
 
-You can attach observers to automatically receive notifications when evaluations complete:
+Attach observers to receive notifications when evaluations complete:
 
 ```java
 import dev.rage4j.asserts.AssertionObserver;
 
-// Create a custom observer
 AssertionObserver observer = (sample, evaluation, passed) -> {
     System.out.println("Evaluation: " + evaluation.getName() + " = " + evaluation.getValue());
 };
@@ -90,7 +129,7 @@ import dev.rage4j.persist.Rage4jPersist;
 EvaluationStore store = Rage4jPersist.jsonLines("target/evaluations.jsonl");
 rageAssert.addObserver(new PersistingObserver(store));
 
-// All assertions are now automatically recorded!
+// All assertions are now automatically recorded
 rageAssert.given()
     .question("What is AI?")
     .groundTruth("...")
@@ -108,5 +147,6 @@ rageAssert.given()
 | `RageAssertTestCaseBuilder` | Builder for test case setup (given phase) |
 | `RageAssertTestCaseGiven` | Builder for answer setup (when phase) |
 | `RageAssertTestCaseAssertions` | Assertion methods (then phase) |
+| `AssertionEvaluation` | Result wrapper enabling assertion chaining via `.then()` |
 | `AssertionObserver` | Interface for evaluation observers |
-| `OpenAiLLMBuilder` | Builder for OpenAI-backed RageAssert |
+| `OpenAiLLMBuilder` | Builder for OpenAI-backed RageAssert (uses gpt-4 and text-embedding-3-small) |
