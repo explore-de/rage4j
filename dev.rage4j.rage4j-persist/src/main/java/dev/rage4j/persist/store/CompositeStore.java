@@ -6,7 +6,6 @@ import java.util.List;
 
 import dev.rage4j.model.EvaluationAggregation;
 import dev.rage4j.persist.EvaluationStore;
-import dev.rage4j.persist.RecordMetadata;
 
 /**
  * An EvaluationStore implementation that delegates to multiple underlying
@@ -14,7 +13,7 @@ import dev.rage4j.persist.RecordMetadata;
  *
  * <p>
  * This allows writing evaluations to multiple destinations simultaneously, for
- * example both CSV and JSONL files.
+ * example to multiple JSONL files.
  * </p>
  */
 public class CompositeStore implements EvaluationStore
@@ -54,16 +53,6 @@ public class CompositeStore implements EvaluationStore
 		for (EvaluationStore store : stores)
 		{
 			store.store(aggregation);
-		}
-	}
-
-	@Override
-	public void store(EvaluationAggregation aggregation, RecordMetadata metadata)
-	{
-		checkNotClosed();
-		for (EvaluationStore store : stores)
-		{
-			store.store(aggregation, metadata);
 		}
 	}
 

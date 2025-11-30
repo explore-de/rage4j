@@ -34,12 +34,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>dev.rage4j</groupId>
-            <artifactId>rage-assert</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>

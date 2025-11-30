@@ -1,10 +1,19 @@
 package dev.rage4j.model;
 
-import dev.rage4j.evaluation.Evaluation;
-
+import java.io.Serial;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import dev.rage4j.evaluation.Evaluation;
 
 /**
  * The {@code EvaluationAggregation} class represents a map-like structure that
@@ -14,9 +23,15 @@ import java.util.Optional;
  * <p>
  * Optionally, an instance can be associated with a {@code Sample} that was
  * evaluated.
+ * <p>
+ * This class is serializable to JSON with Jackson, producing output in the
+ * format: {@code {"sample": {...}, "metrics": {...}}}
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "sample", "metrics" })
 public class EvaluationAggregation extends HashMap<String, Double>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private Sample sample;
 
@@ -47,9 +62,55 @@ public class EvaluationAggregation extends HashMap<String, Double>
 	 * @return An {@code Optional} containing the sample, or empty if no sample
 	 *         is associated.
 	 */
+	@JsonIgnore
 	public Optional<Sample> getSample()
 	{
 		return Optional.ofNullable(sample);
+	}
+
+	/**
+	 * Returns the sample as a map for JSON serialization. Only non-null fields
+	 * of the sample are included.
+	 *
+	 * @return A map representation of the sample, or null if no sample is
+	 *         associated.
+	 */
+	@JsonProperty("sample")
+	public Map<String, String> sampleMap()
+	{
+		if (sample == null)
+		{
+			return Collections.emptyMap();
+		}
+		Map<String, String> map = new LinkedHashMap<>();
+		if (sample.hasQuestion())
+		{
+			map.put("question", sample.getQuestion());
+		}
+		if (sample.hasAnswer())
+		{
+			map.put("answer", sample.getAnswer());
+		}
+		if (sample.hasGroundTruth())
+		{
+			map.put("groundTruth", sample.getGroundTruth());
+		}
+		if (sample.hasContext())
+		{
+			map.put("context", sample.getContext());
+		}
+		return map;
+	}
+
+	/**
+	 * Returns the metrics map for JSON serialization.
+	 *
+	 * @return A copy of the metrics map.
+	 */
+	@JsonProperty("metrics")
+	public Map<String, Double> getMetrics()
+	{
+		return Map.copyOf(this);
 	}
 
 	/**
@@ -92,7 +153,7 @@ public class EvaluationAggregation extends HashMap<String, Double>
 		{
 			return false;
 		}
-		EvaluationAggregation that = (EvaluationAggregation) o;
+		EvaluationAggregation that = (EvaluationAggregation)o;
 		return Objects.equals(sample, that.sample);
 	}
 

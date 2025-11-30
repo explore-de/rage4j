@@ -1,24 +1,21 @@
 package dev.rage4j.persist.junit5;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import dev.rage4j.model.EvaluationAggregation;
 import dev.rage4j.model.Sample;
 import dev.rage4j.persist.EvaluationStore;
-import dev.rage4j.persist.Rage4jPersist;
+import dev.rage4j.persist.store.CompositeStore;
+import dev.rage4j.persist.store.JsonLinesStore;
 
 class Rage4jPersistExtensionTest
 {
@@ -26,20 +23,8 @@ class Rage4jPersistExtensionTest
 	@TempDir
 	static Path tempDir;
 
-	@BeforeAll
-	static void setup()
-	{
-		Rage4jPersist.clearConfiguration();
-	}
-
-	@AfterAll
-	static void cleanup()
-	{
-		Rage4jPersist.clearConfiguration();
-	}
-
 	@Test
-	void extensionInjectsStore()
+	void extensionConfigAnnotationWorks()
 	{
 		@Rage4jPersistConfig(file = "target/test-evaluations.jsonl")
 		class TestClass
@@ -48,7 +33,8 @@ class Rage4jPersistExtensionTest
 
 		Rage4jPersistConfig config = TestClass.class.getAnnotation(Rage4jPersistConfig.class);
 		assertNotNull(config);
-		assertTrue(config.configureGlobal());
+		assertEquals("target/test-evaluations.jsonl", config.file());
+		assertEquals(JsonLinesStore.class, config.storeClass());
 	}
 
 	@Test
@@ -62,13 +48,13 @@ class Rage4jPersistExtensionTest
 		Rage4jPersistConfig config = DefaultConfig.class.getAnnotation(Rage4jPersistConfig.class);
 		assertNotNull(config);
 		assertEquals("target/evaluations.jsonl", config.file());
-		assertTrue(config.configureGlobal());
+		assertEquals(JsonLinesStore.class, config.storeClass());
 	}
 
 	@Test
-	void customConfigIsApplied()
+	void customStoreClassConfigIsApplied()
 	{
-		@Rage4jPersistConfig(file = "custom/evaluations.jsonl", configureGlobal = false)
+		@Rage4jPersistConfig(file = "custom/evaluations.jsonl", storeClass = JsonLinesStore.class)
 		class CustomConfig
 		{
 		}
@@ -76,23 +62,7 @@ class Rage4jPersistExtensionTest
 		Rage4jPersistConfig config = CustomConfig.class.getAnnotation(Rage4jPersistConfig.class);
 		assertNotNull(config);
 		assertEquals("custom/evaluations.jsonl", config.file());
-		assertFalse(config.configureGlobal());
-	}
-
-	@Test
-	void testContextIsSet()
-	{
-		var metadata = dev.rage4j.persist.RecordMetadata.of("TestClass", "testMethod");
-		Rage4jPersist.setTestContext(metadata);
-
-		var retrieved = Rage4jPersist.getTestContext();
-		assertNotNull(retrieved);
-		assertEquals("TestClass", retrieved.testClass());
-		assertEquals("testMethod", retrieved.testMethod());
-		assertNotNull(retrieved.timestamp());
-
-		Rage4jPersist.clearTestContext();
-		assertNull(Rage4jPersist.getTestContext());
+		assertEquals(JsonLinesStore.class, config.storeClass());
 	}
 
 	@Test
@@ -100,7 +70,7 @@ class Rage4jPersistExtensionTest
 	{
 		Path jsonlFile = tempDir.resolve("test.jsonl");
 
-		EvaluationStore store = Rage4jPersist.jsonLines(jsonlFile);
+		EvaluationStore store = new JsonLinesStore(jsonlFile);
 		assertNotNull(store);
 
 		Sample sample = Sample.builder().withQuestion("What is ML?").withAnswer("ML is machine learning")
@@ -116,5 +86,31 @@ class Rage4jPersistExtensionTest
 		String content = Files.readString(jsonlFile);
 		assertTrue(content.contains("What is ML?"));
 		assertTrue(content.contains("accuracy"));
+	}
+
+	@Test
+	void compositeStoreWorks() throws IOException
+	{
+		Path jsonlFile1 = tempDir.resolve("composite1.jsonl");
+		Path jsonlFile2 = tempDir.resolve("composite2.jsonl");
+
+		EvaluationStore store = new CompositeStore(new JsonLinesStore(jsonlFile1), new JsonLinesStore(jsonlFile2));
+		assertNotNull(store);
+
+		Sample sample = Sample.builder().withQuestion("Test question").withAnswer("Test answer").build();
+
+		EvaluationAggregation aggregation = new EvaluationAggregation(sample);
+		aggregation.put("score", 0.95);
+
+		store.store(aggregation);
+		store.close();
+
+		assertTrue(Files.exists(jsonlFile1));
+		assertTrue(Files.exists(jsonlFile2));
+
+		String content1 = Files.readString(jsonlFile1);
+		String content2 = Files.readString(jsonlFile2);
+		assertTrue(content1.contains("Test question"));
+		assertTrue(content2.contains("Test question"));
 	}
 }

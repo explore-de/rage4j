@@ -1,6 +1,7 @@
 package dev.rage4j.asserts;
 
 import dev.rage4j.evaluation.Evaluation;
+import dev.rage4j.model.EvaluationAggregation;
 
 public class AssertionEvaluation
 {
@@ -30,6 +31,17 @@ public class AssertionEvaluation
 	public Evaluation getEvaluation()
 	{
 		return evaluation;
+	}
+
+	/**
+	 * Returns the collected evaluation aggregation containing the sample and
+	 * all evaluation results performed so far.
+	 *
+	 * @return The EvaluationAggregation with sample and metrics.
+	 */
+	public EvaluationAggregation getEvaluationAggregation()
+	{
+		return assertions.getEvaluationAggregation();
 	}
 
 	public static AssertionEvaluation from(Evaluation evaluation, RageAssertTestCaseAssertions assertions)

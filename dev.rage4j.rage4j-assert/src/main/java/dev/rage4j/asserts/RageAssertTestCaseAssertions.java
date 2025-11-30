@@ -1,7 +1,5 @@
 package dev.rage4j.asserts;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
@@ -22,6 +20,7 @@ import dev.rage4j.evaluation.answersemanticsimilarity.AnswerSemanticSimilarityEv
 import dev.rage4j.evaluation.bleuscore.BleuScoreEvaluator;
 import dev.rage4j.evaluation.faithfulness.FaithfulnessEvaluator;
 import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
+import dev.rage4j.model.EvaluationAggregation;
 import dev.rage4j.model.Sample;
 
 public class RageAssertTestCaseAssertions
@@ -34,12 +33,12 @@ public class RageAssertTestCaseAssertions
 	private final String groundTruth;
 	private final String context;
 	private final String answer;
-	private final List<AssertionObserver> observers;
 	private final boolean evaluationMode;
+	private EvaluationAggregation pendingAggregation;
 
 	private static final String MINVALUE = "Answer did not reach required min value! Evaluated value: ";
 
-	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, String context, ChatModel chatModel, EmbeddingModel embeddingModel, List<AssertionObserver> observers, boolean evaluationMode)
+	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, String context, ChatModel chatModel, EmbeddingModel embeddingModel, boolean evaluationMode)
 	{
 		this.answer = answer;
 		this.groundTruth = groundTruth;
@@ -47,7 +46,6 @@ public class RageAssertTestCaseAssertions
 		this.context = context;
 		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
-		this.observers = observers != null ? observers : Collections.emptyList();
 		this.evaluationMode = evaluationMode;
 	}
 
@@ -74,12 +72,25 @@ public class RageAssertTestCaseAssertions
 		}
 	}
 
-	private void notifyObservers(Sample sample, Evaluation evaluation, boolean passed)
+	private void collectEvaluation(Sample sample, Evaluation evaluation)
 	{
-		for (AssertionObserver observer : observers)
+		if (pendingAggregation == null)
 		{
-			observer.onEvaluation(sample, evaluation, passed);
+			pendingAggregation = new EvaluationAggregation(sample);
 		}
+		pendingAggregation.put(evaluation);
+	}
+
+	/**
+	 * Returns the collected evaluation aggregation containing the sample and
+	 * all evaluation results performed so far.
+	 *
+	 * @return The EvaluationAggregation with sample and metrics, or null if no
+	 *         evaluations were performed.
+	 */
+	public EvaluationAggregation getEvaluationAggregation()
+	{
+		return pendingAggregation;
 	}
 
 	public AssertionEvaluation assertFaithfulness(double minValue)
@@ -94,7 +105,7 @@ public class RageAssertTestCaseAssertions
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		notifyObservers(sample, evaluation, passed);
+		collectEvaluation(sample, evaluation);
 
 		if (!passed)
 		{
@@ -115,7 +126,7 @@ public class RageAssertTestCaseAssertions
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		notifyObservers(sample, evaluation, passed);
+		collectEvaluation(sample, evaluation);
 
 		if (!passed)
 		{
@@ -136,7 +147,7 @@ public class RageAssertTestCaseAssertions
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		notifyObservers(sample, evaluation, passed);
+		collectEvaluation(sample, evaluation);
 
 		if (!passed)
 		{
@@ -161,7 +172,7 @@ public class RageAssertTestCaseAssertions
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		notifyObservers(sample, evaluation, passed);
+		collectEvaluation(sample, evaluation);
 
 		if (!passed)
 		{
@@ -181,7 +192,7 @@ public class RageAssertTestCaseAssertions
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		notifyObservers(sample, evaluation, passed);
+		collectEvaluation(sample, evaluation);
 
 		if (!passed)
 		{
@@ -201,7 +212,7 @@ public class RageAssertTestCaseAssertions
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		notifyObservers(sample, evaluation, passed);
+		collectEvaluation(sample, evaluation);
 
 		if (!passed)
 		{

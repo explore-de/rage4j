@@ -13,8 +13,9 @@ import dev.rage4j.persist.EvaluationStore;
 import dev.rage4j.persist.store.JsonLinesStore;
 
 /**
- * Configures Rage4j evaluation persistence for a test class. When applied,
- * evaluations will be automatically persisted to the specified file.
+ * Configures Rage4j evaluation persistence for a test class. When applied, an
+ * {@link EvaluationStore} will be created and can be injected into test
+ * methods.
  *
  * <p>
  * Example usage:
@@ -67,12 +68,4 @@ public @interface Rage4jPersistConfig
 	 * @return the store class
 	 */
 	Class<? extends EvaluationStore> storeClass() default JsonLinesStore.class;
-
-	/**
-	 * Whether to configure the store as the global static store via
-	 * {@link dev.rage4j.persist.Rage4jPersist#configure(dev.rage4j.persist.EvaluationStore)}.
-	 *
-	 * @return true to configure as global store
-	 */
-	boolean configureGlobal() default true;
 }

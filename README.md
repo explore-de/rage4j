@@ -7,8 +7,73 @@
 
 # Rage4J
 
-For specific information about individual parts of the system,
-go to the respective README's in the folders.
+RAG Evaluation library for Java.
+
+## Overview
+
+Rage4J provides tools to evaluate and measure the quality of language model outputs using various metrics like correctness, relevance, faithfulness, and semantic similarity. It integrates with LangChain4j and supports fluent test assertions for RAG pipelines.
+
+**Modules:**
+- **rage4j** - Core evaluation library with evaluators and model classes
+- **rage4j-assert** - Fluent assertion library for RAG evaluation in tests
+- **rage4j-persist** - Persistence module for saving evaluation results (JSONL format)
+- **rage4j-persist-junit5** - JUnit 5 extension for automatic persistence lifecycle
+
+## Installation
+
+Add the dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage4j</artifactId>
+    <version>1.1.1-SNAPSHOT</version>
+</dependency>
+```
+
+For fluent test assertions:
+
+```xml
+<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage-assert</artifactId>
+    <version>1.1.1-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+```
+
+## Usage
+
+### Core Evaluation
+
+```java
+Sample sample = Sample.builder()
+    .withQuestion("What is the capital of France?")
+    .withAnswer("Paris is the capital of France.")
+    .withGroundTruth("Paris")
+    .build();
+
+Evaluator evaluator = new AnswerCorrectnessEvaluator(chatModel);
+Evaluation result = evaluator.evaluate(sample);
+System.out.println(result.getName() + ": " + result.getValue());
+```
+
+### Fluent Assertions
+
+```java
+RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(apiKey);
+
+rageAssert.given()
+    .question("What is the capital of France?")
+    .groundTruth("Paris")
+    .context("Paris is the capital of France.")
+    .when()
+    .answer("Paris is the capital of France.")
+    .then()
+    .assertFaithfulness(0.7)
+    .then()
+    .assertAnswerCorrectness(0.8);
+```
 
 ## Documentation
 
@@ -16,11 +81,10 @@ Visit our documentation on Github Pages: <a href="https://explore-de.github.io/r
 
 ## Requirements
 
-To use/build rage4j you need to install yarn and java,
-there are maven wrappers inside the individual modules
-(`./mvnw`). Please use the exentra code formatter, and
-(on VSCode) install the editorconfig extension (IntelliJ has
-built-in support).
+- Java 21
+- Maven (wrapper included: `./mvnw`)
+
+For development, use the code formatter (`./mvnw formatter:format`) and install the EditorConfig extension (IntelliJ has built-in support).
 
 ## Contributors
 

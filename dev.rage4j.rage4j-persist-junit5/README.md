@@ -4,11 +4,11 @@ JUnit 5 extension for automatic persistence of Rage4J evaluation results.
 
 ## Overview
 
-The **Rage4J Persist JUnit 5** module provides a JUnit 5 extension that automatically manages the lifecycle of an `EvaluationStore` during test execution. It handles store creation, test context metadata, and cleanup.
+The Rage4J Persist JUnit 5 module provides a JUnit 5 extension that automatically manages the lifecycle of an `EvaluationStore` during test execution. It handles store creation, parameter injection, and cleanup.
 
 ## Installation
 
-Add this dependency to your pom.xml:
+Add this dependency to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -21,9 +21,9 @@ Add this dependency to your pom.xml:
 
 ## Usage
 
-### Basic Usage with Annotation
+### Basic Usage
 
-Simply annotate your test class with `@Rage4jPersistConfig`:
+Annotate your test class with `@Rage4jPersistConfig`:
 
 ```java
 import dev.rage4j.persist.junit5.Rage4jPersistConfig;
@@ -51,49 +51,28 @@ class MyEvaluationTest {
 }
 ```
 
-### Using Static API
-
-The extension also configures the global static store:
-
-```java
-@Rage4jPersistConfig(file = "target/evaluations.jsonl")
-class MyEvaluationTest {
-
-    @Test
-    void testWithStaticApi() {
-        EvaluationAggregation result = EvaluationAggregator.evaluateAll(sample, evaluators);
-
-        // Use static API - no parameter injection needed
-        Rage4jPersist.store(result);
-    }
-}
-```
-
 ### With rage4j-assert
 
-Combine with rage4j-assert for automatic recording:
+Combine with rage4j-assert for fluent assertions and persist the results:
 
 ```java
 @Rage4jPersistConfig(file = "target/evaluations.jsonl")
 class MyAssertTest {
 
-    RageAssert rageAssert;
-
-    @BeforeEach
-    void setUp() {
-        rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
-        rageAssert.addObserver(new PersistingObserver(Rage4jPersist.configured()));
-    }
-
     @Test
-    void testWithAssert() {
-        rageAssert.given()
+    void testWithAssert(EvaluationStore store) {
+        RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(apiKey);
+
+        EvaluationAggregation result = rageAssert.given()
             .question("What is AI?")
             .groundTruth("Artificial intelligence...")
             .when()
             .answer(llm::chat)
             .then()
-            .assertFaithfulness(0.7);  // Automatically recorded!
+            .assertFaithfulness(0.7)
+            .getEvaluationAggregation();
+
+        store.store(result);  // Persist to injected store
     }
 }
 ```
@@ -106,7 +85,6 @@ The `@Rage4jPersistConfig` annotation supports:
 |-----------|---------|-------------|
 | `file` | `"target/evaluations.jsonl"` | Path to the output file |
 | `storeClass` | `JsonLinesStore.class` | Store implementation class (must have a `Path` constructor) |
-| `configureGlobal` | `true` | Whether to configure the static `Rage4jPersist` API |
 
 ### Custom Store Implementation
 
@@ -123,12 +101,4 @@ class MyCustomTest {
 
 - **Automatic Lifecycle Management**: Store is created before tests and closed after
 - **Parameter Injection**: Inject `EvaluationStore` into test methods
-- **Test Context Metadata**: Each record includes test class and method names
-- **Static API Integration**: Optionally configures global store for `Rage4jPersist.store()`
-
-## How It Works
-
-1. **BeforeAll**: Creates the `EvaluationStore` and optionally configures the global static API
-2. **BeforeEach**: Sets test context metadata (class name, method name)
-3. **Test Execution**: Store is available via parameter injection or static API
-4. **AfterAll**: Closes the store and clears configuration
+- **Inheritance Support**: Configuration is inherited from parent test classes

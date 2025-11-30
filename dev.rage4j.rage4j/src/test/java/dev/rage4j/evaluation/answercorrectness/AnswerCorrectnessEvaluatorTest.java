@@ -45,8 +45,7 @@ class AnswerCorrectnessEvaluatorTest
 		return Stream.of(
 			Arguments.of(1, 1, 0, 0.6667, "true and false positives"),
 			Arguments.of(0, 0, 0, 0.0, "no true/false positives or negatives"),
-			Arguments.of(1, 0, 0, 1.0, "only true positives")
-		);
+			Arguments.of(1, 0, 0, 1.0, "only true positives"));
 	}
 
 	@ParameterizedTest(name = "evaluates correctly with {4}")
