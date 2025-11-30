@@ -120,8 +120,7 @@ public class RougeScoreEvaluator implements Evaluator
 		{
 			case PRECISION -> precision;
 			case RECALL -> recall;
-			case F1SCORE ->
-			{
+			case F1SCORE -> {
 				if (precision + recall < EPSILON)
 				{
 					yield 0.0;

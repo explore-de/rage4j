@@ -21,8 +21,8 @@
 
     <modules>
         <module>dev.rage4j.rage4j</module>
-        <module>dev.rage4j.rage4j-assert</module>
         <module>dev.rage4j.rage4j-persist</module>
+        <module>dev.rage4j.rage4j-assert</module>
         <module>dev.rage4j.rage4j-persist-junit5</module>
     </modules>
 

@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.rage4j.model.EvaluationAggregation;
 import dev.rage4j.model.Sample;
-import dev.rage4j.persist.RecordMetadata;
 
 class JsonLinesStoreTest
 {
@@ -95,8 +94,6 @@ class JsonLinesStoreTest
 		List<String> lines = Files.readAllLines(file);
 		JsonNode json = objectMapper.readTree(lines.get(0));
 
-		assertTrue(json.has("id"));
-		assertTrue(json.has("timestamp"));
 		assertTrue(json.has("sample"));
 		assertTrue(json.has("metrics"));
 	}
@@ -144,25 +141,6 @@ class JsonLinesStoreTest
 	}
 
 	@Test
-	void testMetadataIncluded() throws IOException
-	{
-		Sample sample = Sample.builder().withQuestion("Test").withAnswer("Answer").build();
-
-		EvaluationAggregation aggregation = new EvaluationAggregation(sample);
-		aggregation.put("score", 0.5);
-
-		RecordMetadata metadata = RecordMetadata.of("TestClass", "testMethod");
-		store.store(aggregation, metadata);
-		store.flush();
-
-		List<String> lines = Files.readAllLines(file);
-		JsonNode json = objectMapper.readTree(lines.get(0));
-
-		assertEquals("TestClass", json.get("testClass").asText());
-		assertEquals("testMethod", json.get("testMethod").asText());
-	}
-
-	@Test
 	void testNullFieldsOmitted() throws IOException
 	{
 		Sample sample = Sample.builder().withQuestion("Test").withAnswer("Answer").build();
@@ -181,5 +159,59 @@ class JsonLinesStoreTest
 		assertTrue(sampleNode.has("answer"));
 		// groundTruth and context were not set, should be omitted
 		assertTrue(!sampleNode.has("groundTruth") || sampleNode.get("groundTruth").isNull());
+	}
+
+	@Test
+	void testBufferingDataNotVisibleUntilFlush() throws IOException
+	{
+		Sample sample = Sample.builder().withQuestion("Test").withAnswer("Answer").build();
+
+		EvaluationAggregation aggregation = new EvaluationAggregation(sample);
+		aggregation.put("score", 0.5);
+
+		store.store(aggregation);
+
+		// File should not exist or be empty before flush
+		assertTrue(!Files.exists(file) || Files.size(file) == 0);
+
+		store.flush();
+
+		// Now file should have content
+		assertTrue(Files.exists(file));
+		assertTrue(Files.size(file) > 0);
+	}
+
+	@Test
+	void testStoreFlushWritesImmediately() throws IOException
+	{
+		Sample sample = Sample.builder().withQuestion("Test").withAnswer("Answer").build();
+
+		EvaluationAggregation aggregation = new EvaluationAggregation(sample);
+		aggregation.put("score", 0.5);
+
+		store.storeFlush(aggregation);
+
+		// File should have content immediately
+		assertTrue(Files.exists(file));
+		List<String> lines = Files.readAllLines(file);
+		assertEquals(1, lines.size());
+	}
+
+	@Test
+	void testCloseAutoFlushes() throws IOException
+	{
+		Sample sample = Sample.builder().withQuestion("Test").withAnswer("Answer").build();
+
+		EvaluationAggregation aggregation = new EvaluationAggregation(sample);
+		aggregation.put("score", 0.5);
+
+		store.store(aggregation);
+		store.close();
+		store = null; // Prevent double close in tearDown
+
+		// File should have content after close
+		assertTrue(Files.exists(file));
+		List<String> lines = Files.readAllLines(file);
+		assertEquals(1, lines.size());
 	}
 }

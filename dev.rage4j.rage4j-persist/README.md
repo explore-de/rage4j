@@ -4,11 +4,11 @@ Persistence module for saving Rage4J evaluation results to files.
 
 ## Overview
 
-The **Rage4J Persist** module provides tools to persist evaluation results from Rage4J evaluators. It supports JSON Lines (JSONL) format for append-friendly, structured storage of evaluation data.
+The Rage4J Persist module provides tools to persist evaluation results from Rage4J evaluators. It supports JSON Lines (JSONL) format for append-friendly, structured storage of evaluation data.
 
 ## Installation
 
-Add this dependency to your pom.xml:
+Add this dependency to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -23,63 +23,83 @@ Add this dependency to your pom.xml:
 ### Basic Usage
 
 ```java
-import dev.rage4j.persist.Rage4jPersist;
-import dev.rage4j.persist.EvaluationStore;
+import dev.rage4j.persist.store.JsonLinesStore;
+import java.nio.file.Path;
 
 // Create a JSONL store
-EvaluationStore store = Rage4jPersist.jsonLines("target/evaluations.jsonl");
+JsonLinesStore store = new JsonLinesStore(Path.of("target/evaluations.jsonl"));
 
-// Store evaluation results
+// Store evaluation results (buffered)
 EvaluationAggregation result = EvaluationAggregator.evaluateAll(sample, evaluators);
 store.store(result);
 
-// Close when done
+// Flush to disk and close
+store.close();  // flush() is called automatically
+```
+
+### Buffering and Flushing
+
+The `JsonLinesStore` buffers evaluations in memory and writes them to disk only when `flush()` is called. This allows efficient batch writes:
+
+```java
+JsonLinesStore store = new JsonLinesStore(Path.of("target/evaluations.jsonl"));
+
+// Multiple stores are buffered
+store.store(aggregation1);
+store.store(aggregation2);
+store.store(aggregation3);
+
+// Write all buffered data to file
+store.flush();
+
+// Or use storeFlush() for immediate write
+store.storeFlush(aggregation4);
+
+// close() automatically flushes remaining buffer
 store.close();
 ```
 
-### Static API
+### Composite Store
 
-For convenience, you can configure a global store and use the static API:
-
-```java
-// Configure once at startup
-Rage4jPersist.configure(Rage4jPersist.jsonLines("target/evaluations.jsonl"));
-
-// Record anywhere in your code
-EvaluationAggregation result = EvaluationAggregator.evaluateAll(sample, evaluators);
-Rage4jPersist.store(result);
-```
-
-### With Metadata
-
-You can attach test metadata to records:
+Write to multiple destinations simultaneously:
 
 ```java
-import dev.rage4j.persist.RecordMetadata;
+import dev.rage4j.persist.store.CompositeStore;
+import dev.rage4j.persist.store.JsonLinesStore;
 
-RecordMetadata metadata = RecordMetadata.of("MyTestClass", "testMethod");
-store.store(aggregation, metadata);
+EvaluationStore store = new CompositeStore(
+    new JsonLinesStore(Path.of("target/results.jsonl")),
+    new JsonLinesStore(Path.of("target/backup.jsonl"))
+);
+
+store.store(aggregation);
+store.close();
 ```
 
 ### Integration with rage4j-assert
 
-Use the `PersistingObserver` to automatically record evaluations from rage4j-assert:
+Get evaluation results from rage4j-assert and persist them:
 
 ```java
-import dev.rage4j.persist.PersistingObserver;
+import dev.rage4j.model.EvaluationAggregation;
+import dev.rage4j.persist.store.JsonLinesStore;
 
-EvaluationStore store = Rage4jPersist.jsonLines("target/evaluations.jsonl");
-RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
-rageAssert.addObserver(new PersistingObserver(store));
-
-// Evaluations are automatically recorded!
-rageAssert.given()
+// Get results from assertions
+EvaluationAggregation result = rageAssert.given()
     .question("What is AI?")
     .groundTruth("Artificial intelligence...")
     .when()
     .answer(llm::chat)
     .then()
-    .assertFaithfulness(0.7);
+    .assertFaithfulness(0.7)
+    .then()
+    .assertAnswerCorrectness(0.8)
+    .getEvaluationAggregation();
+
+// Persist the results
+try (JsonLinesStore store = new JsonLinesStore(Path.of("target/evaluations.jsonl"))) {
+    store.store(result);
+}
 ```
 
 ## Output Format
@@ -87,7 +107,7 @@ rageAssert.given()
 Records are stored in JSON Lines format (one JSON object per line):
 
 ```json
-{"id":"uuid","timestamp":"2024-01-15T10:30:00Z","testClass":"MyTest","testMethod":"testEval","sample":{"question":"What is AI?","answer":"AI is...","groundTruth":"..."},"metrics":{"Faithfulness":0.85,"BLEU score":0.72}}
+{"sample":{"question":"What is AI?","answer":"AI is...","groundTruth":"..."},"metrics":{"Faithfulness":0.85,"Answer correctness":0.72}}
 ```
 
 ## Key Classes
@@ -95,8 +115,5 @@ Records are stored in JSON Lines format (one JSON object per line):
 | Class | Description |
 |-------|-------------|
 | `EvaluationStore` | Interface for storing evaluations |
-| `JsonLinesStore` | JSONL file implementation |
+| `JsonLinesStore` | JSONL file implementation with buffering |
 | `CompositeStore` | Fan-out to multiple stores |
-| `Rage4jPersist` | Entry point with factory methods |
-| `RecordMetadata` | Test context metadata (class, method, timestamp) |
-| `PersistingObserver` | Observer for rage4j-assert integration |

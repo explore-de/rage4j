@@ -1,5 +1,6 @@
 package dev.rage4j.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
  */
 public class Sample implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	protected String question;
 	protected String answer;
@@ -119,7 +121,7 @@ public class Sample implements Serializable
 		{
 			return false;
 		}
-		Sample sample = (Sample) o;
+		Sample sample = (Sample)o;
 		return Objects.equals(question, sample.question)
 			&& Objects.equals(answer, sample.answer)
 			&& Objects.equals(groundTruth, sample.groundTruth)
