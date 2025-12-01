@@ -1,0 +1,41 @@
+---
+id: persist-installation
+title: Installation
+sidebar_position: 1
+---
+
+import CodeBlock from '@theme/CodeBlock';
+import {getGitHubStats} from '@site/src/api/GitHubApi';
+
+export const FetchedDependency = () => {
+  const {stats, loading} = getGitHubStats('explore-de', 'rage4j');
+
+  const getMavenDependency = (version) => `<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage-persist</artifactId>
+    <version>${version}</version>
+</dependency>`;
+
+  return (
+    <CodeBlock language="xml">
+      {getMavenDependency(loading ? '1.0.2' : stats.version)}
+    </CodeBlock>
+  );
+};
+
+## Installation: Add Rage4J-Persist to Your Project
+
+To start using Rage4J-Persist, add the following Maven dependency to your `pom.xml` file:
+
+<FetchedDependency />
+
+Once added, Maven will download and include the library in your project automatically.
+
+---
+
+Explore more about Rage4J:
+
+1. [RAGE4j-Core](/docs/category/rage4j-core)
+2. [RAGE4j-Assert](/docs/category/rage4j-assert)
+3. [RAGE4j-Persist](/docs/category/rage4j-persist)
+4. [RAGE4j-Persist-JUnit5](/docs/category/rage4j-persist-junit5)

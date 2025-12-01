@@ -13,7 +13,7 @@ Sample sample = Sample.builder()
     .withQuestion("What is the capital of France?")
     .withAnswer("Paris is the capital of France.")
     .withGroundTruth("Paris is the capital and largest city of France.")
-    .withContextsList(Arrays.asList("Paris is the capital of France..."))
+    .withContext("Paris is the capital of France...")
     .build();
 ```
 
@@ -21,7 +21,7 @@ A Sample typically consists of:
 - A **question**: the prompt or input to the language model.
 - An **answer**: the model-generated response.
 - A **ground truth**: the expected or correct answer.
-- **Contexts** (optional): additional information related to the question.
+- A **context** (optional): additional information related to the question.
 
 ---
 
@@ -80,10 +80,7 @@ public class EvaluationExample {
             .withQuestion("What are the main features of Java?")
             .withAnswer("Java is object-oriented, platform-independent, and has automatic memory management.")
             .withGroundTruth("Java's main features include object-oriented programming, platform independence through JVM, automatic memory management (garbage collection), and strong type safety.")
-            .withContextsList(Arrays.asList(
-                "Java is a popular programming language...",
-                "Key features of Java include..."
-            ))
+            .withContext("Java is a popular programming language. Key features of Java include...")
             .build();
 
         EvaluationAggregation results = EvaluationAggregator.evaluateAll(sample,
