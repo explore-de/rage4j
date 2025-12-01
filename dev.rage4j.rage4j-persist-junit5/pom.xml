@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rage4j-persist-junit5</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>2.0.0</version>
     <name>Rage4j Persist JUnit 5</name>
     <description>JUnit 5 extension for Rage4j evaluation persistence</description>
 
     <parent>
         <groupId>dev.rage4j</groupId>
         <artifactId>rage4j-reactor</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>2.0.0</version>
     </parent>
 
     <licenses>
