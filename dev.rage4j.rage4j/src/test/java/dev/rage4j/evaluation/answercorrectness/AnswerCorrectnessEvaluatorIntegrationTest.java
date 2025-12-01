@@ -28,7 +28,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	@BeforeEach
 	void setUp()
 	{
-		// Initialise the evaluator using OpenAIChatModel
+		// Initialize the evaluator using OpenAIChatModel
 		OpenAiChatModel model = OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
 			.modelName(GPT_4)

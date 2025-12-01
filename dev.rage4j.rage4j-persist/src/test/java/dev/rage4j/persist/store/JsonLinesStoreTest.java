@@ -21,7 +21,6 @@ import dev.rage4j.model.Sample;
 
 class JsonLinesStoreTest
 {
-
 	@TempDir
 	Path tempDir;
 
@@ -92,7 +91,7 @@ class JsonLinesStoreTest
 		store.flush();
 
 		List<String> lines = Files.readAllLines(file);
-		JsonNode json = objectMapper.readTree(lines.get(0));
+		JsonNode json = objectMapper.readTree(lines.getFirst());
 
 		assertTrue(json.has("sample"));
 		assertTrue(json.has("metrics"));
@@ -111,7 +110,7 @@ class JsonLinesStoreTest
 		store.flush();
 
 		List<String> lines = Files.readAllLines(file);
-		JsonNode json = objectMapper.readTree(lines.get(0));
+		JsonNode json = objectMapper.readTree(lines.getFirst());
 		JsonNode sampleNode = json.get("sample");
 
 		assertEquals("Test question", sampleNode.get("question").asText());
@@ -133,7 +132,7 @@ class JsonLinesStoreTest
 		store.flush();
 
 		List<String> lines = Files.readAllLines(file);
-		JsonNode json = objectMapper.readTree(lines.get(0));
+		JsonNode json = objectMapper.readTree(lines.getFirst());
 		JsonNode metricsNode = json.get("metrics");
 
 		assertEquals(0.85, metricsNode.get("BLEU score").asDouble(), 0.001);
@@ -152,7 +151,7 @@ class JsonLinesStoreTest
 		store.flush();
 
 		List<String> lines = Files.readAllLines(file);
-		JsonNode json = objectMapper.readTree(lines.get(0));
+		JsonNode json = objectMapper.readTree(lines.getFirst());
 		JsonNode sampleNode = json.get("sample");
 
 		assertTrue(sampleNode.has("question"));
@@ -176,7 +175,7 @@ class JsonLinesStoreTest
 
 		store.flush();
 
-		// Now file should have content
+		// Now the file should have content
 		assertTrue(Files.exists(file));
 		assertTrue(Files.size(file) > 0);
 	}

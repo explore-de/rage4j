@@ -19,7 +19,6 @@ import dev.rage4j.persist.store.JsonLinesStore;
 
 class Rage4jPersistExtensionTest
 {
-
 	@TempDir
 	static Path tempDir;
 

@@ -41,7 +41,6 @@ import dev.rage4j.persist.EvaluationStore;
  */
 public class Rage4jPersistExtension implements BeforeAllCallback, AfterAllCallback, ParameterResolver
 {
-
 	private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(Rage4jPersistExtension.class);
 
 	private static final String STORE_KEY = "evaluationStore";
@@ -150,7 +149,6 @@ public class Rage4jPersistExtension implements BeforeAllCallback, AfterAllCallba
 	 */
 	private static class CloseableStoreWrapper implements ExtensionContext.Store.CloseableResource
 	{
-
 		private final EvaluationStore store;
 
 		CloseableStoreWrapper(EvaluationStore store)
