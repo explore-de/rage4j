@@ -17,6 +17,7 @@ public class Sample implements Serializable
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
+
 	protected String question;
 	protected String answer;
 	protected String groundTruth;

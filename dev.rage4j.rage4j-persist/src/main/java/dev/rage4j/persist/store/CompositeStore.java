@@ -13,13 +13,13 @@ import dev.rage4j.persist.EvaluationStore;
  *
  * <p>
  * This allows writing evaluations to multiple destinations simultaneously, for
- * example to multiple JSONL files.
+ * example, to multiple JSONL files.
  * </p>
  */
 public class CompositeStore implements EvaluationStore
 {
-
 	private final List<EvaluationStore> stores;
+
 	private boolean closed;
 
 	/**

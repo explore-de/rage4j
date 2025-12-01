@@ -52,7 +52,6 @@ import dev.rage4j.persist.store.JsonLinesStore;
 @ExtendWith(Rage4jPersistExtension.class)
 public @interface Rage4jPersistConfig
 {
-
 	/**
 	 * The file path where evaluations will be stored. Defaults to
 	 * "target/evaluations.jsonl".
