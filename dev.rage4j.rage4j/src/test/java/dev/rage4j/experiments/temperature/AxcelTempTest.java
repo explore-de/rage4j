@@ -4,11 +4,14 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.axcel.AxcelEvaluator;
+import dev.rage4j.experiments.StatisticsUtil;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +26,7 @@ public class AxcelTempTest
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 	private static final Map<String, List<Double>> results = new HashMap<>();
 	public static final int RUNS = 2;
+	private static final Logger log = LoggerFactory.getLogger(AxcelTempTest.class);
 	private AxcelEvaluator evaluator;
 
 	private static OpenAiChatModel buildChatModel(double temperature)
@@ -39,11 +43,10 @@ public class AxcelTempTest
 	@AfterAll
 	static void afterAll()
 	{
-		System.out.println("Evaluation results over tests:");
-		results.forEach((key, value) -> {
-			double average = value.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-			System.out.printf("  %s: %s (avg: %.4f)%n", key, value, average);
-		});
+		log.info("Evaluation results over tests:");
+		results.entrySet().stream()
+			.map(StatisticsUtil::buildStats)
+			.forEach(stats -> log.info("{}", stats));
 	}
 
 	@RepeatedTest(RUNS)
