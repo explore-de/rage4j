@@ -37,11 +37,37 @@ class RageAssertTest
 			.question("What is the capital of France?")
 			.groundTruth("Paris is the capital of France")
 			.when()
-			.answer(a -> model.generate(a))
+			.answer(q -> model.generate(q))
 			.then()
 			.assertAnswerCorrectness(0.7);
 	}
 }
+```
+
+## Model Selection
+
+Configure custom models for chat and embedding operations:
+
+``` java
+RageAssert rageAssert = new OpenAiLLMBuilder()
+    .withChatModel("gpt-4o")
+    .withEmbeddingModel("text-embedding-3-large")
+    .fromApiKey(key);
+```
+
+Default models: `gpt-5.1` (chat), `text-embedding-3-small` (embedding).
+
+## Evaluation Mode
+
+By default, assertions throw exceptions on failure (**strict mode**). Enable **evaluation mode** to log warnings instead, allowing complete test runs for data collection:
+
+``` java
+RageAssert rageAssert = new OpenAiLLMBuilder()
+    .fromApiKey(key)
+    .withEvaluationMode();  // Logs warnings instead of throwing
+
+// Switch back to strict mode if needed
+rageAssert.withStrictMode();
 ```
 
 ## Features

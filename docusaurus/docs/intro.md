@@ -11,10 +11,12 @@ Welcome to **RAGE4J** (**RAG** **E**valuations **f**or **J**ava) - Your Java too
 
 ## What is RAGE4J?
 
-RAGE4J is a Java library suite for evaluating Large Language Model (LLM) outputs. It consists of two main components:
+RAGE4J is a Java library suite for evaluating Large Language Model (LLM) outputs. It consists of four modules:
 
 - **RAGE4J-Core**: The foundation library providing evaluation metrics and tools
 - **RAGE4J-Assert**: Testing extensions for integrating LLM evaluations into your test suite
+- **RAGE4J-Persist**: Persistence layer for saving evaluation results to files
+- **RAGE4J-Persist-JUnit5**: JUnit 5 extension for automatic persistence lifecycle management
 
 ## Core Features
 
@@ -37,9 +39,19 @@ RAGE4J helps you assess LLM outputs across six key dimensions:
     - Utility functions
 
 - **RAGE4J-Assert**
-    - JUnit integration
-    - Assertion helpers
-    - Test utilities
+    - Fluent assertion API
+    - LLM builder integration
+    - Evaluation/strict modes
+
+- **RAGE4J-Persist**
+    - EvaluationStore interface
+    - JsonLinesStore implementation
+    - CompositeStore for multiple outputs
+
+- **RAGE4J-Persist-JUnit5**
+    - @Rage4jPersistConfig annotation
+    - Automatic store lifecycle
+    - Parameter injection
 
 ---
 
@@ -47,4 +59,6 @@ Explore more about RAGE4J:
 
 1. [RAGE4j-Core](/docs/category/rage4j-core)
 2. [RAGE4j-Assert](/docs/category/rage4j-assert)
-3. [Contribution guide](/docs/contribution)
+3. [RAGE4j-Persist](/docs/category/rage4j-persist)
+4. [RAGE4j-Persist-JUnit5](/docs/category/rage4j-persist-junit5)
+5. [Contribution guide](/docs/contribution)

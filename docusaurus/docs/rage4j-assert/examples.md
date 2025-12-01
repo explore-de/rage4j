@@ -27,7 +27,7 @@ RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
 rageAssert.given()
     .question(QUESTION)
     .groundTruth(GROUND_TRUTH)
-    .contextList(List.of(ANSWER))
+    .context(CONTEXT)
     .when()
     .answer(model::generate)
     .then()
@@ -36,7 +36,7 @@ rageAssert.given()
 
 This example illustrates the use of [`assertFaithfulness`](/docs/rage4j-core/metrics/faithfulness), ensuring that the
 generated answer adheres to the provided
-context and retains at least 0.7 faithfulness compared to the ground truth.
+context with at least 0.7 faithfulness.
 
 ### Example: Testing Semantic Similarity
 
@@ -100,7 +100,7 @@ rageAssert.given()
     .when()
     .answer(model::generate)
     .then()
-    assertRougeScore(0.9, RougeScoreEvaluator.RougeType.ROUGE_L_SUM, RougeScoreEvaluator.MeasureType.PRECISION));
+    .assertRougeScore(0.9, RougeScoreEvaluator.RougeType.ROUGE_L_SUM, RougeScoreEvaluator.MeasureType.PRECISION);
 ```
 
 This example uses the [`assertRougeScore`](/docs/rage4j-core/metrics/rouge_score) feature, with the **ROUGE_L_SUM**
