@@ -1,0 +1,42 @@
+---
+id: persist-junit5-installation
+title: Installation
+sidebar_position: 1
+---
+
+import CodeBlock from '@theme/CodeBlock';
+import {getGitHubStats} from '@site/src/api/GitHubApi';
+
+export const FetchedDependency = () => {
+  const {stats, loading} = getGitHubStats('explore-de', 'rage4j');
+
+  const getMavenDependency = (version) => `<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage-persist-junit5</artifactId>
+    <version>${version}</version>
+    <scope>test</scope>
+</dependency>`;
+
+  return (
+    <CodeBlock language="xml">
+      {getMavenDependency(loading ? '1.0.2' : stats.version)}
+    </CodeBlock>
+  );
+};
+
+## Installation: Add Rage4J-Persist-JUnit5 to Your Project
+
+To use the JUnit 5 extension for automatic persistence, add the following Maven dependency to your `pom.xml` file:
+
+<FetchedDependency />
+
+This module depends on `rage4j-persist`, which will be included transitively.
+
+---
+
+Explore more about Rage4J:
+
+1. [RAGE4j-Core](/docs/category/rage4j-core)
+2. [RAGE4j-Assert](/docs/category/rage4j-assert)
+3. [RAGE4j-Persist](/docs/category/rage4j-persist)
+4. [RAGE4j-Persist-JUnit5](/docs/category/rage4j-persist-junit5)
