@@ -8,7 +8,7 @@ const config: Config = {
     favicon: "img/favicon.ico",
 
     url: "https://explore-de.github.io",
-    baseUrl: "/rage4j/",
+    baseUrl: "/",
 
     organizationName: "explore-de",
     projectName: "rage4j",
