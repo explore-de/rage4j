@@ -32,7 +32,7 @@ public class DialogLoader
 			.withAnswer(messageToString(dialog.dialog[length - 1]))
 			.withContextsList(context)
 			.build();
-		index = index + 1 % dialogs.length;
+		index = (index + 1) % dialogs.length;
 		return sample;
 	}
 
