@@ -67,7 +67,8 @@ public class AxcelEvaluator implements Evaluator
 		logDebug(parsedFacts);
 		log.info("Axcel evaluation completed. Score: {}", score);
 
-		return new Evaluation(METRIC_NAME, score);
+		List<String> explanations = parsedFacts.stream().map(AxcelFactEvaluation::toString).toList();
+		return new Evaluation(METRIC_NAME, score, explanations);
 	}
 
 	private static @NotNull String buildContext(Sample sample)
