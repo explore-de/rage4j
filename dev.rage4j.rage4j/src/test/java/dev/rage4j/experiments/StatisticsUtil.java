@@ -1,5 +1,6 @@
 package dev.rage4j.experiments;
 
+import dev.rage4j.evaluation.Evaluation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,9 +26,11 @@ public class StatisticsUtil
 		}
 	}
 
-	public static Stats buildStats(Map.Entry<String, List<Double>> entry)
+	public static Stats buildStats(Map.Entry<String, List<Evaluation>> entry)
 	{
-		return buildStats(entry.getKey(), entry.getValue());
+		// Extracts the values from the Evaluation objects
+		List<Double> valueList = entry.getValue().stream().map(Evaluation::getValue).toList();
+		return buildStats(entry.getKey(), valueList);
 	}
 
 	public static @NotNull Stats buildStats(String key, List<Double> value)

@@ -49,10 +49,15 @@ public class AxcelEvaluator implements Evaluator
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
-		AxcelOneShotExamples examples = loader.loadExampleData();
+		AxcelOneShotExamples oneShotExample = loader.loadExampleData();
+		return evaluate(sample, oneShotExample);
+	}
+
+	public Evaluation evaluate(Sample sample, AxcelOneShotExamples oneShotExample)
+	{
 		SystemMessage systemMessage = SystemMessage.from(SYSTEM_PROMPT);
-		UserMessage exampleStDtPair = UserMessage.from(buildFewShotExemplars(examples.sourceText(), examples.derivedText()));
-		AiMessage exampleResponseAiResponse = AiMessage.from(examples.aiResponse());
+		UserMessage exampleStDtPair = UserMessage.from(buildFewShotExemplars(oneShotExample.sourceText(), oneShotExample.derivedText()));
+		AiMessage exampleResponseAiResponse = AiMessage.from(oneShotExample.aiResponse());
 
 		chatMemory.clear();
 		chatMemory.add(systemMessage);

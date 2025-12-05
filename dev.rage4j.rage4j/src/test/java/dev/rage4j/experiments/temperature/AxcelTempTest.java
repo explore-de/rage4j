@@ -3,7 +3,9 @@ package dev.rage4j.experiments.temperature;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
+import dev.rage4j.evaluation.axcel.AxcelDataLoader;
 import dev.rage4j.evaluation.axcel.AxcelEvaluator;
+import dev.rage4j.evaluation.axcel.AxcelOneShotExamples;
 import dev.rage4j.experiments.DialogLoader;
 import dev.rage4j.experiments.StatisticsUtil;
 import dev.rage4j.model.Sample;
@@ -25,12 +27,11 @@ import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 public class AxcelTempTest
 {
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
-	private static final Map<String, List<Double>> RESULTS = new HashMap<>();
-	private static final int RUNS = 10;
+	private static final Map<String, List<Evaluation>> RESULTS = new HashMap<>();
+	private static final int RUNS = 20;
 	private static final Logger LOGGER = LoggerFactory.getLogger(AxcelTempTest.class);
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
-
-	private AxcelEvaluator evaluator;
+	private final AxcelDataLoader loader = new AxcelDataLoader();
 
 	private static OpenAiChatModel buildChatModel(double temperature)
 	{
@@ -47,9 +48,12 @@ public class AxcelTempTest
 	static void afterAll()
 	{
 		LOGGER.info("Evaluation results over tests:");
-		RESULTS.entrySet().stream()
+		List<StatisticsUtil.Stats> statsList = RESULTS.entrySet().stream()
 			.map(StatisticsUtil::buildStats)
-			.forEach(stats -> LOGGER.info("{}", stats));
+			.toList();
+		statsList.forEach(stats -> LOGGER.info("{}", stats));
+		// Write each statistic to a log file
+		// statsList.forEach();
 	}
 
 	@RepeatedTest(RUNS)
@@ -57,20 +61,21 @@ public class AxcelTempTest
 	void temperature0Evaluation()
 	{
 		Sample sample = DIALOG_LOADER.getDialog();
-		runTestWithTemperature(1, sample);
-		runTestWithTemperature(0, sample);
+		AxcelOneShotExamples oneShotExample = loader.loadExampleData();
+		runTestWithTemperature(1, sample, oneShotExample);
+		runTestWithTemperature(0, sample, oneShotExample);
 	}
 
-	private void runTestWithTemperature(int temperature, Sample sample)
+	private void runTestWithTemperature(int temperature, Sample sample, AxcelOneShotExamples oneShotExample)
 	{
 		// given
-		evaluator = new AxcelEvaluator(buildChatModel(temperature));
+		AxcelEvaluator evaluator = new AxcelEvaluator(buildChatModel(temperature));
 
 		// when
-		Evaluation evaluation = evaluator.evaluate(sample);
+		Evaluation evaluation = evaluator.evaluate(sample, oneShotExample);
 
 		// then
-		String mapKey = "temperature" + temperature;
-		RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(evaluation.getValue());
+		String mapKey = "temperature-" + temperature;
+		RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(evaluation);
 	}
 }
