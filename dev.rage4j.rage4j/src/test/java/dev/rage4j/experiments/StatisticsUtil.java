@@ -1,14 +1,26 @@
 package dev.rage4j.experiments;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.rage4j.evaluation.Evaluation;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class StatisticsUtil
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsUtil.class);
+
 	public record Stats(
 		String key,
 		List<Double> values,
@@ -69,5 +81,44 @@ public class StatisticsUtil
 			.mapToDouble(v -> Math.pow(v - mean, 2))
 			.sum();
 		return Math.sqrt(sumSquaredDiff / values.size());
+	}
+
+	public static void writeToFile(List<Stats> statsList, Map<String, List<Evaluation>> results, String modelName, String filePrefix)
+	{
+		try
+		{
+			String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+			Path logFile = Paths.get(filePrefix + "-" + timestamp + ".log");
+			List<String> lines = new ArrayList<>();
+			lines.add("Statistics Report - " + LocalDateTime.now() + " - Model: " + modelName);
+			lines.add("=".repeat(80));
+			lines.add("");
+			for (Stats stats : statsList)
+			{
+				lines.add(stats.toString());
+				lines.add("");
+			}
+			for (Map.Entry<String, List<Evaluation>> entry : results.entrySet())
+			{
+				lines.add("Detailed Results for " + entry.getKey() + ":");
+				lines.add("=".repeat(80));
+				for (Evaluation eval : entry.getValue())
+				{
+					lines.add("Value: " + eval.getValue() + " | Explanations: " + eval.getExplanations());
+				}
+				lines.add("");
+			}
+			Files.write(logFile, lines, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			LOGGER.info("Statistics written to file: {}", logFile.toAbsolutePath());
+			// Also write detailed results as JSON
+			ObjectMapper mapper = new ObjectMapper();
+			Path jsonFile = Paths.get(filePrefix + "-" + timestamp + ".json");
+			mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile.toFile(), results);
+			LOGGER.info("Detailed results written to file: {}", jsonFile.toAbsolutePath());
+		}
+		catch (IOException e)
+		{
+			LOGGER.error("Failed to write statistics to file", e);
+		}
 	}
 }
