@@ -16,13 +16,13 @@ public record AxcelFactEvaluation(
 	@Override
 	public @NotNull String toString()
 	{
-		return "AxcelFactEvaluation[" +
-			"index=" + index +
-			", title='" + title + '\'' +
-			", derivedText='" + (derivedText != null ? truncate(derivedText) : "null") + '\'' +
-			", sourceText='" + (sourceText != null ? truncate(sourceText) : "null") + '\'' +
-			", verification='" + (verification != null ? truncate(verification) : "null") + '\'' +
-			", rating=" + rating +
+		return "AxcelFactEvaluation[\n" +
+			"  index=" + index + "\n" +
+			"  title='" + title + "'\n" +
+			"  derivedText='" + (derivedText != null ? truncate(derivedText) : "null") + "'\n" +
+			"  sourceText='" + (sourceText != null ? truncate(sourceText) : "null") + "'\n" +
+			"  verification='" + (verification != null ? truncate(verification) : "null") + "'\n" +
+			"  rating=" + rating + "\n" +
 			']';
 	}
 

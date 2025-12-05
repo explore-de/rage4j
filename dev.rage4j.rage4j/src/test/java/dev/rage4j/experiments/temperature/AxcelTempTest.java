@@ -29,15 +29,17 @@ public class AxcelTempTest
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 	private static final Map<String, List<Evaluation>> RESULTS = new HashMap<>();
 	private static final int RUNS = 20;
+	private static final String MODEL_NAME = "gpt-4.1";
 	private static final Logger LOGGER = LoggerFactory.getLogger(AxcelTempTest.class);
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
+
 	private final AxcelDataLoader loader = new AxcelDataLoader();
 
 	private static OpenAiChatModel buildChatModel(double temperature)
 	{
 		return OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName("gpt-4.1")
+			.modelName(MODEL_NAME)
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
 			.strictJsonSchema(true)
 			.temperature(temperature)
@@ -52,8 +54,7 @@ public class AxcelTempTest
 			.map(StatisticsUtil::buildStats)
 			.toList();
 		statsList.forEach(stats -> LOGGER.info("{}", stats));
-		// Write each statistic to a log file
-		// statsList.forEach();
+		StatisticsUtil.writeToFile(statsList, RESULTS, MODEL_NAME, "axcel-temp-test-statistics");
 	}
 
 	@RepeatedTest(RUNS)
