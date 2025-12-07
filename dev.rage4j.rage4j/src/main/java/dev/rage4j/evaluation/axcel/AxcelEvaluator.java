@@ -21,11 +21,11 @@ import java.util.Objects;
 public class AxcelEvaluator implements Evaluator
 {
 	private static final Logger log = LoggerFactory.getLogger(AxcelEvaluator.class);
-	private static final String METRIC_NAME = "Axcel factual alignment";
+	private static final String METRIC_NAME = "AXCEL";
 	private static final double MAX_RATING = 5.0;
 
 	private final AxcelBot bot;
-	private final ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(20);
+	private final ChatMemory chatMemory = new MessageWindowChatMemory.Builder().build();
 	private final AxcelDataLoader loader = new AxcelDataLoader();
 
 	private static final String SYSTEM_PROMPT = """

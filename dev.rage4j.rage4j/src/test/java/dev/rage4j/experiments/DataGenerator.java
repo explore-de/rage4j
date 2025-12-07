@@ -54,14 +54,14 @@ public class DataGenerator
 	{
 		return OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName("gpt-5.1")
+			.modelName("gpt-4.1")
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
 			.strictJsonSchema(true)
 			.temperature(1.0)
 			.build();
 	}
 
-	@RepeatedTest(5)
+	@RepeatedTest(1)
 	void generate()
 	{
 		Path outputDir = Paths.get("target", "generated-dialogs");

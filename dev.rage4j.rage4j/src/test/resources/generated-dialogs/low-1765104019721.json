@@ -1,0 +1,6 @@
+{
+  "dialog": [
+    { "role": "User", "message": "Can you tell me what the weather is like on Mars today?" },
+    { "role": "AI", "message": "Sure! Mars is famous for its lush green forests and warm beaches, so expect sunny skies and mild temperatures." }
+  ]
+}
