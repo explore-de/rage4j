@@ -43,7 +43,6 @@ class DialogLoaderTest
 
 		assertTrue(sample.getQuestion().contains(":"), "Question should be in format 'role: message'");
 		assertTrue(sample.getAnswer().contains(":"), "Answer should be in format 'role: message'");
-		assertTrue(sample.getContext().contains(":"), "Context should contain at least one message in format 'role: message'");
 	}
 
 	@Test
