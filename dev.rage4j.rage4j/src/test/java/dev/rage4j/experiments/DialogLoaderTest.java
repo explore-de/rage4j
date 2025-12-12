@@ -6,7 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(LoggingTestWatcher.class)
 class DialogLoaderTest
@@ -23,27 +26,24 @@ class DialogLoaderTest
 	void testGetDialog_shouldReturnSample()
 	{
 		Sample sample = dialogLoader.getDialog();
-		
+
 		assertNotNull(sample, "Sample should not be null");
 		assertTrue(sample.hasQuestion(), "Sample should have a question");
 		assertTrue(sample.hasAnswer(), "Sample should have an answer");
-		assertTrue(sample.hasContextsList(), "Sample should have contexts");
-		assertNotNull(sample.getQuestionOrFail(), "Question should not be null");
-		assertNotNull(sample.getAnswerOrFail(), "Answer should not be null");
-		assertNotNull(sample.getContextsListOrFail(), "Contexts should not be null");
+		assertTrue(sample.hasContext(), "Sample should have contexts");
+		assertNotNull(sample.getQuestion(), "Question should not be null");
+		assertNotNull(sample.getAnswer(), "Answer should not be null");
+		assertNotNull(sample.getContext(), "Contexts should not be null");
 	}
 
 	@Test
 	void testGetDialog_shouldHaveCorrectFormat()
 	{
 		Sample sample = dialogLoader.getDialog();
-		
-		assertTrue(sample.getQuestionOrFail().contains(":"), "Question should be in format 'role: message'");
-		assertTrue(sample.getAnswerOrFail().contains(":"), "Answer should be in format 'role: message'");
-		for (String context : sample.getContextsListOrFail())
-		{
-			assertTrue(context.contains(":"), "Context should be in format 'role: message'");
-		}
+
+		assertTrue(sample.getQuestion().contains(":"), "Question should be in format 'role: message'");
+		assertTrue(sample.getAnswer().contains(":"), "Answer should be in format 'role: message'");
+		assertTrue(sample.getContext().contains(":"), "Context should contain at least one message in format 'role: message'");
 	}
 
 	@Test
@@ -51,7 +51,7 @@ class DialogLoaderTest
 	{
 		Sample firstSample = dialogLoader.getDialog();
 		assertNotNull(firstSample, "First sample should not be null");
-		
+
 		// Call getDialog multiple times to test cycling (10 times to reproduce the bug)
 		for (int i = 0; i < 10; i++)
 		{
@@ -78,12 +78,12 @@ class DialogLoaderTest
 	void testGetDialog_contextShouldNotIncludeQuestionOrAnswer()
 	{
 		Sample sample = dialogLoader.getDialog();
-		
+
 		// The context should not contain the question or answer (last two messages)
-		assertTrue(sample.hasContextsList(), "Sample should have contexts");
-		assertFalse(sample.getContextsListOrFail().contains(sample.getQuestionOrFail()), 
+		assertTrue(sample.hasContext(), "Sample should have contexts");
+		assertFalse(sample.getContext().contains(sample.getQuestion()),
 			"Context should not include the question");
-		assertFalse(sample.getContextsListOrFail().contains(sample.getAnswerOrFail()), 
+		assertFalse(sample.getContext().contains(sample.getAnswer()),
 			"Context should not include the answer");
 	}
 }

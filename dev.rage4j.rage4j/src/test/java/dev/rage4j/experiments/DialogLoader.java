@@ -2,6 +2,7 @@ package dev.rage4j.experiments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.rage4j.model.Sample;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -30,10 +31,20 @@ public class DialogLoader
 		Sample sample = Sample.builder()
 			.withQuestion(messageToString(dialog.dialog[length - 2]))
 			.withAnswer(messageToString(dialog.dialog[length - 1]))
-			.withContextsList(context)
+			.withContext(buildContext(context))
 			.build();
 		index = (index + 1) % dialogs.length;
 		return sample;
+	}
+
+	private static @NotNull String buildContext(List<String> contextList)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String context : contextList)
+		{
+			sb.append(context).append("\n");
+		}
+		return sb.toString();
 	}
 
 	private static String messageToString(Message message)

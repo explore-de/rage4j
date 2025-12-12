@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(LoggingTestWatcher.class)
@@ -36,15 +34,16 @@ class PairEvalEvaluatorTest
 	@Tag("integration")
 	void testEvaluate()
 	{
-		List<String> context = List.of("Hello, my name is John.",
-			"Hello John, how can I assist you today?",
-			"Can you tell me a joke?",
-			"Sure! Why don't scientists trust atoms? Because they make up everything!");
+		String context = """
+			User: Hello, my name is John.
+			AI: Hello John, how can I assist you today?
+			User: Can you tell me a joke?
+			AI: Sure! Why don't scientists trust atoms? Because they make up everything!""";
 
 		Sample sample = Sample.builder()
 			.withQuestion("Good one! Do you remember my name?")
 			.withAnswer("Yes, your name is John.")
-			.withContextsList(context)
+			.withContext(context)
 			.build();
 
 		Evaluation evaluation = evaluator.evaluate(sample);
@@ -55,15 +54,16 @@ class PairEvalEvaluatorTest
 	@Tag("integration")
 	void testEvaluateFail()
 	{
-		List<String> context = List.of("Hello, my name is John.",
-			"Hello John, how can I assist you today?",
-			"Can you tell me a joke?",
-			"Sure! Why don't scientists trust atoms? Because they make up everything!");
+		String context = """
+			User: Hello, my name is John.
+			AI: Hello John, how can I assist you today?
+			User: Can you tell me a joke?
+			AI: Sure! Why don't scientists trust atoms? Because they make up everything!""";
 
 		Sample sample = Sample.builder()
 			.withQuestion("Good one! Do you remember my name?")
 			.withAnswer("Ready for a next joke?")
-			.withContextsList(context)
+			.withContext(context)
 			.build();
 
 		Evaluation evaluation = evaluator.evaluate(sample);

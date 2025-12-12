@@ -20,6 +20,6 @@ class PairEvalExampleLoaderTest
 		assertEquals(3, examples.size());
 
 		Sample first = examples.getFirst();
-		assertNotEquals(1, first.getContextsListOrFail().size());
+		assertNotEquals(1, first.getContext().length());
 	}
 }

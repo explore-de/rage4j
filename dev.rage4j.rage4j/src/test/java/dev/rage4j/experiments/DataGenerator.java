@@ -15,7 +15,7 @@ import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 
 public class DataGenerator
 {
-	private final String prompt = """
+	private static final String PROMPT = """
 		Task 1:
 		Write a fictive chat dialog between an AI and a Human. The goal is to demonstrate temporal consistency with the last AI message.
 		Consistency goal: %s consistent
@@ -54,14 +54,14 @@ public class DataGenerator
 	{
 		return OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName("gpt-4.1")
+			.modelName("gpt-5.1")
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
 			.strictJsonSchema(true)
 			.temperature(1.0)
 			.build();
 	}
 
-	@RepeatedTest(1)
+	@RepeatedTest(10)
 	void generate()
 	{
 		Path outputDir = Paths.get("target", "generated-dialogs");
@@ -74,11 +74,12 @@ public class DataGenerator
 			throw new UncheckedIOException("Failed to prepare output directory", e);
 		}
 
-		for (String level : List.of("low", "medium", "high"))
+		for (String level : List.of("very low", "low", "medium", "high"))
 		{
-			String customizedPrompt = String.format(prompt, level, (int)(Math.random() * 20) + 1);
+			String customizedPrompt = String.format(PROMPT, level, (int)(Math.random() * 20) + 1);
 			String response = chatModel.chat(customizedPrompt);
 			String md = response.split("```")[1]; // extract JSON part
+			md = md.substring(md.indexOf("\n") + 1); // remove first line
 			System.out.println("=== Consistency Level: " + level + " ===");
 			System.out.println(response);
 			System.out.println();

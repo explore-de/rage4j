@@ -3,6 +3,7 @@ package dev.rage4j.evaluation.paireval;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.rage4j.model.Sample;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public class PairEvalExampleLoader
 			{
 				PairEvalJsonObject example = objectMapper.readValue(exampleJson, PairEvalJsonObject.class);
 				samples.add(Sample.builder()
-					.withContextsList(example.history)
+					.withContext(buildContext(example.history))
 					.withAnswer(example.response)
 					.build());
 			}
@@ -52,6 +53,16 @@ public class PairEvalExampleLoader
 			log.error("Failed to load PairEval one-shot examples.", e);
 			return samples;
 		}
+	}
+
+	private static @NotNull String buildContext(List<String> contextList)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String context : contextList)
+		{
+			sb.append(context).append("\n");
+		}
+		return sb.toString();
 	}
 
 	private static class PairEvalJsonObject

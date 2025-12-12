@@ -10,7 +10,6 @@ import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,8 +64,8 @@ public class AxcelEvaluator implements Evaluator
 		chatMemory.add(exampleResponseAiResponse);
 
 		log.info("Start Axcel evaluation...");
-		String context = buildContext(sample);
-		String actualStDtPair = buildFewShotExemplars(context, sample.getAnswerOrFail());
+		String context = sample.getContext() + "User: " + sample.getQuestion() + "\n";
+		String actualStDtPair = buildFewShotExemplars(context, sample.getAnswer());
 		List<AxcelFactEvaluation> parsedFacts = bot.evaluate(actualStDtPair);
 		double score = normalizeScore(parsedFacts);
 		logDebug(parsedFacts);
@@ -74,17 +73,6 @@ public class AxcelEvaluator implements Evaluator
 
 		List<String> explanations = parsedFacts.stream().map(AxcelFactEvaluation::toString).toList();
 		return new Evaluation(METRIC_NAME, score, explanations);
-	}
-
-	private static @NotNull String buildContext(Sample sample)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (String context : sample.getContextsListOrFail())
-		{
-			sb.append(context).append("\n");
-		}
-		sb.append("User: ").append(sample.getQuestionOrFail());
-		return sb.toString();
 	}
 
 	private static void logDebug(List<AxcelFactEvaluation> parsedFacts)

@@ -5,7 +5,6 @@ import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,33 +43,19 @@ public class PairEvalEvaluator implements Evaluator
 		}
 
 		double value = ((double)isBetterCount / (fewShotExamples.size() * 2));
-		log.info("PairEvalEvaluator result for sample '{}': {}", sample.getQuestionOrFail(), value);
+		log.info("PairEvalEvaluator result for sample '{}': {}", sample.getQuestion(), value);
 		return new Evaluation(NAME, value);
 	}
 
 	private String getResult(Sample sampleA, Sample sampleB)
 	{
-		String historyA = buildContext(sampleA);
-		String historyB = buildContext(sampleB);
+		String historyA = sampleA.getContext() + sampleA.getQuestion();
+		String historyB = sampleB.getContext() + sampleB.getQuestion();
 		return bot.evaluateResponses(
 			historyA,
-			sampleA.getAnswerOrFail(),
+			sampleA.getAnswer(),
 			historyB,
-			sampleB.getAnswerOrFail()
+			sampleB.getAnswer()
 		);
-	}
-
-	private static @NotNull String buildContext(Sample sample)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (String context : sample.getContextsListOrFail())
-		{
-			sb.append(context).append("\n");
-		}
-		if (sample.hasQuestion())
-		{
-			sb.append(sample.getQuestionOrFail());
-		}
-		return sb.toString();
 	}
 }
