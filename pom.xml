@@ -26,6 +26,10 @@
         <module>dev.rage4j.rage4j-persist-junit5</module>
     </modules>
 
+    <properties>
+        <jackson.version>2.19.0</jackson.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -47,6 +51,21 @@
                 <groupId>dev.rage4j</groupId>
                 <artifactId>rage4j-persist-junit5</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
