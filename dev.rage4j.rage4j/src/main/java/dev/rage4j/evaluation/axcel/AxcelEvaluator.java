@@ -24,7 +24,7 @@ public class AxcelEvaluator implements Evaluator
 	private static final double MAX_RATING = 5.0;
 
 	private final AxcelBot bot;
-	private final ChatMemory chatMemory = new MessageWindowChatMemory.Builder().build();
+	private final ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(100);
 	private final AxcelDataLoader loader = new AxcelDataLoader();
 
 	private static final String SYSTEM_PROMPT = """
