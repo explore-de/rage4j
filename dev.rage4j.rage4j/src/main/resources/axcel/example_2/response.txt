@@ -1,0 +1,26 @@
+Let’s verify the factual accuracy of the derived text step by step:
+
+1. The Hubble Space Telescope Was Launched into Low Earth Orbit in 1990:
+- **Derived Text:** The Hubble Space Telescope was launched into low Earth orbit in 1990.
+- **Source Text:** "The Hubble Space Telescope was launched into low Earth orbit by the Space Shuttle Discovery on April 24, 1990."
+- **Verification:** Correct (the year and low Earth orbit match; omission of date and shuttle does not contradict the source). Rating: 5
+
+2. It Is Operated Jointly by NASA and the European Space Agency:
+- **Derived Text:** It is operated jointly by NASA and the European Space Agency.
+- **Source Text:** "Operated by NASA and the European Space Agency (ESA)..."
+- **Verification:** Correct. Rating: 5
+
+3. Hubble Mainly Observes in Visible, Ultraviolet, and Radio Wavelengths:
+- **Derived Text:** Hubble mainly observes in visible, ultraviolet, and radio wavelengths.
+- **Source Text:** "It observes primarily in the visible, ultraviolet, and near-infrared wavelengths."
+- **Verification:** Incorrect: the source says "near-infrared," not "radio," so this directly conflicts with the source. Rating: 1
+
+4. Astronauts Have Upgraded Its Instruments During Servicing Missions, Which Helped Extend Its Operational Life:
+- **Derived Text:** Astronauts have upgraded its instruments during servicing missions, which helped extend its operational life.
+- **Source Text:** "Hubble’s instruments have been upgraded multiple times during servicing missions, extending its operational life well beyond initial expectations."
+- **Verification:** Mostly correct: servicing missions and life extension are explicitly supported; "astronauts" is an implicit but reasonable addition, not stated in the source. Rating: 4
+
+5. Scientists Have Used Hubble Data to Study the Expansion Rate of the Universe:
+- **Derived Text:** Scientists have used Hubble data to study the expansion rate of the universe.
+- **Source Text:** "Scientists have used Hubble data to measure the rate of expansion of the universe with unprecedented precision."
+- **Verification:** Correct: "study the expansion rate" is a less specific restatement of "measure the rate of expansion" and is consistent with the source. Rating: 5
