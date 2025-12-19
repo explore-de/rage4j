@@ -19,20 +19,10 @@ public record AxcelFactEvaluation(
 		return "AxcelFactEvaluation[\n" +
 			"  index=" + index + "\n" +
 			"  title='" + title + "'\n" +
-			"  derivedText='" + (derivedText != null ? truncate(derivedText) : "null") + "'\n" +
-			"  sourceText='" + (sourceText != null ? truncate(sourceText) : "null") + "'\n" +
-			"  verification='" + (verification != null ? truncate(verification) : "null") + "'\n" +
+			"  derivedText='" + (derivedText != null ? derivedText : "null") + "'\n" +
+			"  sourceText='" + (sourceText != null ? sourceText : "null") + "'\n" +
+			"  verification='" + (verification != null ? verification : "null") + "'\n" +
 			"  rating=" + rating + "\n" +
 			']';
-	}
-
-	private static String truncate(String text)
-	{
-		int maxLength = 200;
-		if (text.length() <= maxLength)
-		{
-			return text;
-		}
-		return text.substring(0, maxLength) + "...";
 	}
 }
