@@ -54,7 +54,7 @@ public class DataGenerator
 	{
 		return OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName("gpt-5.1")
+			.modelName("gpt-5.2")
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
 			.strictJsonSchema(true)
 			.temperature(1.0)
