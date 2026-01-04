@@ -1,16 +1,14 @@
 package dev.rage4j.experiments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.rage4j.experiments.enity.Dialog;
 import dev.rage4j.model.Sample;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 public class DialogLoader
@@ -21,35 +19,16 @@ public class DialogLoader
 	public Sample getDialog()
 	{
 		Dialog dialog = dialogs[index];
-		int length = dialog.dialog.length;
-		List<String> context = new ArrayList<>();
-		// Add all messages except the last two (question and answer) to the context
-		for (int i = 0; i < length - 2; i++)
-		{
-			context.add(messageToString(dialog.dialog[i]));
-		}
-		Sample sample = Sample.builder()
-			.withQuestion(messageToString(dialog.dialog[length - 2]))
-			.withAnswer(messageToString(dialog.dialog[length - 1]))
-			.withContext(buildContext(context))
-			.build();
+		Sample sample = dialog.getSample();
 		index = (index + 1) % dialogs.length;
 		return sample;
 	}
 
-	private static @NotNull String buildContext(List<String> contextList)
+	public Dialog getRawDialog()
 	{
-		StringBuilder sb = new StringBuilder();
-		for (String context : contextList)
-		{
-			sb.append(context).append("\n");
-		}
-		return sb.toString();
-	}
-
-	private static String messageToString(Message message)
-	{
-		return message.role + ": " + message.message;
+		Dialog dialog = dialogs[index];
+		index = (index + 1) % dialogs.length;
+		return dialog;
 	}
 
 	private Dialog[] loadDialogs()
@@ -66,7 +45,8 @@ public class DialogLoader
 					.map(path -> {
 						try
 						{
-							return objectMapper.readValue(path.toFile(), Dialog.class);
+							Dialog dialog = objectMapper.readValue(path.toFile(), Dialog.class);
+							return new Dialog(dialog.dialog(), path.getFileName().toString());
 						}
 						catch (IOException e)
 						{
@@ -80,13 +60,5 @@ public class DialogLoader
 		{
 			throw new RuntimeException("Failed to load dialogs", e);
 		}
-	}
-
-	record Dialog(Message[] dialog)
-	{
-	}
-
-	record Message(String role, String message)
-	{
 	}
 }

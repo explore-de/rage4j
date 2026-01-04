@@ -2,6 +2,7 @@ package dev.rage4j.experiments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.rage4j.evaluation.Evaluation;
+import dev.rage4j.experiments.enity.ExperimentEvaluation;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class StatisticsUtil
 		}
 	}
 
-	public static Stats buildStats(Map.Entry<String, List<Evaluation>> entry)
+	public static Stats buildStats(Map.Entry<String, List<ExperimentEvaluation>> entry)
 	{
 		// Extracts the values from the Evaluation objects
 		List<Double> valueList = entry.getValue().stream().map(Evaluation::getValue).toList();
@@ -83,12 +84,13 @@ public class StatisticsUtil
 		return Math.sqrt(sumSquaredDiff / values.size());
 	}
 
-	public static void writeToFile(List<Stats> statsList, Map<String, List<Evaluation>> results, String modelName, String filePrefix)
+	public static void writeToFile(List<Stats> statsList, Map<String, List<ExperimentEvaluation>> results, String modelName, String filePrefix)
 	{
 		try
 		{
 			String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-			Path logFile = Paths.get(filePrefix + "-" + timestamp + ".log");
+			String filename = filePrefix + "_" + modelName + "_" + timestamp;
+			Path logFile = Paths.get(filename + ".log");
 			List<String> lines = new ArrayList<>();
 			lines.add("Statistics Report - " + LocalDateTime.now() + " - Model: " + modelName);
 			lines.add("=".repeat(80));
@@ -98,7 +100,7 @@ public class StatisticsUtil
 				lines.add(stats.toString());
 				lines.add("");
 			}
-			for (Map.Entry<String, List<Evaluation>> entry : results.entrySet())
+			for (Map.Entry<String, List<ExperimentEvaluation>> entry : results.entrySet())
 			{
 				lines.add("Detailed Results for " + entry.getKey() + ":");
 				lines.add("=".repeat(80));
@@ -112,7 +114,7 @@ public class StatisticsUtil
 			LOGGER.info("Statistics written to file: {}", logFile.toAbsolutePath());
 			// Also write detailed results as JSON
 			ObjectMapper mapper = new ObjectMapper();
-			Path jsonFile = Paths.get(filePrefix + "-" + timestamp + ".json");
+			Path jsonFile = Paths.get(filename + ".json");
 			mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile.toFile(), results);
 			LOGGER.info("Detailed results written to file: {}", jsonFile.toAbsolutePath());
 		}
