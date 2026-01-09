@@ -27,8 +27,8 @@ public class PairEvalTempTest
 {
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 	private static final Map<String, List<ExperimentEvaluation>> RESULTS = new HashMap<>();
-	private static final int RUNS = 10;
-	private static final String MODEL_NAME = "gpt-4.1";
+	private static final int RUNS = 20;
+	private static final String MODEL_NAME = "gpt-5.1";
 	private static final Logger LOGGER = LoggerFactory.getLogger(PairEvalTempTest.class);
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
 

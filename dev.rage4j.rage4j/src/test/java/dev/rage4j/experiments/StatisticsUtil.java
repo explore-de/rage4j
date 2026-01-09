@@ -90,7 +90,9 @@ public class StatisticsUtil
 		{
 			String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 			String filename = filePrefix + "_" + modelName + "_" + timestamp;
-			Path logFile = Paths.get(filename + ".log");
+			Path outputDir = Paths.get("experiment_results");
+			Files.createDirectories(outputDir);
+			Path logFile = outputDir.resolve(filename + ".log");
 			List<String> lines = new ArrayList<>();
 			lines.add("Statistics Report - " + LocalDateTime.now() + " - Model: " + modelName);
 			lines.add("=".repeat(80));
@@ -114,7 +116,7 @@ public class StatisticsUtil
 			LOGGER.info("Statistics written to file: {}", logFile.toAbsolutePath());
 			// Also write detailed results as JSON
 			ObjectMapper mapper = new ObjectMapper();
-			Path jsonFile = Paths.get(filename + ".json");
+			Path jsonFile = outputDir.resolve(filename + ".json");
 			mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile.toFile(), results);
 			LOGGER.info("Detailed results written to file: {}", jsonFile.toAbsolutePath());
 		}
