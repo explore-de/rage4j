@@ -7,32 +7,40 @@ import dev.rage4j.evaluation.axcel.AxcelDataLoader;
 import dev.rage4j.evaluation.axcel.AxcelEvaluator;
 import dev.rage4j.experiments.enity.Dialog;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class OllamaSetupTest
 {
-	private static final ChatModel CHAT_MODEL = getChatModel();
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
-	private static final String MODEL_NAME = "ministral-3:3b";
+	private static final String NON_THINKING_MODEL = "ministral-3:3b";
+	private static final String THINKING_MODEL = "qwen3:4b";
 
-	@Test
 	@Tag("integration")
-	void ollamaEvaluation()
+	@ParameterizedTest()
+	@ValueSource(strings = { NON_THINKING_MODEL, THINKING_MODEL })
+	void ollamaEvaluation(String model)
 	{
-		String answer = CHAT_MODEL.chat("Provide 3 short bullet points explaining why Java is awesome");
+		// given
+		ChatModel chatModel = getChatModel(model);
 
+		// when
+		String answer = chatModel.chat("Provide 3 short bullet points explaining why Java is awesome");
+
+		// then
 		assertNotNull(answer);
 	}
 
-	@Test
 	@Tag("integration")
-	void ollamaAxcelEvaluation()
+	@ParameterizedTest()
+	@ValueSource(strings = { NON_THINKING_MODEL, THINKING_MODEL })
+	void ollamaAxcelEvaluation(String model)
 	{
 		// given
-		AxcelEvaluator evaluator = new AxcelEvaluator(CHAT_MODEL);
+		AxcelEvaluator evaluator = new AxcelEvaluator(getChatModel(model));
 		Dialog dialog = DIALOG_LOADER.getRawDialog();
 		AxcelDataLoader loader = new AxcelDataLoader();
 
@@ -44,12 +52,12 @@ public class OllamaSetupTest
 		System.out.printf("Evaluation result: %s = %.2f%n\n%s", evaluation.getName(), evaluation.getValue(), evaluation.getExplanations());
 	}
 
-	private static OllamaChatModel getChatModel()
+	private static OllamaChatModel getChatModel(String model)
 	{
 		return OllamaChatModel.builder()
 			.baseUrl("http://localhost:11434")
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
-			.modelName(MODEL_NAME)
+			.modelName(model)
 			.build();
 	}
 }
