@@ -1,5 +1,7 @@
 package dev.rage4j.experiments.temperature;
 
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,16 +30,19 @@ import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 @ExtendWith(LoggingTestWatcher.class)
 public class AxcelTempTest
 {
+	private static final int RUNS = 40;
+	private static final String OPEN_AI_MODEL_NAME = "gpt-5.1";
+	private static final String OLLAMA_MODEL_NAME = "gemma3:12b";
+
+	private static final String MODEL_NAME = OLLAMA_MODEL_NAME;
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 	private static final Map<String, List<ExperimentEvaluation>> RESULTS = new HashMap<>();
-	private static final int RUNS = 40;
-	private static final String MODEL_NAME = "gpt-5.1";
 	private static final Logger LOGGER = LoggerFactory.getLogger(AxcelTempTest.class);
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
 
 	private final AxcelDataLoader loader = new AxcelDataLoader();
 
-	private static OpenAiChatModel buildChatModel(double temperature)
+	private static ChatModel getOpenAIChatModel(double temperature)
 	{
 		return OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
@@ -44,6 +50,17 @@ public class AxcelTempTest
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
 			.strictJsonSchema(true)
 			.temperature(temperature)
+			.build();
+	}
+
+	private static OllamaChatModel getOllamaChatModel(double temperature)
+	{
+		return OllamaChatModel.builder()
+			.baseUrl("http://localhost:11434")
+			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
+			.modelName(MODEL_NAME)
+			.temperature(temperature)
+			.timeout(Duration.ofMinutes(10))
 			.build();
 	}
 
@@ -73,7 +90,7 @@ public class AxcelTempTest
 	private void runTestWithTemperature(int temperature, Dialog dialog, AxcelOneShotExamples oneShotExample)
 	{
 		// given
-		AxcelEvaluator evaluator = new AxcelEvaluator(buildChatModel(temperature));
+		AxcelEvaluator evaluator = new AxcelEvaluator(getOllamaChatModel(temperature));
 
 		// when
 		Evaluation evaluation = evaluator.evaluate(dialog.getSample(), oneShotExample);
