@@ -89,7 +89,7 @@ public class StatisticsUtil
 		try
 		{
 			String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-			String escapedModelName = modelName.replace(":", "-");
+			String escapedModelName = modelName.replace(":", "-").replace("/", "-");
 			String filename = filePrefix + "_" + escapedModelName + "_" + timestamp;
 			Path outputDir = Paths.get("experiment_results");
 			Files.createDirectories(outputDir);

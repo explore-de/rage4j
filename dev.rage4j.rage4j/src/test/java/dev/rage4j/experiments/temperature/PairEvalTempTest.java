@@ -1,5 +1,6 @@
 package dev.rage4j.experiments.temperature;
 
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
@@ -33,6 +34,7 @@ public class PairEvalTempTest
 
 	private static final String MODEL_NAME = OLLAMA_MODEL_NAME;
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final String DGX_AI_KEY = System.getenv("DGX_AI_KEY");
 	private static final Map<String, List<ExperimentEvaluation>> RESULTS = new HashMap<>();
 	private static final Logger LOGGER = LoggerFactory.getLogger(PairEvalTempTest.class);
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
@@ -48,6 +50,19 @@ public class PairEvalTempTest
 			.build();
 	}
 
+	private static ChatModel getDGXChatModel(double temperature)
+	{
+		return OpenAiChatModel.builder()
+			.baseUrl("https://brev.explorelora.dev/v1")
+			.customHeaders(Map.of("Authorization", "Bearer " + DGX_AI_KEY))
+			.modelName(MODEL_NAME)
+			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
+			.strictJsonSchema(true)
+			.temperature(temperature)
+			.timeout(Duration.ofMinutes(15))
+			.build();
+	}
+
 	private static OllamaChatModel getOllamaChatModel(double temperature)
 	{
 		return OllamaChatModel.builder()
@@ -55,7 +70,8 @@ public class PairEvalTempTest
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
 			.modelName(MODEL_NAME)
 			.temperature(temperature)
-			.timeout(Duration.ofMinutes(10))
+			.timeout(Duration.ofMinutes(30))
+			.customHeaders(Map.of("keep_alive", "30min"))
 			.build();
 	}
 
