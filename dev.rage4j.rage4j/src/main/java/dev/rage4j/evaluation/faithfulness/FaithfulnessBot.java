@@ -11,7 +11,16 @@ public interface FaithfulnessBot
 	@UserMessage("Extract claims from this text: '''{{text}}'''")
 	ArrayResponse extractClaims(@V("text") String text);
 
-	@SystemMessage("You are a fact checker llm. Your are provided with a context and a fact. You must answer whether this fact can be inferred from the context.")
-	@UserMessage("Decide whether this fact '{{claim}}' can be inferred from this context '{{info}}'")
+	@SystemMessage("""
+		You are a fact checker. Your task is to determine if a claim can be inferred from a context.
+		You MUST respond with ONLY the word "true" or "false", nothing else.
+		Do not add explanations, reasoning, or any other text.
+		""")
+	@UserMessage("""
+		Context: {{info}}
+		Claim: {{claim}}
+		
+		Can the claim be inferred from the context? Answer ONLY with true or false:
+		""")
 	Boolean canBeInferred(@V("info") String info, @V("claim") String claim);
 }
