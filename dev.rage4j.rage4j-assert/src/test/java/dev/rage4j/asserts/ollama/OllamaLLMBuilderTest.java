@@ -73,13 +73,13 @@ class OllamaLLMBuilderTest
 	void testWithChatLanguageModelInjection()
 	{
 		// Use a real OllamaChatModel instance for testing injection
-		ChatModel mockChatModel = OllamaChatModel.builder()
+		ChatModel chatModel = OllamaChatModel.builder()
 			.baseUrl("http://localhost:11434")
 			.modelName("test-model")
 			.build();
 
 		RageAssert rageAssert = new OllamaLLMBuilder()
-			.withChatLanguageModel(mockChatModel)
+			.withChatLanguageModel(chatModel)
 			.build();
 
 		assertNotNull(rageAssert);
@@ -89,13 +89,13 @@ class OllamaLLMBuilderTest
 	void testWithCustomEmbeddingModelInjection()
 	{
 		// Use a real OllamaEmbeddingModel instance for testing injection
-		EmbeddingModel mockEmbeddingModel = OllamaEmbeddingModel.builder()
+		EmbeddingModel embeddingModel = OllamaEmbeddingModel.builder()
 			.baseUrl("http://localhost:11434")
 			.modelName("test-embedding")
 			.build();
 
 		RageAssert rageAssert = new OllamaLLMBuilder()
-			.withCustomEmbeddingModel(mockEmbeddingModel)
+			.withCustomEmbeddingModel(embeddingModel)
 			.build();
 
 		assertNotNull(rageAssert);
@@ -105,19 +105,19 @@ class OllamaLLMBuilderTest
 	void testWithBothCustomModelsInjection()
 	{
 		// Use real Ollama model instances for testing injection
-		ChatModel mockChatModel = OllamaChatModel.builder()
+		ChatModel chatModel = OllamaChatModel.builder()
 			.baseUrl("http://localhost:11434")
 			.modelName("test-model")
 			.build();
 
-		EmbeddingModel mockEmbeddingModel = OllamaEmbeddingModel.builder()
+		EmbeddingModel embeddingModel = OllamaEmbeddingModel.builder()
 			.baseUrl("http://localhost:11434")
 			.modelName("test-embedding")
 			.build();
 
 		RageAssert rageAssert = new OllamaLLMBuilder()
-			.withChatLanguageModel(mockChatModel)
-			.withCustomEmbeddingModel(mockEmbeddingModel)
+			.withChatLanguageModel(chatModel)
+			.withCustomEmbeddingModel(embeddingModel)
 			.build();
 
 		assertNotNull(rageAssert);
