@@ -57,6 +57,31 @@ RageAssert rageAssert = new OpenAiLLMBuilder()
 
 Default models: `gpt-5.1` (chat), `text-embedding-3-small` (embedding).
 
+## Using Ollama (Local LLMs)
+
+Rage4J also supports Ollama for running local LLMs:
+
+``` java
+import dev.rage4j.asserts.ollama.OllamaLLMBuilder;
+
+RageAssert rageAssert = new OllamaLLMBuilder()
+    .withBaseUrl("http://localhost:11434")  // Default Ollama URL
+    .withChatModel("llama3.2")              // Default chat model
+    .withEmbeddingModel("nomic-embed-text") // Default embedding model
+    .build();
+
+// Use it the same way as OpenAI
+rageAssert.given()
+    .question("What is the capital of France?")
+    .groundTruth("Paris")
+    .when()
+    .answer(q -> llm.generate(q))
+    .then()
+    .assertAnswerCorrectness(0.7);
+```
+
+**Note:** Requires langchain4j version 1.11.0 or higher.
+
 ## Evaluation Mode
 
 By default, assertions throw exceptions on failure (**strict mode**). Enable **evaluation mode** to log warnings instead, allowing complete test runs for data collection:

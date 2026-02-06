@@ -52,6 +52,39 @@ RageAssert rageAssert = new OpenAiLLMBuilder()
     .fromApiKey(apiKey);
 ```
 
+### Using Ollama (Local LLM)
+
+Rage4J also supports Ollama for running local LLMs:
+
+```java
+import dev.rage4j.asserts.ollama.OllamaLLMBuilder;
+
+RageAssert rageAssert = new OllamaLLMBuilder()
+    .withBaseUrl("http://localhost:11434")  // Default Ollama URL
+    .withChatModel("llama3.2")              // Default chat model
+    .withEmbeddingModel("nomic-embed-text") // Default embedding model
+    .build();
+```
+
+The `fromApiKey()` method is also available for interface compatibility but ignores the API key parameter since Ollama doesn't require authentication:
+
+```java
+RageAssert rageAssert = new OllamaLLMBuilder()
+    .withChatModel("mistral")
+    .fromApiKey("not-used");  // API key ignored for Ollama
+```
+
+**Note:** Requires langchain4j version 1.11.0 or higher. Add the following dependency:
+
+```xml
+<dependency>
+    <groupId>dev.langchain4j</groupId>
+    <artifactId>langchain4j-ollama</artifactId>
+    <version>1.11.0</version>
+</dependency>
+```
+
+
 ### With LLM Integration
 
 ```java
@@ -161,3 +194,4 @@ Each assertion returns an `AssertionEvaluation` that provides access to the raw 
 | `RageAssertTestCaseAssertions` | Assertion methods (then phase) |
 | `AssertionEvaluation` | Result wrapper enabling assertion chaining via `.then()` |
 | `OpenAiLLMBuilder` | Builder for OpenAI-backed RageAssert |
+| `OllamaLLMBuilder` | Builder for Ollama-backed RageAssert (local LLMs) |
