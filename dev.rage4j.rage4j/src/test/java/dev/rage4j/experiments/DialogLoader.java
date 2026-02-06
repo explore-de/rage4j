@@ -31,7 +31,7 @@ public class DialogLoader
 		return dialog;
 	}
 
-	private Dialog[] loadDialogs()
+	public Dialog[] loadDialogs()
 	{
 		try
 		{

@@ -25,15 +25,34 @@ public class AxcelDataLoader
 		List<Path> exampleFiles = findExamples(resource);
 		int randomIndex = (int)(Math.random() * (exampleFiles.size() - 1));
 		Path oneShotExampleFolder = exampleFiles.get(randomIndex);
+		return loadExample(oneShotExampleFolder);
+	}
+
+	public List<AxcelOneShotExamples> loadAllExampleData()
+	{
+		ClassLoader classLoader = getClass().getClassLoader();
+		URL resource = classLoader.getResource("axcel");
+
+		List<Path> exampleFiles = findExamples(resource);
+		List<AxcelOneShotExamples> examples = new ArrayList<>();
+		for (Path exampleFolder : exampleFiles)
+		{
+			examples.add(loadExample(exampleFolder));
+		}
+		return examples;
+	}
+
+	private AxcelOneShotExamples loadExample(Path oneShotExampleFolder)
+	{
 		try
 		{
-			Path responsePath = Path.of(oneShotExampleFolder.toFile().getAbsolutePath() + "/response.txt");
+			Path responsePath = oneShotExampleFolder.resolve("response.txt");
 			String response = Files.readString(responsePath);
 
-			Path stPath = Path.of(oneShotExampleFolder.toFile().getAbsolutePath() + "/source-text.txt");
+			Path stPath = oneShotExampleFolder.resolve("source-text.txt");
 			String st = Files.readString(stPath);
 
-			Path dtPath = Path.of(oneShotExampleFolder.toFile().getAbsolutePath() + "/derived-text.txt");
+			Path dtPath = oneShotExampleFolder.resolve("derived-text.txt");
 			String dt = Files.readString(dtPath);
 
 			return new AxcelOneShotExamples(st, dt, response);

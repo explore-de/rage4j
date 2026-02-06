@@ -98,14 +98,13 @@ public class AxcelEvaluator implements Evaluator
 	{
 		DoubleSummaryStatistics stats = facts.stream()
 			.map(AxcelFactEvaluation::rating)
-			.filter(Objects::nonNull)
+			.filter(r -> Objects.nonNull(r) && r >= 0 && r <= MAX_RATING)
 			.mapToDouble(Integer::doubleValue)
 			.summaryStatistics();
 
 		if (stats.getCount() == 0)
 		{
-			log.warn("Axcel response did not include any numeric ratings. Returning score 0.");
-			return 0.0;
+			throw new IllegalStateException("Axcel response did not include any numeric ratings. Returning score 0.");
 		}
 
 		double averageRating = stats.getAverage();

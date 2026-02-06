@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class OllamaSetupTest
 {
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
-	private static final String NON_THINKING_MODEL = "ministral-3:3b";
+	private static final String NON_THINKING_MODEL = "gemma3:12b";
 	private static final String THINKING_MODEL = "qwen3:4b";
 
 	@Tag("integration")

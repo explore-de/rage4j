@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.List;
 
 import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
@@ -58,10 +59,11 @@ public class DataGenerator
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
 			.strictJsonSchema(true)
 			.temperature(1.0)
+			.timeout(Duration.ofMinutes(20))
 			.build();
 	}
 
-	@RepeatedTest(10)
+	@RepeatedTest(2)
 	void generate()
 	{
 		Path outputDir = Paths.get("target", "generated-dialogs");
@@ -76,7 +78,9 @@ public class DataGenerator
 
 		for (String level : List.of("very low", "low", "medium", "high"))
 		{
-			String customizedPrompt = String.format(PROMPT, level, (int)(Math.random() * 20) + 1);
+			// int length = (int)(Math.random() * 20) + 1;
+			int length = 100;
+			String customizedPrompt = String.format(PROMPT, level, length);
 			String response = chatModel.chat(customizedPrompt);
 			String md = response.split("```")[1]; // extract JSON part
 			md = md.substring(md.indexOf("\n") + 1); // remove first line
