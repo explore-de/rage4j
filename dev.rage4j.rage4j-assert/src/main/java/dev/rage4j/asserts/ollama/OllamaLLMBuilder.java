@@ -9,7 +9,8 @@ import dev.rage4j.asserts.RageAssert;
 
 /**
  * Builder for creating RageAssert instances configured for Ollama models.
- * Supports both standalone model creation and injection of framework-managed models.
+ * Supports both standalone model creation and injection of framework-managed
+ * models.
  */
 public class OllamaLLMBuilder implements LLMBuilder<OllamaLLMBuilder>
 {
@@ -42,7 +43,8 @@ public class OllamaLLMBuilder implements LLMBuilder<OllamaLLMBuilder>
 	/**
 	 * Sets the base URL for the Ollama server.
 	 *
-	 * @param baseUrl The base URL (e.g., "http://localhost:11434")
+	 * @param baseUrl
+	 *            The base URL (e.g., "http://localhost:11434")
 	 * @return This builder instance for method chaining
 	 */
 	public OllamaLLMBuilder withBaseUrl(String baseUrl)
@@ -52,10 +54,11 @@ public class OllamaLLMBuilder implements LLMBuilder<OllamaLLMBuilder>
 	}
 
 	/**
-	 * Injects a custom ChatModel instance (e.g., from a DI framework like Quarkus).
-	 * When set, standalone model creation is bypassed.
+	 * Injects a custom ChatModel instance (e.g., from a DI framework like
+	 * Quarkus). When set, standalone model creation is bypassed.
 	 *
-	 * @param chatModel The ChatModel instance to use
+	 * @param chatModel
+	 *            The ChatModel instance to use
 	 * @return This builder instance for method chaining
 	 */
 	public OllamaLLMBuilder withChatLanguageModel(ChatModel chatModel)
@@ -65,13 +68,14 @@ public class OllamaLLMBuilder implements LLMBuilder<OllamaLLMBuilder>
 	}
 
 	/**
-	 * Injects a custom EmbeddingModel instance (e.g., from a DI framework like Quarkus).
-	 * When set, standalone model creation is bypassed.
+	 * Injects a custom EmbeddingModel instance (e.g., from a DI framework like
+	 * Quarkus). When set, standalone model creation is bypassed.
 	 *
-	 * @param embeddingModel The EmbeddingModel instance to use
+	 * @param embeddingModel
+	 *            The EmbeddingModel instance to use
 	 * @return This builder instance for method chaining
 	 */
-	public OllamaLLMBuilder withEmbeddingModel(EmbeddingModel embeddingModel)
+	public OllamaLLMBuilder withCustomEmbeddingModel(EmbeddingModel embeddingModel)
 	{
 		this.customEmbeddingModel = embeddingModel;
 		return this;
@@ -80,7 +84,8 @@ public class OllamaLLMBuilder implements LLMBuilder<OllamaLLMBuilder>
 	/**
 	 * Creates a RageAssert instance. For Ollama, no API key is required.
 	 *
-	 * @param apiKey Ignored for Ollama (kept for interface compatibility)
+	 * @param apiKey
+	 *            Ignored for Ollama (kept for interface compatibility)
 	 * @return A configured RageAssert instance
 	 */
 	@Override
@@ -90,23 +95,23 @@ public class OllamaLLMBuilder implements LLMBuilder<OllamaLLMBuilder>
 	}
 
 	/**
-	 * Creates a RageAssert instance with the configured models.
-	 * Uses custom models if provided, otherwise creates standalone Ollama models.
+	 * Creates a RageAssert instance with the configured models. Uses custom
+	 * models if provided, otherwise creates standalone Ollama models.
 	 *
 	 * @return A configured RageAssert instance
 	 */
 	public RageAssert build()
 	{
 		ChatModel chatModel = customChatModel != null
-				? customChatModel
-				: OllamaChatModel.builder()
+			? customChatModel
+			: OllamaChatModel.builder()
 				.baseUrl(this.baseUrl)
 				.modelName(this.chatModelName)
 				.build();
 
 		EmbeddingModel embeddingModel = customEmbeddingModel != null
-				? customEmbeddingModel
-				: OllamaEmbeddingModel.builder()
+			? customEmbeddingModel
+			: OllamaEmbeddingModel.builder()
 				.baseUrl(this.baseUrl)
 				.modelName(this.embeddingModelName)
 				.build();

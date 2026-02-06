@@ -1,5 +1,9 @@
 package dev.rage4j.asserts.ollama;
 
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
 import dev.rage4j.asserts.RageAssert;
 import org.junit.jupiter.api.Test;
 
@@ -61,6 +65,60 @@ class OllamaLLMBuilderTest
 			.withBaseUrl("http://localhost:11434")
 			.build()
 			.withEvaluationMode();
+
+		assertNotNull(rageAssert);
+	}
+
+	@Test
+	void testWithChatLanguageModelInjection()
+	{
+		// Use a real OllamaChatModel instance for testing injection
+		ChatModel mockChatModel = OllamaChatModel.builder()
+			.baseUrl("http://localhost:11434")
+			.modelName("test-model")
+			.build();
+
+		RageAssert rageAssert = new OllamaLLMBuilder()
+			.withChatLanguageModel(mockChatModel)
+			.build();
+
+		assertNotNull(rageAssert);
+	}
+
+	@Test
+	void testWithCustomEmbeddingModelInjection()
+	{
+		// Use a real OllamaEmbeddingModel instance for testing injection
+		EmbeddingModel mockEmbeddingModel = OllamaEmbeddingModel.builder()
+			.baseUrl("http://localhost:11434")
+			.modelName("test-embedding")
+			.build();
+
+		RageAssert rageAssert = new OllamaLLMBuilder()
+			.withCustomEmbeddingModel(mockEmbeddingModel)
+			.build();
+
+		assertNotNull(rageAssert);
+	}
+
+	@Test
+	void testWithBothCustomModelsInjection()
+	{
+		// Use real Ollama model instances for testing injection
+		ChatModel mockChatModel = OllamaChatModel.builder()
+			.baseUrl("http://localhost:11434")
+			.modelName("test-model")
+			.build();
+
+		EmbeddingModel mockEmbeddingModel = OllamaEmbeddingModel.builder()
+			.baseUrl("http://localhost:11434")
+			.modelName("test-embedding")
+			.build();
+
+		RageAssert rageAssert = new OllamaLLMBuilder()
+			.withChatLanguageModel(mockChatModel)
+			.withCustomEmbeddingModel(mockEmbeddingModel)
+			.build();
 
 		assertNotNull(rageAssert);
 	}
