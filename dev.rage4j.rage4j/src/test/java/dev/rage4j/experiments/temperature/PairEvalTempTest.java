@@ -30,7 +30,7 @@ public class PairEvalTempTest
 {
 	private static final int RUNS = 40;
 	private static final String OPEN_AI_MODEL_NAME = "gpt-5.1";
-	private static final String OLLAMA_MODEL_NAME = "gemma3:12b";
+	private static final String OLLAMA_MODEL_NAME = "llama3.1:8b";
 
 	private static final String MODEL_NAME = OLLAMA_MODEL_NAME;
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
@@ -92,21 +92,22 @@ public class PairEvalTempTest
 	{
 		Dialog dialog = DIALOG_LOADER.getRawDialog();
 
-		runTestWithTemperature(1, dialog);
-		runTestWithTemperature(0, dialog);
+		ExperimentEvaluation eval1 = runTestWithTemperature(1, dialog);
+		ExperimentEvaluation eval0 = runTestWithTemperature(0, dialog);
+
+		String mapKey = "temperature-" + 1;
+		RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(eval1);
+		mapKey = "temperature-" + 0;
+		RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(eval0);
 	}
 
-	private void runTestWithTemperature(int temperature, Dialog dialog)
+	private ExperimentEvaluation runTestWithTemperature(int temperature, Dialog dialog)
 	{
 		// given
 		PairEvalEvaluator evaluator = new PairEvalEvaluator(getOllamaChatModel(temperature));
 
 		// when
 		Evaluation evaluation = evaluator.evaluate(dialog.getSample());
-		ExperimentEvaluation experimentEvaluation = new ExperimentEvaluation(evaluation, dialog.path());
-
-		// then
-		String mapKey = "temperature-" + temperature;
-		RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(experimentEvaluation);
+		return new ExperimentEvaluation(evaluation, dialog.path());
 	}
 }

@@ -32,7 +32,7 @@ public class AxcelTempTest
 {
 	private static final int RUNS = 40;
 	private static final String OPEN_AI_MODEL_NAME = "gpt-5.1";
-	private static final String OLLAMA_MODEL_NAME = "gemma3:12b";
+	private static final String OLLAMA_MODEL_NAME = "llama3.1:8b";
 
 	private static final String MODEL_NAME = OLLAMA_MODEL_NAME;
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
@@ -97,21 +97,22 @@ public class AxcelTempTest
 
 		AxcelOneShotExamples oneShotExample = loader.loadExampleData();
 
-		runTestWithTemperature(1, dialog, oneShotExample);
-		runTestWithTemperature(0, dialog, oneShotExample);
+		ExperimentEvaluation eval1 = runTestWithTemperature(1, dialog, oneShotExample);
+		ExperimentEvaluation eval0 = runTestWithTemperature(0, dialog, oneShotExample);
+
+		String mapKey = "temperature-" + 1;
+		RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(eval1);
+		mapKey = "temperature-" + 0;
+		RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(eval0);
 	}
 
-	private void runTestWithTemperature(int temperature, Dialog dialog, AxcelOneShotExamples oneShotExample)
+	private ExperimentEvaluation runTestWithTemperature(int temperature, Dialog dialog, AxcelOneShotExamples oneShotExample)
 	{
 		// given
 		AxcelEvaluator evaluator = new AxcelEvaluator(getOllamaChatModel(temperature));
 
 		// when
 		Evaluation evaluation = evaluator.evaluate(dialog.getSample(), oneShotExample);
-		ExperimentEvaluation experimentEvaluation = new ExperimentEvaluation(evaluation, dialog.path());
-
-		// then
-		String mapKey = "temperature-" + temperature;
-		RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(experimentEvaluation);
+		return new ExperimentEvaluation(evaluation, dialog.path());
 	}
 }
