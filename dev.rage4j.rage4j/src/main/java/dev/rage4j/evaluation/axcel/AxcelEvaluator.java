@@ -10,19 +10,20 @@ import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
+import dev.rage4j.util.ConsistencyContextCompressorInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class AxcelEvaluator implements Evaluator
 {
 	private static final Logger log = LoggerFactory.getLogger(AxcelEvaluator.class);
 	private static final String METRIC_NAME = "AXCEL";
 	private static final double MAX_RATING = 5.0;
-
 	private final AxcelBot bot;
 	private final ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(100);
 	private final AxcelDataLoader loader = new AxcelDataLoader();
@@ -36,6 +37,8 @@ public class AxcelEvaluator implements Evaluator
 		Step 3 - Rate the correctness of each fact on the scale of 1 to 5 based on the verification from previous step.
 		Step 4 - Generate output in a consistent format following the format of the	examples given below.
 		""";
+
+	private Optional<ConsistencyContextCompressorInterface> contextCompressor = Optional.empty();
 
 	public AxcelEvaluator(ChatModel model)
 	{
@@ -64,7 +67,7 @@ public class AxcelEvaluator implements Evaluator
 		chatMemory.add(exampleResponseAiResponse);
 
 		log.info("Start Axcel evaluation...");
-		String context = sample.getContext() + "User: " + sample.getQuestion() + "\n";
+		String context = getContext(sample) + "User: " + sample.getQuestion() + "\n";
 		String actualStDtPair = buildFewShotExemplars(context, sample.getAnswer());
 		List<AxcelFactEvaluation> parsedFacts = bot.evaluate(actualStDtPair);
 		double score = normalizeScore(parsedFacts);
@@ -73,6 +76,23 @@ public class AxcelEvaluator implements Evaluator
 
 		List<String> explanations = parsedFacts.stream().map(AxcelFactEvaluation::toString).toList();
 		return new Evaluation(METRIC_NAME, score, explanations);
+	}
+
+	public void setContextCompressor(ConsistencyContextCompressorInterface contextCompressor)
+	{
+		this.contextCompressor = Optional.of(contextCompressor);
+	}
+
+	private String getContext(Sample sample)
+	{
+		if (contextCompressor.isPresent() && sample.getContext().length() > contextCompressor.get().getTokenLimit())
+		{
+			log.info("Compressing context for sample with question: {}", sample.getQuestion());
+			String compressedContext = contextCompressor.get().compress(sample.getContext(), sample.getQuestion());
+			log.info("Context compressed from {} to {} characters", sample.getContext().length(), compressedContext.length());
+			return compressedContext;
+		}
+		return sample.getContext();
 	}
 
 	private static void logDebug(List<AxcelFactEvaluation> parsedFacts)
