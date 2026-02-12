@@ -2,7 +2,10 @@ package dev.rage4j.util;
 
 import dev.langchain4j.model.chat.ChatModel;
 
-public class ConsistencyContextCompressor implements ConsistencyContextCompressorInterface
+import java.util.HashMap;
+import java.util.Map;
+
+public class LlmContextCompressor implements ContextCompressor
 {
 	private final ChatModel chatModel;
 	private final int tokenLimit;
@@ -12,7 +15,7 @@ public class ConsistencyContextCompressor implements ConsistencyContextCompresso
 		
 		GOAL
 		- Produce a shorter representation that preserves:
-		  - The essential facts, decisions, and open questions
+		  - The essential facts, decisions, and open questions revenant for the last message from the user.
 		  - The overall flow of the conversation
 		  - Which speaker contributed which information
 		
@@ -26,18 +29,24 @@ public class ConsistencyContextCompressor implements ConsistencyContextCompresso
 		FORMAT
 		Return a list of compressed turns like this:
 		
-		1. User: <compressed content of what the user contributed in this segment>
-		2. AI: <compressed content of the assistant's response>
+		User: <compressed content of what the user contributed in this segment>
+		AI: <compressed content of the assistant's response>
 		...
 		
 		If multiple original turns in a row can be merged into one compressed turn from the same speaker, you may merge them, but keep ordering.
+		
+		LAST MASSAGE:
+		
+		%s
 		
 		Now compress the following conversation:
 		
 		%s
 		""";
 
-	public ConsistencyContextCompressor(ChatModel chatModel, int tokenLimit)
+	private Map<String, String> contextCache = new HashMap<>();
+
+	public LlmContextCompressor(ChatModel chatModel, int tokenLimit)
 	{
 		this.chatModel = chatModel;
 		this.tokenLimit = tokenLimit;
@@ -46,8 +55,14 @@ public class ConsistencyContextCompressor implements ConsistencyContextCompresso
 	@Override
 	public String compress(String context, String question)
 	{
-		String formattedPrompt = String.format(PROMPT, tokenLimit, context);
-		return getChatModel().chat(formattedPrompt);
+		if (contextCache.containsKey(context))
+		{
+			return contextCache.get(context);
+		}
+		String formattedPrompt = String.format(PROMPT, tokenLimit, question, context);
+		String compressedContext = getChatModel().chat(formattedPrompt);
+		contextCache.put(context, compressedContext);
+		return compressedContext;
 	}
 
 	@Override

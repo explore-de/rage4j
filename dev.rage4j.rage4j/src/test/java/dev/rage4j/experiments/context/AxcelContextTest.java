@@ -11,6 +11,7 @@ import dev.rage4j.experiments.DialogLoader;
 import dev.rage4j.experiments.StatisticsUtil;
 import dev.rage4j.experiments.enity.Dialog;
 import dev.rage4j.experiments.enity.ExperimentEvaluation;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +35,7 @@ import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 public class AxcelContextTest
 {
 	private static final String MODEL_NAME = "ministral-3";
-	private static final int[] CONTEXT_SIZES = { 2048, 4096, 8192 };
+	private static final int[] CONTEXT_SIZES = { 2048, 4096 };
 
 	private static final Map<String, List<ExperimentEvaluation>> CONTEXT_EXAMPLE_RESULTS = new HashMap<>();
 	private static final Map<String, List<ExperimentEvaluation>> CONTEXT_RESULTS = new HashMap<>();
@@ -43,8 +44,9 @@ public class AxcelContextTest
 	private static final Logger LOGGER = LoggerFactory.getLogger(AxcelContextTest.class);
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
 	private static final AxcelDataLoader AXCEL_DATA_LOADER = new AxcelDataLoader();
+	public static final String FILE_PREFIX = "axcel-context";
 
-	private static OllamaChatModel getOllamaChatModel(int context)
+	public static OllamaChatModel getOllamaChatModel(int context)
 	{
 		return OllamaChatModel.builder()
 			.baseUrl("http://localhost:11434")
@@ -63,19 +65,19 @@ public class AxcelContextTest
 		List<StatisticsUtil.Stats> statsList = CONTEXT_EXAMPLE_RESULTS.entrySet().stream()
 			.map(StatisticsUtil::buildStats)
 			.toList();
-		StatisticsUtil.writeToFile(statsList, CONTEXT_EXAMPLE_RESULTS, MODEL_NAME, "axcel-context");
+		StatisticsUtil.writeToFile(statsList, CONTEXT_EXAMPLE_RESULTS, MODEL_NAME, FILE_PREFIX);
 
 		// Grouped by context and dialog only
 		statsList = CONTEXT_RESULTS.entrySet().stream()
 			.map(StatisticsUtil::buildStats)
 			.toList();
-		StatisticsUtil.writeToCSV(CONTEXT_RESULTS, MODEL_NAME + "_reduced", "axcel-context");
-		StatisticsUtil.writeToFile(statsList, CONTEXT_RESULTS, MODEL_NAME + "_reduced", "axcel-context");
+		StatisticsUtil.writeToCSV(CONTEXT_RESULTS, MODEL_NAME + "_reduced", FILE_PREFIX);
+		StatisticsUtil.writeToFile(statsList, CONTEXT_RESULTS, MODEL_NAME + "_reduced", FILE_PREFIX);
 
 		// Store errors by context
 		try
 		{
-			new ObjectMapper().writeValue(new File("./experiment_results/axcel-context_" + MODEL_NAME + "_errors.json"), ERRORS_BY_CONTEXT);
+			new ObjectMapper().writeValue(new File("./experiment_results/" + FILE_PREFIX + "_" + MODEL_NAME + "_errors.json"), ERRORS_BY_CONTEXT);
 		}
 		catch (IOException e)
 		{
@@ -92,15 +94,7 @@ public class AxcelContextTest
 	{
 		try
 		{
-			// given
-			ChatModel chatModel = getOllamaChatModel(context);
-			AxcelEvaluator evaluator = new AxcelEvaluator(chatModel);
-
-			// when
-			Evaluation evaluation = evaluator.evaluate(dialog.getSample(), oneShotExample);
-			ExperimentEvaluation experimentEvaluation = new ExperimentEvaluation(evaluation, dialog.path());
-
-			// then
+			ExperimentEvaluation experimentEvaluation = getExperimentEvaluation(context, dialog, oneShotExample);
 			String mapKey = "context-" + context + "-example-" + oneShotExample.hashCode();
 			CONTEXT_EXAMPLE_RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(experimentEvaluation);
 			mapKey = "context-" + context;
@@ -113,6 +107,17 @@ public class AxcelContextTest
 			LOGGER.error(ex.getMessage(), ex);
 			throw ex;
 		}
+	}
+
+	protected @NonNull ExperimentEvaluation getExperimentEvaluation(int context, Dialog dialog, AxcelOneShotExamples oneShotExample)
+	{
+		// given
+		ChatModel chatModel = getOllamaChatModel(context);
+		AxcelEvaluator evaluator = new AxcelEvaluator(chatModel);
+
+		// when
+		Evaluation evaluation = evaluator.evaluate(dialog.getSample(), oneShotExample);
+		return new ExperimentEvaluation(evaluation, dialog.path());
 	}
 
 	private static Stream<Arguments> contextDialogExampleProvider()

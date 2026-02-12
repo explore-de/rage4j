@@ -10,7 +10,8 @@ import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
-import dev.rage4j.util.ConsistencyContextCompressorInterface;
+import dev.rage4j.util.ContextCompressor;
+import dev.rage4j.util.LlmContextCompressor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +39,12 @@ public class AxcelEvaluator implements Evaluator
 		Step 4 - Generate output in a consistent format following the format of the	examples given below.
 		""";
 
-	private Optional<ConsistencyContextCompressorInterface> contextCompressor = Optional.empty();
+	private final ChatModel model;
+	private Optional<ContextCompressor> contextCompressor = Optional.empty();
 
 	public AxcelEvaluator(ChatModel model)
 	{
+		this.model = model;
 		this.bot = AiServices.builder(AxcelBot.class)
 			.chatMemory(chatMemory)
 			.chatModel(model)
@@ -78,7 +81,12 @@ public class AxcelEvaluator implements Evaluator
 		return new Evaluation(METRIC_NAME, score, explanations);
 	}
 
-	public void setContextCompressor(ConsistencyContextCompressorInterface contextCompressor)
+	public void enableSimpleContextCompression()
+	{
+		this.contextCompressor = Optional.of(new LlmContextCompressor(model, 1024));
+	}
+
+	public void setContextCompressor(ContextCompressor contextCompressor)
 	{
 		this.contextCompressor = Optional.of(contextCompressor);
 	}
