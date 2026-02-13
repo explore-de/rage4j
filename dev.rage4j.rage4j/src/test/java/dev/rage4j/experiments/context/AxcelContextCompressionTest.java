@@ -21,10 +21,10 @@ public class AxcelContextCompressionTest extends AxcelContextTest
 	private static final LlmContextCompressor COMPRESSOR = new LlmContextCompressor(getOpenAIChatModel(), TOKEN_LIMIT);
 
 	@Override
-	protected @NonNull ExperimentEvaluation getExperimentEvaluation(int context, Dialog dialog, AxcelOneShotExamples oneShotExample)
+	protected @NonNull ExperimentEvaluation getExperimentEvaluation(String model, int context, Dialog dialog, AxcelOneShotExamples oneShotExample)
 	{
 		// given
-		AxcelEvaluator evaluator = new AxcelEvaluator(getOllamaChatModel(context));
+		AxcelEvaluator evaluator = new AxcelEvaluator(getOllamaChatModel(model, context));
 		evaluator.enableSimpleContextCompression(TOKEN_LIMIT);
 
 		// when
@@ -32,7 +32,7 @@ public class AxcelContextCompressionTest extends AxcelContextTest
 		return new ExperimentEvaluation(evaluation, dialog.path());
 	}
 
-	private static ChatModel getOpenAIChatModel()
+	public static ChatModel getOpenAIChatModel()
 	{
 		return OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)

@@ -1,6 +1,5 @@
 package dev.rage4j.experiments.context;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.rage4j.evaluation.Evaluation;
@@ -8,11 +7,10 @@ import dev.rage4j.evaluation.axcel.AxcelDataLoader;
 import dev.rage4j.evaluation.axcel.AxcelEvaluator;
 import dev.rage4j.evaluation.axcel.AxcelOneShotExamples;
 import dev.rage4j.experiments.DialogLoader;
-import dev.rage4j.experiments.StatisticsUtil;
 import dev.rage4j.experiments.enity.Dialog;
 import dev.rage4j.experiments.enity.ExperimentEvaluation;
 import org.jspecify.annotations.NonNull;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,10 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,85 +29,52 @@ import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 
 public class AxcelContextTest
 {
-	private static final String MODEL_NAME = "ministral-3";
-	private static final int[] CONTEXT_SIZES = { 2048, 4096 };
+	private static final List<String> MODELS = List.of("ministral-3", "gemma3:12b", "llama3.1:8b", "qwen3:14b");
+	private static final int[] CONTEXT_SIZES = { 2048, 4096, 8192 };
 
-	private static final Map<String, List<ExperimentEvaluation>> CONTEXT_EXAMPLE_RESULTS = new HashMap<>();
-	private static final Map<String, List<ExperimentEvaluation>> CONTEXT_RESULTS = new HashMap<>();
-	private static final Map<String, List<String>> ERRORS_BY_CONTEXT = new HashMap<>();
-
+	private static final Map<String, AxcelModelResults> MODEL_RESULTS_MAP = new HashMap<>();
 	private static final Logger LOGGER = LoggerFactory.getLogger(AxcelContextTest.class);
-	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
 	private static final AxcelDataLoader AXCEL_DATA_LOADER = new AxcelDataLoader();
-	public static final String FILE_PREFIX = "axcel-context";
 
-	public static OllamaChatModel getOllamaChatModel(int context)
+	protected static OllamaChatModel getOllamaChatModel(String model, int context)
 	{
 		return OllamaChatModel.builder()
 			.baseUrl("http://localhost:11434")
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
-			.modelName(MODEL_NAME)
+			.modelName(model)
 			.temperature(1.0)
 			.numCtx(context)
 			.timeout(Duration.ofMinutes(30))
 			.build();
 	}
 
-	@AfterAll
-	static void afterAll()
+	@AfterEach
+	void saveResults()
 	{
-		// Grouped by context, dialog and one shot example
-		List<StatisticsUtil.Stats> statsList = CONTEXT_EXAMPLE_RESULTS.entrySet().stream()
-			.map(StatisticsUtil::buildStats)
-			.toList();
-		StatisticsUtil.writeToFile(statsList, CONTEXT_EXAMPLE_RESULTS, MODEL_NAME, FILE_PREFIX);
-
-		// Grouped by context and dialog only
-		statsList = CONTEXT_RESULTS.entrySet().stream()
-			.map(StatisticsUtil::buildStats)
-			.toList();
-		StatisticsUtil.writeToCSV(CONTEXT_RESULTS, MODEL_NAME + "_reduced", FILE_PREFIX);
-		StatisticsUtil.writeToFile(statsList, CONTEXT_RESULTS, MODEL_NAME + "_reduced", FILE_PREFIX);
-
-		// Store errors by context
-		try
-		{
-			new ObjectMapper().writeValue(new File("./experiment_results/" + FILE_PREFIX + "_" + MODEL_NAME + "_errors.json"), ERRORS_BY_CONTEXT);
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException(e);
-		}
-
-		LOGGER.info("Evaluation results over tests:");
-		statsList.forEach(stats -> LOGGER.info("{}", stats));
+		MODEL_RESULTS_MAP.values().forEach(ModelResults::storeResults);
 	}
 
 	@ParameterizedTest(name = "Test #{index} - {0} - {1} - {2}")
 	@MethodSource("contextDialogExampleProvider")
-	void testAxcelContextSize(int context, Dialog dialog, AxcelOneShotExamples oneShotExample)
+	void testAXCELContextSize(String model, int context, Dialog dialog, AxcelOneShotExamples oneShotExample)
 	{
 		try
 		{
-			ExperimentEvaluation experimentEvaluation = getExperimentEvaluation(context, dialog, oneShotExample);
-			String mapKey = "context-" + context + "-example-" + oneShotExample.hashCode();
-			CONTEXT_EXAMPLE_RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(experimentEvaluation);
-			mapKey = "context-" + context;
-			CONTEXT_RESULTS.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(experimentEvaluation);
+			ExperimentEvaluation experimentEvaluation = getExperimentEvaluation(model, context, dialog, oneShotExample);
+			MODEL_RESULTS_MAP.computeIfAbsent(model, AxcelModelResults::new).addExperimentEvaluation(context, experimentEvaluation, oneShotExample);
 		}
 		catch (Exception ex)
 		{
-			String mapKey = "context-" + context;
-			ERRORS_BY_CONTEXT.computeIfAbsent(mapKey, k -> new ArrayList<>()).add(dialog.path());
+			MODEL_RESULTS_MAP.computeIfAbsent(model, AxcelModelResults::new).addError(context, dialog.path());
 			LOGGER.error(ex.getMessage(), ex);
 			throw ex;
 		}
 	}
 
-	protected @NonNull ExperimentEvaluation getExperimentEvaluation(int context, Dialog dialog, AxcelOneShotExamples oneShotExample)
+	protected @NonNull ExperimentEvaluation getExperimentEvaluation(String model, int context, Dialog dialog, AxcelOneShotExamples oneShotExample)
 	{
 		// given
-		ChatModel chatModel = getOllamaChatModel(context);
+		ChatModel chatModel = getOllamaChatModel(model, context);
 		AxcelEvaluator evaluator = new AxcelEvaluator(chatModel);
 
 		// when
@@ -122,16 +84,18 @@ public class AxcelContextTest
 
 	private static Stream<Arguments> contextDialogExampleProvider()
 	{
-		List<Dialog> dialogs = List.of(DIALOG_LOADER.loadDialogs());
+		List<Dialog> dialogs = List.of(new DialogLoader().loadDialogs()[0]);
 		List<AxcelOneShotExamples> examples = AXCEL_DATA_LOADER.loadAllExampleData();
 
 		return IntStream.of(CONTEXT_SIZES)
 			.boxed()
-			.flatMap(context -> dialogs.stream()
-				.flatMap(dialog -> examples.stream()
-					.map(example -> Arguments.of(
-						Named.of("context " + context, context),
-						Named.of("dialog " + dialog.path(), dialog),
-						Named.of("example " + example.hashCode(), example)))));
+			.flatMap(context -> MODELS.stream()
+				.flatMap(model -> dialogs.stream()
+					.flatMap(dialog -> examples.stream()
+						.map(example -> Arguments.of(
+							Named.of("model " + model, model),
+							Named.of("context " + context, context),
+							Named.of("dialog " + dialog.path(), dialog),
+							Named.of("examples " + example.hashCode(), example))))));
 	}
 }
