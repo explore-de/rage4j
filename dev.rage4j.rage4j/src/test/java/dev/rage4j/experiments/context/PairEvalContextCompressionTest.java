@@ -16,10 +16,10 @@ public class PairEvalContextCompressionTest extends PairEvalContextTest
 	private static final LlmContextCompressor COMPRESSOR = new LlmContextCompressor(getOpenAIChatModel(), TOKEN_LIMIT);
 
 	@Override
-	protected @NonNull ExperimentEvaluation getExperimentEvaluation(int context, Dialog dialog)
+	protected @NonNull ExperimentEvaluation getExperimentEvaluation(String model, int context, Dialog dialog)
 	{
 		// given
-		PairEvalEvaluator evaluator = new PairEvalEvaluator(getOllamaChatModel(context));
+		PairEvalEvaluator evaluator = new PairEvalEvaluator(getOllamaChatModel(model, context));
 		evaluator.enableSimpleContextCompression(TOKEN_LIMIT);
 
 		// when
