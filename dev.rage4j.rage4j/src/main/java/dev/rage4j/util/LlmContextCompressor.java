@@ -44,7 +44,7 @@ public class LlmContextCompressor implements ContextCompressor
 		%s
 		""";
 
-	private Map<String, String> contextCache = new HashMap<>();
+	private static final Map<String, String> CONTEXT_CACHE = new HashMap<>();
 
 	public LlmContextCompressor(ChatModel chatModel, int tokenLimit)
 	{
@@ -55,13 +55,13 @@ public class LlmContextCompressor implements ContextCompressor
 	@Override
 	public String compress(String context, String question)
 	{
-		if (contextCache.containsKey(context))
+		if (CONTEXT_CACHE.containsKey(context))
 		{
-			return contextCache.get(context);
+			return CONTEXT_CACHE.get(context);
 		}
 		String formattedPrompt = String.format(PROMPT, tokenLimit, question, context);
 		String compressedContext = getChatModel().chat(formattedPrompt);
-		contextCache.put(context, compressedContext);
+		CONTEXT_CACHE.put(context, compressedContext);
 		return compressedContext;
 	}
 

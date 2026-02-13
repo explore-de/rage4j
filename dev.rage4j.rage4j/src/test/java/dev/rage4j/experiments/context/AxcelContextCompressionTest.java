@@ -16,15 +16,16 @@ public class AxcelContextCompressionTest extends AxcelContextTest
 {
 	private static final String OPEN_AI_MODEL_NAME = "gpt-5.2";
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final int TOKEN_LIMIT = 512;
 
-	private static final LlmContextCompressor COMPRESSOR = new LlmContextCompressor(getOpenAIChatModel(), 512);
+	private static final LlmContextCompressor COMPRESSOR = new LlmContextCompressor(getOpenAIChatModel(), TOKEN_LIMIT);
 
 	@Override
 	protected @NonNull ExperimentEvaluation getExperimentEvaluation(int context, Dialog dialog, AxcelOneShotExamples oneShotExample)
 	{
 		// given
 		AxcelEvaluator evaluator = new AxcelEvaluator(getOllamaChatModel(context));
-		evaluator.setContextCompressor(COMPRESSOR);
+		evaluator.enableSimpleContextCompression(TOKEN_LIMIT);
 
 		// when
 		Evaluation evaluation = evaluator.evaluate(dialog.getSample(), oneShotExample);

@@ -81,9 +81,9 @@ public class AxcelEvaluator implements Evaluator
 		return new Evaluation(METRIC_NAME, score, explanations);
 	}
 
-	public void enableSimpleContextCompression()
+	public void enableSimpleContextCompression(int tokenLimit)
 	{
-		this.contextCompressor = Optional.of(new LlmContextCompressor(model, 1024));
+		this.contextCompressor = Optional.of(new LlmContextCompressor(model, tokenLimit));
 	}
 
 	public void setContextCompressor(ContextCompressor contextCompressor)
