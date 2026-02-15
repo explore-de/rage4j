@@ -15,24 +15,7 @@ public class SimpleChatbot {
     }
 
     public String askQuestion(String question) {
-        String response = chatModel.chat(question);
-        return stripThinking(response);
-    }
-
-    public String askQuestionWithContext(String question, String context) {
-        String prompt = String.format(
-            "Context: %s\n\nQuestion: %s\n\nAnswer based on the context provided:",
-            context, question
-        );
-        String response = chatModel.chat(prompt);
-        return stripThinking(response);
-    }
-
-    private String stripThinking(String response) {
-        if (response.contains("</think>")) {
-            return response.substring(response.lastIndexOf("</think>") + 8).trim();
-        }
-        return response;
+        return chatModel.chat(question);
     }
 }
 

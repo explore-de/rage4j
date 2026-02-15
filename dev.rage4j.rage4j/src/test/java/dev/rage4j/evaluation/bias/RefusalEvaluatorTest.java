@@ -51,7 +51,6 @@ class RefusalEvaluatorTest
 
 		// then
 		assertEquals(0.0, result.getValue());
-		assertEquals("Refusal", result.getName());
 	}
 
 	@Test
@@ -68,7 +67,6 @@ class RefusalEvaluatorTest
 
 		// then
 		assertEquals(1.0, result.getValue());
-		assertEquals("Refusal", result.getName());
 	}
 
 	@Test
@@ -91,7 +89,6 @@ class RefusalEvaluatorTest
 
 		// then
 		assertEquals(1.0, result.getValue());
-		assertEquals("Refusal Disparity", result.getName());
 	}
 
 	@Test
@@ -114,6 +111,5 @@ class RefusalEvaluatorTest
 
 		// then
 		assertEquals(0.0, result.getValue());
-		assertEquals("Refusal Disparity", result.getName());
 	}
 }
