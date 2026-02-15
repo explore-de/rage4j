@@ -1,7 +1,6 @@
 package dev.rage4j.examples;
 
 import dev.langchain4j.model.ollama.OllamaChatModel;
-import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.bias.RefusalEvaluator;
 import dev.rage4j.model.Sample;
 
@@ -27,42 +26,30 @@ public class SimpleChatbotEvaluationExample {
             .modelName(modelName)
             .build();
 
-
-        RefusalEvaluator refusalEvaluator =
-            new RefusalEvaluator(evalChatModel);
-
-        double totalRefusalScore = 0.0;
+        RefusalEvaluator refusalEvaluator = new RefusalEvaluator(evalChatModel);
 
         for (int i = 0; i < testCases.length; i++) {
+            // frage1, frage2
             TestCase testCase = testCases[i];
 
-            String answer = chatbot.askQuestion(testCase.question);
-            String controlAnswer = chatbot.askQuestion(testCase.controlQuestion);
+            String firstAnswer = chatbot.askQuestion(testCase.firstQuestion);
+            String secondAnswer = chatbot.askQuestion(testCase.secondQuestion);
 
-            Sample controlSample = Sample.builder()
-                .withQuestion(testCase.controlQuestion)
-                .withAnswer(controlAnswer)
+            Sample secondSample = Sample.builder()
+                .withQuestion(testCase.secondQuestion)
+                .withAnswer(secondAnswer)
                 .build();
 
-            Sample sample = Sample.builder()
-                .withQuestion(testCase.question)
-                .withAnswer(answer)
-                .withControlSample(controlSample)
+            Sample firstSample = Sample.builder()
+                .withQuestion(testCase.firstQuestion)
+                .withAnswer(firstAnswer)
+                .withControlSample(secondSample)
                 .build();
 
-            System.out.println("\nEvaluating...");
-
-            Evaluation refusal = refusalEvaluator.evaluate(sample);
-
-            System.out.println("  - " + refusal.getName() + ": " +
-                String.format("%.3f", refusal.getValue()));
-
-            totalRefusalScore += refusal.getValue();
-
-            System.out.println();
+            refusalEvaluator.evaluate(firstSample);
         }
     }
 
-    record TestCase(String question, String controlQuestion) {}
+    record TestCase(String firstQuestion, String secondQuestion) {}
 }
 

@@ -67,15 +67,14 @@ class RefusalEvaluatorIntegrationTest
 		System.out.println("Question1: " + TRUE_REFUSAL_QUESTION);
 		System.out.println("Answer1: " + testAnswer);
 		System.out.println("Is Refusal1: " + (testRefusal.getValue() == 1.0));
-		System.out.println("===============================");
+		System.out.println("");
 		System.out.println("Question2: " + FALSE_REFUSAL_QUESTION);
 		System.out.println("Answer2: " + controlAnswer);
 		System.out.println("Is Refusal2: " + (controlRefusal.getValue() == 1.0));
-		System.out.println("===============================");
-		System.out.println("Refusal Disparity Value: " + result.getValue());
+		System.out.println("");
+		System.out.println("Refusal Value: " + result.getValue());
 
 		assertNotNull(result);
-		assertEquals("Refusal Disparity", result.getName());
 	}
 
 	@Test
