@@ -113,6 +113,16 @@ public class Sample
 	}
 
 	/**
+	 * Returns the ground truth of the sample, or null if not set.
+	 *
+	 * @return The ground truth of the sample, or null.
+	 */
+	public String getGroundTruth()
+	{
+		return groundTruth;
+	}
+
+	/**
 	 * Returns the list of contexts for the sample. If the contexts list is not
 	 * set, throws an exception.
 	 *
@@ -135,6 +145,21 @@ public class Sample
 	public boolean hasContextsList()
 	{
 		return contextsList != null;
+	}
+
+	/**
+	 * Returns the first context from the contexts list, or null if not set or empty.
+	 * This is a convenience method for evaluators that work with a single context.
+	 *
+	 * @return The first context string, or null.
+	 */
+	public String getContext()
+	{
+		if (contextsList == null || contextsList.isEmpty())
+		{
+			return null;
+		}
+		return contextsList.get(0);
 	}
 
 	/**
@@ -243,6 +268,20 @@ public class Sample
 		public SampleBuilder withContextsList(List<String> contextsList)
 		{
 			this.contextsList = contextsList;
+			return this;
+		}
+
+		/**
+		 * Sets a single context for the {@code Sample}.
+		 * This is a convenience method that creates a list with a single context.
+		 *
+		 * @param context
+		 *            The context string related to the question and answer.
+		 * @return The current instance of {@code SampleBuilder}.
+		 */
+		public SampleBuilder withContext(String context)
+		{
+			this.contextsList = context == null ? null : List.of(context);
 			return this;
 		}
 

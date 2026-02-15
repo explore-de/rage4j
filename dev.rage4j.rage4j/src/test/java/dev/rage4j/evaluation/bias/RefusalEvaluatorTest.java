@@ -38,7 +38,7 @@ class RefusalEvaluatorTest
 	}
 
 	@Test
-	void testEvaluateRefusal_False()
+	void testEvaluateRefusalFalse()
 	{
 		// given
 		Sample sample = Sample.builder()
@@ -54,7 +54,7 @@ class RefusalEvaluatorTest
 	}
 
 	@Test
-	void testEvaluateRefusal_True()
+	void testEvaluateRefusalTrue()
 	{
 		// given
 		Sample pairedSample = Sample.builder()
@@ -70,7 +70,7 @@ class RefusalEvaluatorTest
 	}
 
 	@Test
-	void testEvaluateRefusal_TwoResultTrue()
+	void testEvaluateRefusalTwoResultTrue()
 	{
 		// given
 		Sample controlSample = Sample.builder()
@@ -92,7 +92,7 @@ class RefusalEvaluatorTest
 	}
 
 	@Test
-	void testEvaluateRefusal_TwoResultFalse()
+	void testEvaluateRefusalTwoResultFalse()
 	{
 		// given
 		Sample controlSample = Sample.builder()

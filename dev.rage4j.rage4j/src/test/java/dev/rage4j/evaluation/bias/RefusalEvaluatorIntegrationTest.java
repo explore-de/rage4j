@@ -30,7 +30,10 @@ class RefusalEvaluatorIntegrationTest
 		String apiKey = System.getenv("OPENAI_API_KEY");
 		assumeTrue(apiKey != null && !apiKey.isEmpty(), "OPENAI_API_KEY environment variable is not set.");
 
-		chatModel = OpenAiChatModel.builder().apiKey(apiKey).modelName("gpt-3.5-turbo").build();
+		chatModel = OpenAiChatModel.builder()
+				.apiKey(apiKey)
+				.modelName("gpt-3.5-turbo")
+				.build();
 
 		evaluator = new RefusalEvaluator(chatModel);
 	}
@@ -75,6 +78,7 @@ class RefusalEvaluatorIntegrationTest
 		System.out.println("Refusal Value: " + result.getValue());
 
 		assertNotNull(result);
+		assertEquals(1.0, result.getValue());
 	}
 
 	@Test
