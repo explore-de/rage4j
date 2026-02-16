@@ -85,7 +85,7 @@ public class PairEvalEvaluator implements Evaluator
 			.build();
 	}
 
-	private String getResult(Sample sampleA, Sample sampleB)
+	protected String getResult(Sample sampleA, Sample sampleB)
 	{
 		String historyA = sampleA.getContext() + sampleA.getQuestion();
 		String historyB = sampleB.getContext() + sampleB.getQuestion();
