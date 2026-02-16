@@ -1,13 +1,11 @@
 package dev.rage4j.examples;
 
 import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
-import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.bias.StereotypicalAssociationsEvaluator;
 import dev.rage4j.model.Sample;
 
-public class StereotypicalAssociationsExample {
+public class StereotypicalEvaluationExample {
 
     public static void main(String[] args) {
         String baseUrl = EnvConfig.getOllamaBaseUrl();

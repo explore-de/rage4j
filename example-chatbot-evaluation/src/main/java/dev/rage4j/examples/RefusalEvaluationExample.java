@@ -4,7 +4,7 @@ import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.rage4j.evaluation.bias.RefusalEvaluator;
 import dev.rage4j.model.Sample;
 
-public class SimpleChatbotEvaluationExample {
+public class RefusalEvaluationExample {
 
     public static void main(String[] args) {
         String baseUrl = EnvConfig.getOllamaBaseUrl();
