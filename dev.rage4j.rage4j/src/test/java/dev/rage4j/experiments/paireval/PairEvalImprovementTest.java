@@ -3,12 +3,10 @@ package dev.rage4j.experiments.paireval;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
-import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.paireval.PairEvalEvaluator;
 import dev.rage4j.experiments.DialogLoader;
 import dev.rage4j.experiments.enity.Dialog;
-import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,7 +40,7 @@ public class PairEvalImprovementTest
 			.modelName(modelName)
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
 			.strictJsonSchema(true)
-			.temperature(0.5)
+			.temperature(1.0)
 			.logRequests(true)
 			.build();
 	}
@@ -56,7 +54,7 @@ public class PairEvalImprovementTest
 
 	@ParameterizedTest(name = "Test #{index} - {0} - {1} - {2}")
 	@MethodSource("contextDialogExampleProvider")
-	void testAXCELContextSize(String model, Dialog dialog, int run)
+	void testAXCELContextSize(Dialog dialog, String model, int run)
 	{
 		// given
 		ChatModel chatModel = getOpenAIChatModel(model);
@@ -80,36 +78,12 @@ public class PairEvalImprovementTest
 		List<Dialog> dialogs = List.of(new DialogLoader().loadDialogs());
 		List<Integer> runs = List.of(1, 2, 3);
 
-		return Arrays.stream(MODELS)
-			.flatMap(model -> dialogs.stream()
-				.flatMap(dialog -> runs.stream()
+		return dialogs.stream()
+			.flatMap(dialog -> Arrays.stream(MODELS)
+				.flatMap(model -> runs.stream()
 					.map(run -> Arguments.of(
-						Named.of("model " + model, model),
 						Named.of("dialog " + dialog.path(), dialog),
+						Named.of("model " + model, model),
 						Named.of("run " + run, run)))));
-	}
-}
-
-class PairEvalEvaluatorConsistentPrompt extends PairEvalEvaluator
-{
-	private final PairEvalConsistentPrompt improvedBot;
-
-	public PairEvalEvaluatorConsistentPrompt(ChatModel model)
-	{
-		super(model);
-		this.improvedBot = AiServices.create(PairEvalConsistentPrompt.class, model);
-	}
-
-	@Override
-	protected String getResult(Sample sampleA, Sample sampleB)
-	{
-		String historyA = sampleA.getContext() + sampleA.getQuestion();
-		String historyB = sampleB.getContext() + sampleB.getQuestion();
-		return improvedBot.evaluateResponses(
-			historyA,
-			sampleA.getAnswer(),
-			historyB,
-			sampleB.getAnswer()
-		);
 	}
 }
