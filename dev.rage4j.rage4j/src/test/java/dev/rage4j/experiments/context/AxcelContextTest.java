@@ -10,7 +10,7 @@ import dev.rage4j.experiments.DialogLoader;
 import dev.rage4j.experiments.enity.Dialog;
 import dev.rage4j.experiments.enity.ExperimentEvaluation;
 import org.jspecify.annotations.NonNull;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -48,8 +48,8 @@ public class AxcelContextTest
 			.build();
 	}
 
-	@AfterEach
-	void saveResults()
+	@AfterAll
+	static void saveResults()
 	{
 		MODEL_RESULTS_MAP.values().forEach(ModelResults::storeResults);
 	}
@@ -84,7 +84,7 @@ public class AxcelContextTest
 
 	private static Stream<Arguments> contextDialogExampleProvider()
 	{
-		List<Dialog> dialogs = List.of(new DialogLoader().loadDialogs()[0]);
+		List<Dialog> dialogs = List.of(new DialogLoader().loadDialogs());
 		List<AxcelOneShotExamples> examples = AXCEL_DATA_LOADER.loadAllExampleData();
 
 		return IntStream.of(CONTEXT_SIZES)
