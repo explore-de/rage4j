@@ -48,3 +48,4 @@ Thumbs.db
 /.env
 /github
 /github.pub
+/example-chatbot-evaluation/src/main/resources/logback.xml
