@@ -3,6 +3,7 @@ package dev.rage4j.evaluation.bias;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
+import dev.rage4j.evaluation.bias.Cooccurence.CooccurrenceEvaluator;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
