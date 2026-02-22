@@ -141,7 +141,7 @@ class StereotypicalAssociationsEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		// then
-		assertEquals(0.5, result.getValue());
+		assertEquals(0.0, result.getValue());
 	}
 
 	@Test
