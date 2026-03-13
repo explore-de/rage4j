@@ -11,11 +11,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.function.BiFunction;
-
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O;
 import static dev.langchain4j.model.openai.OpenAiEmbeddingModelName.TEXT_EMBEDDING_3_LARGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(LoggingTestWatcher.class)
@@ -29,8 +28,6 @@ class AnswerRelevanceEvaluatorIntegrationTest
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 
 	private AnswerRelevanceEvaluator evaluator;
-	private AnswerRelevanceBot mockBot;
-	private BiFunction<String, String, Double> mockStringSimilarityComputer;
 
 	@BeforeEach
 	void setUp()
@@ -108,14 +105,11 @@ class AnswerRelevanceEvaluatorIntegrationTest
 			.withAnswer(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have an answer for Answer Relevance evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample)
+		);
+		assertEquals("Sample must have an answer for Answer Relevance evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -127,19 +121,16 @@ class AnswerRelevanceEvaluatorIntegrationTest
 			.withQuestion(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have a question for Answer Relevance evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample)
+		);
+		assertEquals("Sample must have a question for Answer Relevance evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
 	@Test
-	void shouldEvaluateHigh()
+	void testEverythingCorrect()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -147,6 +138,9 @@ class AnswerRelevanceEvaluatorIntegrationTest
 			.withGroundTruth(GROUND_TRUTH)
 			.build();
 
-		assertEquals(0.85, evaluator.evaluate(sample).getValue(), 0.15);
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals("Answer relevance", result.getName());
+		assertEquals(0.85, result.getValue(), 0.15);
 	}
 }

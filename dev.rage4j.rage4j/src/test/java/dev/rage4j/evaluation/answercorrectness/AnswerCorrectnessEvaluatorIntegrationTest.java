@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(LoggingTestWatcher.class)
 class AnswerCorrectnessEvaluatorIntegrationTest
@@ -107,14 +108,11 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 			.withAnswer(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have an answer for Answer Correctness evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample)
+		);
+		assertEquals("Sample must have an answer for Answer Correctness evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -126,14 +124,11 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 			.withAnswer(ANSWER_CORRECT)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have a ground truth for Answer Correctness evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample)
+		);
+		assertEquals("Sample must have a ground truth for Answer Correctness evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")

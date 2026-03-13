@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(LoggingTestWatcher.class)
@@ -100,14 +101,11 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withContext(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have a context for Faithfulness evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample)
+		);
+		assertEquals("Sample must have a context for Faithfulness evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -121,19 +119,16 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withContext(CONTEXT)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have an answer for Faithfulness evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample)
+		);
+		assertEquals("Sample must have an answer for Faithfulness evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
 	@Test
-	void shouldEvaluateAboveZeroPointEight()
+	void testEverythingCorrect()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -142,6 +137,9 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withContext(CONTEXT)
 			.build();
 
-		assertTrue(evaluator.evaluate(sample).getValue() > 0.8);
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals("Faithfulness", result.getName());
+		assertTrue(result.getValue() > 0.8);
 	}
 }
