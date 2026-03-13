@@ -26,8 +26,19 @@
         <module>dev.rage4j.rage4j-persist-junit5</module>
     </modules>
 
+    <properties>
+        <jackson.version>2.19.0</jackson.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>dev.rage4j</groupId>
                 <artifactId>rage4j</artifactId>
