@@ -35,7 +35,7 @@
             </dependency>
             <dependency>
                 <groupId>dev.rage4j</groupId>
-                <artifactId>rage-assert</artifactId>
+                <artifactId>rage4j-assert</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

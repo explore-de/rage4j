@@ -13,7 +13,7 @@ Add this dependency to your `pom.xml`:
 ```xml
 <dependency>
     <groupId>dev.rage4j</groupId>
-    <artifactId>rage-assert</artifactId>
+    <artifactId>rage4j-assert</artifactId>
     <version>1.1.1-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
