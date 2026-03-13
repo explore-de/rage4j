@@ -112,9 +112,9 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 		{
 			evaluator.evaluate(sample);
 		}
-		catch (IllegalStateException e)
+		catch (IllegalArgumentException e)
 		{
-			assertEquals("Attribute not found: answer", e.getMessage());
+			assertEquals("Sample must have an answer for Answer Semantic Similarity evaluation", e.getMessage());
 		}
 	}
 
@@ -131,9 +131,9 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 		{
 			evaluator.evaluate(sample);
 		}
-		catch (IllegalStateException e)
+		catch (IllegalArgumentException e)
 		{
-			assertEquals("Attribute not found: groundTruth", e.getMessage());
+			assertEquals("Sample must have a ground truth for Answer Semantic Similarity evaluation", e.getMessage());
 		}
 	}
 

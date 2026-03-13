@@ -112,9 +112,9 @@ class AnswerRelevanceEvaluatorIntegrationTest
 		{
 			evaluator.evaluate(sample);
 		}
-		catch (IllegalStateException e)
+		catch (IllegalArgumentException e)
 		{
-			assertEquals("Attribute not found: answer", e.getMessage());
+			assertEquals("Sample must have an answer for Answer Relevance evaluation", e.getMessage());
 		}
 	}
 
@@ -131,9 +131,9 @@ class AnswerRelevanceEvaluatorIntegrationTest
 		{
 			evaluator.evaluate(sample);
 		}
-		catch (IllegalStateException e)
+		catch (IllegalArgumentException e)
 		{
-			assertEquals("Attribute not found: question", e.getMessage());
+			assertEquals("Sample must have a question for Answer Relevance evaluation", e.getMessage());
 		}
 	}
 
