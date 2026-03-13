@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static dev.langchain4j.model.openai.OpenAiEmbeddingModelName.TEXT_EMBEDDING_3_LARGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(LoggingTestWatcher.class)
@@ -108,14 +109,11 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 			.withAnswer(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have an answer for Answer Semantic Similarity evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample)
+		);
+		assertEquals("Sample must have an answer for Answer Semantic Similarity evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -127,19 +125,16 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 			.withGroundTruth(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have a ground truth for Answer Semantic Similarity evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample)
+		);
+		assertEquals("Sample must have a ground truth for Answer Semantic Similarity evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
 	@Test
-	void shouldEvaluateAboveZeroPointEight()
+	void testEverythingCorrect()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -147,6 +142,9 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 			.withGroundTruth(GROUND_TRUTH)
 			.build();
 
-		assertTrue(evaluator.evaluate(sample).getValue() > 0.8);
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals("Answer semantic similarity", result.getName());
+		assertTrue(result.getValue() > 0.8);
 	}
 }
