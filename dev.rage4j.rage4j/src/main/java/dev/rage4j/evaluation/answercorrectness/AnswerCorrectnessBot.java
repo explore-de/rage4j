@@ -25,6 +25,7 @@ public interface AnswerCorrectnessBot
 			- Semantic match: Paraphrases count (e.g. "description of process X is Y" == "exact description for X: Y").
 			- One fact per claim; maximize coverage.
 			- Ignore minor wording differences if meaning identical.
+			- Always fully write the claim you extracted in the output
 			
 			Example:
 			GT: "The description of the process definition with ID 'order-process-1' is: 'Handles customer order processing workflow'."
@@ -48,6 +49,7 @@ public interface AnswerCorrectnessBot
 			    Rules:
 			    - Semantic match: If paraphrase exists in GT, it's NOT FP.
 			    - One fact per claim; high precision.
+				- Always fully write the claim you extracted in the output
 
 			
 			    Example:
@@ -77,7 +79,8 @@ public interface AnswerCorrectnessBot
                 Rules:
                 - Semantic match: If paraphrase in answer covers GT claim, it's NOT FN.
                 - One fact per claim; high coverage.
-            
+				- Always fully write the claim you extracted in the output (Do not write something like this: [ "Paris is the la..." ] instead write the full claim "Paris is the largest city of France")
+
                 Example:
                 GT: "Paris is in France and capital of France."
                 Answer: "Paris is in France."
