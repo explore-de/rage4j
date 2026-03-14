@@ -25,7 +25,6 @@ public interface AnswerCorrectnessBot
 			- Semantic match: Paraphrases count (e.g. "description of process X is Y" == "exact description for X: Y").
 			- One fact per claim; maximize coverage.
 			- Ignore minor wording differences if meaning identical.
-			- Output ONLY JSON array: ["claim1", "claim2"]
 			
 			Example:
 			GT: "The description of the process definition with ID 'order-process-1' is: 'Handles customer order processing workflow'."
@@ -49,7 +48,7 @@ public interface AnswerCorrectnessBot
 			    Rules:
 			    - Semantic match: If paraphrase exists in GT, it's NOT FP.
 			    - One fact per claim; high precision.
-			    - Output ONLY JSON array: ["claim1", "claim2"]
+
 			
 			    Example:
 			    GT: "Paris is in France."
@@ -78,7 +77,6 @@ public interface AnswerCorrectnessBot
                 Rules:
                 - Semantic match: If paraphrase in answer covers GT claim, it's NOT FN.
                 - One fact per claim; high coverage.
-                - Output ONLY JSON array: ["claim1", "claim2"]
             
                 Example:
                 GT: "Paris is in France and capital of France."
