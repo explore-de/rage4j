@@ -10,7 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @Tag("integration")
@@ -35,13 +38,24 @@ class RefusalEvaluatorIntegrationTest
 				.modelName("gpt-3.5-turbo")
 				.build();
 
-		evaluator = new RefusalEvaluator(chatModel);
+		evaluator = new RefusalEvaluator();
 	}
 
 	@Test
-	void testEvaluateRefusalDisparityDoubleRefusalTrue()
+	void testEvaluateRequiresControlSample()
 	{
-		// given
+		String answer = chatModel.chat(FALSE_REFUSAL_QUESTION);
+		Sample sample = Sample.builder()
+			.withQuestion(FALSE_REFUSAL_QUESTION)
+			.withAnswer(answer)
+			.build();
+
+		assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(sample));
+	}
+
+	@Test
+	void testEvaluateRefusalDisparityTrue()
+	{
 		String testAnswer = chatModel.chat(TRUE_REFUSAL_QUESTION);
 		String controlAnswer = chatModel.chat(FALSE_REFUSAL_QUESTION);
 
@@ -50,30 +64,26 @@ class RefusalEvaluatorIntegrationTest
 			.withAnswer(controlAnswer)
 			.build();
 
-		Sample testSampleSingle = Sample.builder()
-			.withQuestion(TRUE_REFUSAL_QUESTION)
-			.withAnswer(testAnswer)
-			.build();
-
 		Sample testSample = Sample.builder()
 			.withQuestion(TRUE_REFUSAL_QUESTION)
 			.withAnswer(testAnswer)
 			.withControlSample(controlSample)
 			.build();
 
-		// when
-		Evaluation testRefusal = evaluator.evaluate(testSampleSingle);
-		Evaluation controlRefusal = evaluator.evaluate(controlSample);
+		boolean testRefusal = evaluator.isRefusal(Sample.builder()
+			.withQuestion(TRUE_REFUSAL_QUESTION)
+			.withAnswer(testAnswer)
+			.build());
+		boolean controlRefusal = evaluator.isRefusal(controlSample);
 		Evaluation result = evaluator.evaluate(testSample);
 
-		// then
 		System.out.println("Question1: " + TRUE_REFUSAL_QUESTION);
 		System.out.println("Answer1: " + testAnswer);
-		System.out.println("Is Refusal1: " + (testRefusal.getValue() == 1.0));
+		System.out.println("Is Refusal1: " + testRefusal);
 		System.out.println("");
 		System.out.println("Question2: " + FALSE_REFUSAL_QUESTION);
 		System.out.println("Answer2: " + controlAnswer);
-		System.out.println("Is Refusal2: " + (controlRefusal.getValue() == 1.0));
+		System.out.println("Is Refusal2: " + controlRefusal);
 		System.out.println("");
 		System.out.println("Refusal Value: " + result.getValue());
 
@@ -82,48 +92,38 @@ class RefusalEvaluatorIntegrationTest
 	}
 
 	@Test
-	void testEvaluateRefusalDisparitySingleRefusalTrue()
+	void testIsRefusalTrue()
 	{
-		// given
 		String answer = chatModel.chat(TRUE_REFUSAL_QUESTION);
 		Sample sample = Sample.builder()
 			.withQuestion(TRUE_REFUSAL_QUESTION)
 			.withAnswer(answer)
 			.build();
 
-		// when
-		Evaluation result = evaluator.evaluate(sample);
+		boolean result = evaluator.isRefusal(sample);
 
-		// then
 		System.out.println("Question: " + TRUE_REFUSAL_QUESTION);
 		System.out.println("Answer: " + answer);
-		System.out.println("Is Refusal: " + (result.getValue() == 1.0));
+		System.out.println("Is Refusal: " + result);
 
-		// refusal value should be 1.0
-		assertNotNull(result);
-		assertEquals(1.0, result.getValue());
+		assertTrue(result);
 	}
 
 	@Test
-	void testEvaluateRefusalDisparitySingleRefusalFalse()
+	void testIsRefusalFalse()
 	{
-		// given
 		String answer = chatModel.chat(FALSE_REFUSAL_QUESTION);
 		Sample sample = Sample.builder()
 			.withQuestion(FALSE_REFUSAL_QUESTION)
 			.withAnswer(answer)
 			.build();
 
-		// when
-		Evaluation result = evaluator.evaluate(sample);
+		boolean result = evaluator.isRefusal(sample);
 
-		// then
 		System.out.println("Question: " + FALSE_REFUSAL_QUESTION);
 		System.out.println("Answer: " + answer);
-		System.out.println("Is Refusal: " + (result.getValue() == 1.0));
+		System.out.println("Is Refusal: " + result);
 
-		// refusal value should be 0.0
-		assertNotNull(result);
-		assertEquals(0.0, result.getValue());
+		assertFalse(result);
 	}
 }
