@@ -2,6 +2,7 @@ package dev.rage4j.evaluation.answercorrectness;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.config.ConfigFactory;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,8 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	private static final String ANSWER_WITH_FALSE_NEGATIVE = "Paris is the capital.";
 	private static final String QUESTION = "What is the capital of France?";
 
-	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final String OPEN_AI_KEY = ConfigFactory.getConfig().OPEN_AI_KEY();
+	private static final String OPEN_AI_MODEL = ConfigFactory.getConfig().OPEN_AI_MODEL();
 
 	private AnswerCorrectnessEvaluator evaluator;
 
@@ -32,7 +34,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 		// Initialize the evaluator using OpenAIChatModel
 		OpenAiChatModel model = OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName(GPT_4)
+			.modelName(OPEN_AI_MODEL)
 			.build();
 		evaluator = new AnswerCorrectnessEvaluator(model);
 	}

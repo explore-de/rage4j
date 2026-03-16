@@ -3,6 +3,7 @@ package dev.rage4j.evaluation.answersemanicsimilarity;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.config.ConfigFactory;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.answersemanticsimilarity.AnswerSemanticSimilarityEvaluator;
 import dev.rage4j.model.Sample;
@@ -23,7 +24,8 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "The capital of France is Paris.";
 
-	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final String OPEN_AI_KEY = ConfigFactory.getConfig().OPEN_AI_KEY();
+	private static final String OPEN_AI_EMBEDDING_MODEL = ConfigFactory.getConfig().OPEN_AI_EMBEDDING_MODEL();
 
 	private AnswerSemanticSimilarityEvaluator evaluator;
 
@@ -32,7 +34,7 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 	{
 		// Initialise the evaluator using OpenAIEmbeddingModel
 		EmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
-			.modelName(TEXT_EMBEDDING_3_LARGE)
+			.modelName(OPEN_AI_EMBEDDING_MODEL)
 			.apiKey(OPEN_AI_KEY)
 			.build();
 
