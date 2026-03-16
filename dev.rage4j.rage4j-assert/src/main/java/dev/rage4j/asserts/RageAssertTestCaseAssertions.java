@@ -15,7 +15,7 @@ import dev.rage4j.asserts.exception.Rage4JRougeScoreException;
 import dev.rage4j.asserts.exception.Rage4JSimilarityException;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.answercorrectness.AnswerCorrectnessEvaluator;
-import dev.rage4j.evaluation.answerrelevance.AnswerRelevanceEvaluator;
+import dev.rage4j.evaluation.answerrelevance.embedding.AnswerRelevanceEmbeddingEvaluator;
 import dev.rage4j.evaluation.answersemanticsimilarity.AnswerSemanticSimilarityEvaluator;
 import dev.rage4j.evaluation.bleuscore.BleuScoreEvaluator;
 import dev.rage4j.evaluation.faithfulness.FaithfulnessEvaluator;
@@ -138,7 +138,7 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertAnswerRelevance(double minValue)
 	{
-		AnswerRelevanceEvaluator evaluator = new AnswerRelevanceEvaluator(chatModel, embeddingModel);
+		AnswerRelevanceEmbeddingEvaluator evaluator = new AnswerRelevanceEmbeddingEvaluator(chatModel, embeddingModel);
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withQuestion(question)

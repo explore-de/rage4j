@@ -1,11 +1,11 @@
-package dev.rage4j.evaluation.answerrelevance;
+package dev.rage4j.evaluation.answerrelevance.embedding;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import dev.rage4j.evaluation.model.ArrayResponse;
 
-public interface AnswerRelevanceBot
+public interface AnswerRelevanceEmbeddingBot
 {
 
 	@SystemMessage("""
