@@ -22,15 +22,15 @@ public interface AnswerCorrectnessBot
 			You are a facts analyzer LLM. Extract atomic claims (single facts) SEMANTICALLY present in BOTH ground truth and generated answer.
 			
 			Rules:
-			- Semantic match: Paraphrases count (e.g. "description of process X is Y" == "exact description for X: Y").
+			- Semantic match: Paraphrases count (e.g. "description of the book X is Y" == "exact description for X: Y").
 			- One fact per claim; maximize coverage.
 			- Ignore minor wording differences if meaning identical.
 			- Always fully write the claim you extracted in the output
 			
 			Example:
-			GT: "The description of the process definition with ID 'order-process-1' is: 'Handles customer order processing workflow'."
-			Answer: "The exact description of the process definition with ID 'order-process-1' is: 'Handles customer order processing workflow'."
-			Output: ["The description of the process definition with ID 'order-process-1' is: 'Handles customer order processing workflow'"]
+			GT: "The description of the book with ID 'book-42' is: 'A historical novel about the rise and fall of an ancient empire'."
+			Answer: "The exact description of the book with ID 'book-42' is: 'A historical novel about the rise and fall of an ancient empire'."
+			Output: ["The description of the book with ID 'book-42' is: 'A historical novel about the rise and fall of an ancient empire'"]
 			
 			Ground truth:
 			{{groundTruth}}
