@@ -77,8 +77,7 @@ class ConfigFactoryTest
 		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> invokeValidateNoSecrets(props));
 		assertEquals(
 			"WARNING: Secret-Key 'open.ai.key' in application.properties found! Only allowed as env key: OPEN_AI_KEY",
-			exception.getMessage()
-		);
+			exception.getMessage());
 	}
 
 	@Test
@@ -94,24 +93,29 @@ class ConfigFactoryTest
 	{
 		Method method = ConfigFactory.class.getDeclaredMethod("envOrProp", String.class, Properties.class, String.class);
 		method.setAccessible(true);
-		return (String) method.invoke(null, envKey, props, defaultValue);
+		return (String)method.invoke(null, envKey, props, defaultValue);
 	}
 
 	private static void invokeValidateNoSecrets(Properties props)
 	{
-		try {
+		try
+		{
 			Method method = ConfigFactory.class.getDeclaredMethod("validateNoSecrets", Properties.class);
 			method.setAccessible(true);
 			method.invoke(null, props);
-		} catch (InvocationTargetException e) {
+		}
+		catch (InvocationTargetException e)
+		{
 			Throwable cause = e.getCause();
-			if (cause instanceof RuntimeException runtimeException) {
+			if (cause instanceof RuntimeException runtimeException)
+			{
 				throw runtimeException;
 			}
 			throw new RuntimeException(cause);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			throw new RuntimeException(e);
 		}
 	}
 }
-

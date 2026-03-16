@@ -55,7 +55,7 @@ class AnswerRelevanceEmbeddingEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(EXPECTED_SCORE, result.getValue(), 0.01);
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class AnswerRelevanceEmbeddingEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(0.0, result.getValue(), 0.01);
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class AnswerRelevanceEmbeddingEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(0.0, result.getValue(), 0.01);
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class AnswerRelevanceEmbeddingEvaluatorTest
 			.build();
 
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullAnswerSample));
-		assertEquals("Sample must have an answer for Answer Relevance evaluation", exception.getMessage());
+		assertEquals("Sample must have an answer for Answer Relevance embedding evaluation ", exception.getMessage());
 	}
 
 	@Test
@@ -103,6 +103,6 @@ class AnswerRelevanceEmbeddingEvaluatorTest
 			.build();
 
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullQuestionSample));
-		assertEquals("Sample must have a question for Answer Relevance evaluation", exception.getMessage());
+		assertEquals("Sample must have a question for Answer Relevance embedding evaluation", exception.getMessage());
 	}
 }

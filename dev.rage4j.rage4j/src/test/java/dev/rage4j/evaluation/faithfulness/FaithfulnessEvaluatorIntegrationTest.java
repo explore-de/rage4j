@@ -102,8 +102,7 @@ class FaithfulnessEvaluatorIntegrationTest
 
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
-			() -> evaluator.evaluate(sample)
-		);
+			() -> evaluator.evaluate(sample));
 		assertEquals("Sample must have a context for Faithfulness evaluation", exception.getMessage());
 	}
 
@@ -120,8 +119,7 @@ class FaithfulnessEvaluatorIntegrationTest
 
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
-			() -> evaluator.evaluate(sample)
-		);
+			() -> evaluator.evaluate(sample));
 		assertEquals("Sample must have an answer for Faithfulness evaluation", exception.getMessage());
 	}
 

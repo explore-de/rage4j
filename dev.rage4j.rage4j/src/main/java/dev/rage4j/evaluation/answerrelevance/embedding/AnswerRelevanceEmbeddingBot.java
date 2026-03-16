@@ -9,9 +9,9 @@ public interface AnswerRelevanceEmbeddingBot
 {
 
 	@SystemMessage("""
-	Generate EXACTLY 5 concise questions that the answer directly answers.
-	If fewer possible: Generate maximum possible (never less than 3 if content exists).
-	""")
+		Generate EXACTLY 5 concise questions that the answer directly answers.
+		If fewer possible: Generate maximum possible (never less than 3 if content exists).
+		""")
 	@UserMessage("Predict 5 questions for this answer:  '{{answer}}'")
 	ArrayResponse getGeneratedQuestions(@V("answer") String answer);
 }
