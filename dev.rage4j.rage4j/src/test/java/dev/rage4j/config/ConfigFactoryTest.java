@@ -87,7 +87,7 @@ class ConfigFactoryTest
 		Properties props = new Properties();
 		props.setProperty("open.ai.model", "gpt-5.2-2025-12-11");
 
-		invokeValidateNoSecrets(props);
+		assertDoesNotThrow(() -> invokeValidateNoSecrets(props));
 	}
 
 	private static String invokeEnvOrProp(String envKey, Properties props, String defaultValue) throws Exception
