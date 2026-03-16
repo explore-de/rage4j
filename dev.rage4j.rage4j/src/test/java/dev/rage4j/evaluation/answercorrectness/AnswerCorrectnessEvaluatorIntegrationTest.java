@@ -166,8 +166,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
-			() -> evaluator.evaluate(sample)
-		);
+			() -> evaluator.evaluate(sample));
 		assertEquals("Sample must have an answer for Answer Correctness evaluation", exception.getMessage());
 	}
 
@@ -182,8 +181,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
-			() -> evaluator.evaluate(sample)
-		);
+			() -> evaluator.evaluate(sample));
 		assertEquals("Sample must have a ground truth for Answer Correctness evaluation", exception.getMessage());
 	}
 

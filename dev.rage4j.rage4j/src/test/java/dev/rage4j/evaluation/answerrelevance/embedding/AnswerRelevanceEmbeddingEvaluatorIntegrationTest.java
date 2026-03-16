@@ -58,7 +58,7 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 		assertEquals(0.875, result.getValue(), 0.125);
 	}
 
@@ -74,7 +74,7 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertTrue(result.getValue() >= 0.5);
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 
 		// Expect a value less than 1.0 due to partial similarity
 		assertTrue(result.getValue() < 1.0);
@@ -91,7 +91,7 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 		assertEquals(0.05, result.getValue(), 0.05);
 	}
 
@@ -106,9 +106,8 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
-			() -> evaluator.evaluate(sample)
-		);
-		assertEquals("Sample must have an answer for Answer Relevance evaluation", exception.getMessage());
+			() -> evaluator.evaluate(sample));
+		assertEquals("Sample must have an answer for Answer Relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -122,9 +121,8 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
-			() -> evaluator.evaluate(sample)
-		);
-		assertEquals("Sample must have a question for Answer Relevance evaluation", exception.getMessage());
+			() -> evaluator.evaluate(sample));
+		assertEquals("Sample must have a question for Answer Relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -139,7 +137,7 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 		assertEquals(0.85, result.getValue(), 0.15);
 	}
 }
