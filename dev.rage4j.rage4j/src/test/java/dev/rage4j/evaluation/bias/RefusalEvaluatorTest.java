@@ -8,7 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(LoggingTestWatcher.class)
 class RefusalEvaluatorTest
@@ -18,61 +22,80 @@ class RefusalEvaluatorTest
 	private static final String ANSWER_REFUSAL = "I cannot fulfill this request.";
 	private static final String ANSWER_OK = "Once upon a time...";
 
-	private RefusalEvaluator evaluator;
-	private Sample sampleRefusal;
-	private Sample sampleOk;
+	private RefusalEvaluator regexEvaluator;
+	private RefusalEvaluator llmEvaluator;
+	private RefusalBot mockBot;
 
 	@BeforeEach
 	void setUp()
 	{
-		RefusalBot mockBot = mock(RefusalBot.class);
-		evaluator = new RefusalEvaluator(mockBot);
-
-		sampleRefusal = Sample.builder()
-			.withAnswer(ANSWER_REFUSAL)
-			.build();
-
-		sampleOk = Sample.builder()
-			.withAnswer(ANSWER_OK)
-			.build();
+		mockBot = mock(RefusalBot.class);
+		regexEvaluator = new RefusalEvaluator();
+		llmEvaluator = new RefusalEvaluator(mockBot);
 	}
 
 	@Test
-	void testEvaluateRefusalFalse()
+	void testEvaluateRequiresControlSample()
 	{
-		// given
 		Sample sample = Sample.builder()
-				.withQuestion(FALSE_REFUSAL_QUESTION)
-				.withAnswer(ANSWER_OK)
-				.build();
+			.withQuestion(FALSE_REFUSAL_QUESTION)
+			.withAnswer(ANSWER_OK)
+			.build();
 
-		// when
-		Evaluation result = evaluator.evaluate(sample);
-
-		// then
-		assertEquals(0.0, result.getValue());
+		assertThrows(IllegalArgumentException.class, () -> regexEvaluator.evaluate(sample));
 	}
 
 	@Test
-	void testEvaluateRefusalTrue()
+	void testIsRefusalTrueWithRegex()
 	{
-		// given
-		Sample pairedSample = Sample.builder()
+		Sample sample = Sample.builder()
 			.withQuestion(TRUE_REFUSAL_QUESTION)
 			.withAnswer(ANSWER_REFUSAL)
 			.build();
 
-		// when
-		Evaluation result = evaluator.evaluate(pairedSample);
-
-		// then
-		assertEquals(1.0, result.getValue());
+		assertTrue(regexEvaluator.isRefusal(sample));
 	}
 
 	@Test
-	void testEvaluateRefusalTwoResultTrue()
+	void testIsRefusalFalseWithRegex()
 	{
-		// given
+		Sample sample = Sample.builder()
+			.withQuestion(FALSE_REFUSAL_QUESTION)
+			.withAnswer(ANSWER_OK)
+			.build();
+
+		assertFalse(regexEvaluator.isRefusal(sample));
+	}
+
+	@Test
+	void testIsRefusalTrueWithLlm()
+	{
+		Sample sample = Sample.builder()
+			.withQuestion(TRUE_REFUSAL_QUESTION)
+			.withAnswer("Ich kann dabei nicht helfen.")
+			.build();
+
+		when(mockBot.isRefusal(TRUE_REFUSAL_QUESTION, "Ich kann dabei nicht helfen.")).thenReturn("TRUE");
+
+		assertTrue(llmEvaluator.isRefusal(sample));
+	}
+
+	@Test
+	void testIsRefusalFalseWithLlm()
+	{
+		Sample sample = Sample.builder()
+			.withQuestion(FALSE_REFUSAL_QUESTION)
+			.withAnswer("Hier ist eine harmlose Geschichte.")
+			.build();
+
+		when(mockBot.isRefusal(FALSE_REFUSAL_QUESTION, "Hier ist eine harmlose Geschichte.")).thenReturn("FALSE");
+
+		assertFalse(llmEvaluator.isRefusal(sample));
+	}
+
+	@Test
+	void testEvaluateRefusalDisparityTrue()
+	{
 		Sample controlSample = Sample.builder()
 			.withQuestion(FALSE_REFUSAL_QUESTION)
 			.withAnswer(ANSWER_OK)
@@ -84,17 +107,14 @@ class RefusalEvaluatorTest
 			.withControlSample(controlSample)
 			.build();
 
-		// when
-		Evaluation result = evaluator.evaluate(testSample);
+		Evaluation result = regexEvaluator.evaluate(testSample);
 
-		// then
 		assertEquals(1.0, result.getValue());
 	}
 
 	@Test
-	void testEvaluateRefusalTwoResultFalse()
+	void testEvaluateRefusalDisparityFalse()
 	{
-		// given
 		Sample controlSample = Sample.builder()
 			.withQuestion(FALSE_REFUSAL_QUESTION)
 			.withAnswer(ANSWER_OK)
@@ -106,10 +126,8 @@ class RefusalEvaluatorTest
 			.withControlSample(controlSample)
 			.build();
 
-		// when
-		Evaluation result = evaluator.evaluate(testSample);
+		Evaluation result = regexEvaluator.evaluate(testSample);
 
-		// then
 		assertEquals(0.0, result.getValue());
 	}
 }
