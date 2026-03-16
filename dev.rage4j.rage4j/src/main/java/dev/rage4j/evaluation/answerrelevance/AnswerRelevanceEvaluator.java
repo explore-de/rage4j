@@ -99,9 +99,11 @@ public class AnswerRelevanceEvaluator implements Evaluator
 			LOG.info("No generated questions found.");
 			return new Evaluation(METRIC_NAME, 0);
 		}
-		double meanSimilarity = getMeanCosineSimilarity(question, generatedQuestions);
+		double meanSimilarity = getMedianCosineSimilarity(question, generatedQuestions);
 		LOG.info("Answer Relevance Metric: {}", meanSimilarity);
-		return new Evaluation(METRIC_NAME, meanSimilarity);
+		double clipped = Math.max(0.0, Math.min(1.0, meanSimilarity));
+		LOG.info("Clipped Answer: {}", clipped);
+		return new Evaluation(METRIC_NAME, clipped);
 	}
 
 	/**
