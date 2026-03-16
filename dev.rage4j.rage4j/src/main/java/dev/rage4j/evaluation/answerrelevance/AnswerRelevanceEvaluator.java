@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
@@ -74,7 +75,7 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	 *            The sample containing the original question and answer to be
 	 *            evaluated.
 	 * @return An {@code Evaluation} object containing the metric name and the
-	 *         calculated relevance score.awdawd
+	 *         calculated relevance score.
 	 */
 	public Evaluation evaluate(Sample sample)
 	{
@@ -99,30 +100,58 @@ public class AnswerRelevanceEvaluator implements Evaluator
 			LOG.info("No generated questions found.");
 			return new Evaluation(METRIC_NAME, 0);
 		}
-		double meanSimilarity = getMedianCosineSimilarity(question, generatedQuestions);
-		LOG.info("Answer Relevance Metric: {}", meanSimilarity);
-		double clipped = Math.max(0.0, Math.min(1.0, meanSimilarity));
+		double robustCosineSimilarity = getCosineSimilarityOfRelevantQuestions(question, generatedQuestions);
+		LOG.info("Answer Relevance Metric: {}", robustCosineSimilarity);
+		double clipped = Math.max(0.0, Math.min(1.0, robustCosineSimilarity));
 		LOG.info("Clipped Answer: {}", clipped);
 		return new Evaluation(METRIC_NAME, clipped);
 	}
 
-	/**
-	 * Computes the mean cosine similarity between the original question and an
-	 * array of generated questions. The similarities are calculated using a
-	 * string similarity computer.
-	 *
-	 * @param originalQuestion
-	 *            The original question in the sample.
-	 * @param generatedQuestions
-	 *            The questions generated from the answer.
-	 * @return The mean cosine similarity score.
-	 */
-	private double getMedianCosineSimilarity(String originalQuestion, String[] generatedQuestions)
+	private String[] filterRelevantQuestions(String originalQuestion, String[] generatedQuestions)
+	{
+		return Arrays.stream(generatedQuestions)
+			.filter(gq -> {
+				Double sim = stringSimilarityComputer.apply(originalQuestion, gq);
+				return sim != null && sim > 0.7;
+			})
+			.toArray(String[]::new);
+	}
+
+	private double computeMedianSimilarity(String originalQuestion, String[] questions)
 	{
 		DescriptiveStatistics stats = new DescriptiveStatistics();
-		Arrays.stream(generatedQuestions)
-			.map(generatedQuestion -> stringSimilarityComputer.apply(originalQuestion, generatedQuestion))
+
+		Arrays.stream(questions)
+			.map(q -> stringSimilarityComputer.apply(originalQuestion, q))
+			.filter(Objects::nonNull)
 			.forEach(stats::addValue);
-		return stats.getPercentile(50.0);
+
+		if (stats.getN() == 0)
+		{
+			return 0.0;
+		}
+
+		double median = stats.getPercentile(50.0);
+		return Math.max(0.0, Math.min(1.0, median));
 	}
+
+	private double getCosineSimilarityOfRelevantQuestions(String originalQuestion, String[] generatedQuestions)
+	{
+		if (generatedQuestions.length == 0)
+		{
+			return 0.0;
+		}
+
+		String[] filtered = filterRelevantQuestions(originalQuestion, generatedQuestions);
+		LOG.info("Remaining Questions: {} of {} questions", filtered.length, generatedQuestions.length);
+		LOG.info("Questions which have been filtered out: {}", Arrays.toString(Arrays.stream(generatedQuestions)
+			.filter(q -> !Arrays.asList(filtered).contains(q))
+			.toArray()));
+
+		double score = computeMedianSimilarity(originalQuestion, filtered);
+		LOG.info("Robust Relevance score: {}", score);
+
+		return score;
+	}
+
 }
