@@ -2,6 +2,7 @@ package dev.rage4j.evaluation.faithfulness;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.config.ConfigFactory;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,8 @@ class FaithfulnessEvaluatorIntegrationTest
 	private static final String GROUND_TRUTH = "Paris";
 	private static final String CONTEXT = "Paris is the capital of France.";
 
-	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final String OPEN_AI_KEY = ConfigFactory.getConfig().OPEN_AI_KEY();
+	private static final String OPEN_AI_MODEL = ConfigFactory.getConfig().OPEN_AI_MODEL();
 
 	private FaithfulnessEvaluator evaluator;
 
@@ -32,7 +34,7 @@ class FaithfulnessEvaluatorIntegrationTest
 		// Initialise the evaluator using OpenAIChatModel
 		OpenAiChatModel model = OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName(GPT_4_O)
+			.modelName(OPEN_AI_MODEL)
 			.build();
 
 		evaluator = new FaithfulnessEvaluator(model);

@@ -4,6 +4,7 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.config.ConfigFactory;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,11 +12,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O;
-import static dev.langchain4j.model.openai.OpenAiEmbeddingModelName.TEXT_EMBEDDING_3_LARGE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(LoggingTestWatcher.class)
 class AnswerRelevanceEvaluatorIntegrationTest
@@ -25,7 +22,9 @@ class AnswerRelevanceEvaluatorIntegrationTest
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "Paris";
 
-	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final String OPEN_AI_KEY = ConfigFactory.getConfig().OPEN_AI_KEY();
+	private static final String OPEN_AI_MODEL = ConfigFactory.getConfig().OPEN_AI_MODEL();
+	private static final String OPEN_AI_EMBEDDING_MODEL = ConfigFactory.getConfig().OPEN_AI_EMBEDDING_MODEL();
 
 	private AnswerRelevanceEvaluator evaluator;
 
@@ -36,12 +35,12 @@ class AnswerRelevanceEvaluatorIntegrationTest
 		// OpenAIEmbeddingModel
 		OpenAiChatModel chatModel = OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName(GPT_4_O)
+			.modelName(OPEN_AI_MODEL)
 			.responseFormat("json_object")
 			.build();
 
 		EmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
-			.modelName(TEXT_EMBEDDING_3_LARGE)
+			.modelName(OPEN_AI_EMBEDDING_MODEL)
 			.apiKey(OPEN_AI_KEY)
 			.build();
 
