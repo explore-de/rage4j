@@ -68,7 +68,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
-			.withAnswer("Paris is located in France.")
+			.withAnswer("Paris is the capital of France, known for the Eiffel Tower.")
 			.build();
 
 		Evaluation result = evaluator.evaluate(sample);
