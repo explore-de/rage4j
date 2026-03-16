@@ -117,12 +117,12 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	 *            The questions generated from the answer.
 	 * @return The mean cosine similarity score.
 	 */
-	private double getMeanCosineSimilarity(String originalQuestion, String[] generatedQuestions)
+	private double getMedianCosineSimilarity(String originalQuestion, String[] generatedQuestions)
 	{
-		DescriptiveStatistics similaritiesSum = new DescriptiveStatistics();
+		DescriptiveStatistics stats = new DescriptiveStatistics();
 		Arrays.stream(generatedQuestions)
 			.map(generatedQuestion -> stringSimilarityComputer.apply(originalQuestion, generatedQuestion))
-			.forEach(similaritiesSum::addValue);
-		return similaritiesSum.getMean();
+			.forEach(stats::addValue);
+		return stats.getPercentile(50.0);
 	}
 }
