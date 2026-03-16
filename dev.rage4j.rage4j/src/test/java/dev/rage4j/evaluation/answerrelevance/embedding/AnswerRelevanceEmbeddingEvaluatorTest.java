@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.answerrelevance;
+package dev.rage4j.evaluation.answerrelevance.embedding;
 
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(LoggingTestWatcher.class)
-class AnswerRelevanceEvaluatorTest
+class AnswerRelevanceEmbeddingEvaluatorTest
 {
 	private static final String QUESTION = "What is the capital of France?";
 	private static final String ANSWER = "Paris is the capital of France.";
@@ -26,18 +26,18 @@ class AnswerRelevanceEvaluatorTest
 		"Which city is the capital of France?"
 	};
 
-	private AnswerRelevanceEvaluator evaluator;
-	private AnswerRelevanceBot mockBot;
+	private AnswerRelevanceEmbeddingEvaluator evaluator;
+	private AnswerRelevanceEmbeddingBot mockBot;
 	private BiFunction<String, String, Double> mockSimilarityComputer;
 	private Sample sample;
 
 	@BeforeEach
 	void setUp()
 	{
-		mockBot = mock(AnswerRelevanceBot.class);
+		mockBot = mock(AnswerRelevanceEmbeddingBot.class);
 		mockSimilarityComputer = mock(BiFunction.class);
 
-		evaluator = new AnswerRelevanceEvaluator(mockBot, mockSimilarityComputer);
+		evaluator = new AnswerRelevanceEmbeddingEvaluator(mockBot, mockSimilarityComputer);
 
 		sample = Sample.builder()
 			.withQuestion(QUESTION)

@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.answerrelevance;
+package dev.rage4j.evaluation.answerrelevance.embedding;
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(LoggingTestWatcher.class)
-class AnswerRelevanceEvaluatorIntegrationTest
+class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 {
 
 	private static final String QUESTION = "What is the capital of France?";
@@ -26,7 +26,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 	private static final String OPEN_AI_MODEL = ConfigFactory.getConfig().OPEN_AI_MODEL();
 	private static final String OPEN_AI_EMBEDDING_MODEL = ConfigFactory.getConfig().OPEN_AI_EMBEDDING_MODEL();
 
-	private AnswerRelevanceEvaluator evaluator;
+	private AnswerRelevanceEmbeddingEvaluator evaluator;
 
 	@BeforeEach
 	void setUp()
@@ -44,12 +44,12 @@ class AnswerRelevanceEvaluatorIntegrationTest
 			.apiKey(OPEN_AI_KEY)
 			.build();
 
-		evaluator = new AnswerRelevanceEvaluator(chatModel, embeddingModel);
+		evaluator = new AnswerRelevanceEmbeddingEvaluator(chatModel, embeddingModel);
 	}
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceFullSimilarity()
+	void testEvaluateRelevanceEmbeddingFullSimilarity()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -64,7 +64,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceWithPartialSimilarity()
+	void testEvaluateRelevanceEmbeddingWithPartialSimilarity()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -82,7 +82,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceWithEmptyAnswer()
+	void testEvaluateRelevanceEmbeddingWithEmptyAnswer()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -97,7 +97,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceWithNullAnswer()
+	void testEvaluateRelevanceEmbeddingWithNullAnswer()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -113,7 +113,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceWithNullQuestion()
+	void testEvaluateRelevanceEmbeddingWithNullQuestion()
 	{
 		Sample sample = Sample.builder()
 			.withAnswer(ANSWER)
@@ -129,7 +129,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 
 	@Tag("integration")
 	@Test
-	void testEverythingCorrect()
+	void testEverythingEmbeddingCorrect()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
