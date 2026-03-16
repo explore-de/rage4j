@@ -107,16 +107,6 @@ public class AnswerRelevanceEvaluator implements Evaluator
 		return new Evaluation(METRIC_NAME, clipped);
 	}
 
-	private String[] filterRelevantQuestions(String originalQuestion, String[] generatedQuestions)
-	{
-		return Arrays.stream(generatedQuestions)
-			.filter(gq -> {
-				Double sim = stringSimilarityComputer.apply(originalQuestion, gq);
-				return sim != null && sim > 0.7;
-			})
-			.toArray(String[]::new);
-	}
-
 	private double computeMedianSimilarity(String originalQuestion, String[] questions)
 	{
 		DescriptiveStatistics stats = new DescriptiveStatistics();
@@ -142,13 +132,7 @@ public class AnswerRelevanceEvaluator implements Evaluator
 			return 0.0;
 		}
 
-		String[] filtered = filterRelevantQuestions(originalQuestion, generatedQuestions);
-		LOG.info("Remaining Questions: {} of {} questions", filtered.length, generatedQuestions.length);
-		LOG.info("Questions which have been filtered out: {}", Arrays.toString(Arrays.stream(generatedQuestions)
-			.filter(q -> !Arrays.asList(filtered).contains(q))
-			.toArray()));
-
-		double score = computeMedianSimilarity(originalQuestion, filtered);
+		double score = computeMedianSimilarity(originalQuestion, generatedQuestions);
 		LOG.info("Robust Relevance score: {}", score);
 
 		return score;
