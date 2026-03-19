@@ -34,7 +34,7 @@ public class ContextRelevanceLlmEvaluator implements Evaluator
 	 * result as an {@code Evaluation}.
 	 *
 	 * @param sample
-	 *            The sample containing data (such as context and answer) to be
+	 *            The sample containing data (such as question and context) to be
 	 *            evaluated.
 	 * @return An {@code Evaluation} object representing the metric name and its
 	 *         calculated value.
