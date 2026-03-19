@@ -1,8 +1,9 @@
 package dev.rage4j.evaluation.contextrelevance.llm;
 
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
-import dev.rage4j.evaluation.contextrelevance.embedding.ContextRelevanceEmbeddingEvaluator;
 import dev.rage4j.model.Sample;
 import dev.rage4j.util.ContextChunker;
 import org.slf4j.Logger;
@@ -13,10 +14,15 @@ import java.util.List;
 public class ContextRelevanceLlmEvaluator implements Evaluator
 {
 
-	private static final String METRIC_NAME = "context relevance embedding";
-	private static final Logger LOG = LoggerFactory.getLogger(ContextRelevanceEmbeddingEvaluator.class);
+	private static final String METRIC_NAME = "context relevance llm";
+	private static final Logger LOG = LoggerFactory.getLogger(ContextRelevanceLlmEvaluator.class);
 
 	private final ContextRelevanceLlmBot bot;
+
+	public ContextRelevanceLlmEvaluator(ChatModel judgeModel)
+	{
+		bot = AiServices.create(ContextRelevanceLlmBot.class, judgeModel);
+	}
 
 	public ContextRelevanceLlmEvaluator(ContextRelevanceLlmBot bot)
 	{
@@ -24,24 +30,27 @@ public class ContextRelevanceLlmEvaluator implements Evaluator
 	}
 
 	/**
-	 * Evaluates the given sample according to a specific metric and returns the result as an {@code Evaluation}.
+	 * Evaluates the given sample according to a specific metric and returns the
+	 * result as an {@code Evaluation}.
 	 *
 	 * @param sample
-	 * 	The sample containing data (such as context and answer) to be evaluated.
-	 * @return An {@code Evaluation} object representing the metric name and its calculated value.
+	 *            The sample containing data (such as context and answer) to be
+	 *            evaluated.
+	 * @return An {@code Evaluation} object representing the metric name and its
+	 *         calculated value.
 	 * @throws IllegalArgumentException
-	 * 	if the sample is invalid or cannot be evaluated.
+	 *             if the sample is invalid or cannot be evaluated.
 	 */
 	@Override
 	public Evaluation evaluate(Sample sample)
 	{
 		if (!sample.hasContext())
 		{
-			throw new IllegalArgumentException("Sample must have an answer for Answer Relevance LLM evaluation");
+			throw new IllegalArgumentException("Sample must have a context for Context Relevance LLM evaluation");
 		}
 		if (!sample.hasQuestion())
 		{
-			throw new IllegalArgumentException("Sample must have a question for Answer Relevance LLM evaluation");
+			throw new IllegalArgumentException("Sample must have a question for Context Relevance LLM evaluation");
 		}
 
 		String question = sample.getQuestion();
