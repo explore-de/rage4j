@@ -22,7 +22,7 @@ class ContextRelevanceEmbeddingEvaluatorTest
 	private static final String CONTEXT = "Paris is the capital of France.";
 
 	private ContextRelevanceEmbeddingEvaluator evaluator;
-	private BiFunction<String, List<String>, List<Double>>  mockSimilarityBatchComputer;
+	private BiFunction<String, List<String>, List<Double>> mockSimilarityBatchComputer;
 	private Sample sample;
 
 	@BeforeEach
@@ -37,59 +37,58 @@ class ContextRelevanceEmbeddingEvaluatorTest
 			.build();
 	}
 
-//	@Test
-//	void testEvaluateWithHighSimilarity()
-//	{
-//		when(mockSimilarityBatchComputer.apply(QUESTION, CONTEXT)).thenReturn(0.95);
-//
-//		Evaluation result = evaluator.evaluate(sample);
-//
-//		assertEquals(0.95, result.getValue(), 0.01);
-//		assertEquals("context relevance embedding", result.getName());
-//	}
-//
-//	@Test
-//	void testEvaluateWithLowSimilarity()
-//	{
-//		when(mockSimilarityBatchComputer.apply(QUESTION, CONTEXT)).thenReturn(0.2);
-//
-//		Evaluation result = evaluator.evaluate(sample);
-//
-//		assertEquals(0.2, result.getValue(), 0.01);
-//		assertEquals("context relevance embedding", result.getName());
-//	}
-//
-//	@Test
-//	void testEvaluateWithNoSimilarity()
-//	{
-//		when(mockSimilarityBatchComputer.apply(QUESTION, CONTEXT)).thenReturn(0.0);
-//
-//		Evaluation result = evaluator.evaluate(sample);
-//
-//		assertEquals(0.0, result.getValue(), 0.01);
-//		assertEquals("context relevance embedding", result.getName());
-//	}
-//
-//	@Test
-//	void testEvaluateWithMultipleChunksReturnsBest()
-//	{
-//		String chunk1 = "Paris is the capital of France.";
-//		String chunk2 = "London is the capital of England.";
-//		String multiChunkContext = chunk1 + "\n\n" + chunk2;
-//
-//		Sample multiChunkSample = Sample.builder()
-//			.withQuestion(QUESTION)
-//			.withContext(multiChunkContext)
-//			.build();
-//
-//		when(mockSimilarityBatchComputer.apply(QUESTION, chunk1)).thenReturn(0.9);
-//		when(mockSimilarityBatchComputer.apply(QUESTION, chunk2)).thenReturn(0.3);
-//
-//		Evaluation result = evaluator.evaluate(multiChunkSample);
-//
-//		assertEquals(0.9, result.getValue(), 0.01);
-//		assertEquals("context relevance embedding", result.getName());
-//	}
+	@Test
+	void testEvaluateWithHighSimilarity()
+	{
+		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(CONTEXT))).thenReturn(List.of(0.95));
+
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals(0.95, result.getValue(), 0.01);
+		assertEquals("context relevance embedding", result.getName());
+	}
+
+	@Test
+	void testEvaluateWithLowSimilarity()
+	{
+		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(CONTEXT))).thenReturn(List.of(0.2));
+
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals(0.2, result.getValue(), 0.01);
+		assertEquals("context relevance embedding", result.getName());
+	}
+
+	@Test
+	void testEvaluateWithNoSimilarity()
+	{
+		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(CONTEXT))).thenReturn(List.of(0.0));
+
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals(0.0, result.getValue(), 0.01);
+		assertEquals("context relevance embedding", result.getName());
+	}
+
+	@Test
+	void testEvaluateWithMultipleChunksReturnsAverage()
+	{
+		String chunk1 = "Paris is the capital of France.";
+		String chunk2 = "London is the capital of England.";
+		String multiChunkContext = chunk1 + "\n\n" + chunk2;
+
+		Sample multiChunkSample = Sample.builder()
+			.withQuestion(QUESTION)
+			.withContext(multiChunkContext)
+			.build();
+
+		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(chunk1, chunk2))).thenReturn(List.of(0.9, 0.3));
+
+		Evaluation result = evaluator.evaluate(multiChunkSample);
+
+		assertEquals(0.6, result.getValue(), 0.01);
+		assertEquals("context relevance embedding", result.getName());
+	}
 
 	@Test
 	void testEvaluateWithEmptyContextReturnsZero()
