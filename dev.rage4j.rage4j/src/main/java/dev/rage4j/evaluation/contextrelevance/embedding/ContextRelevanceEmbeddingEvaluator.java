@@ -40,6 +40,8 @@ public class ContextRelevanceEmbeddingEvaluator implements Evaluator
 		String question = sample.getQuestion();
 		String context = sample.getContext();
 		LOG.info("Evaluating new sample");
+		LOG.info("Question: {}", question);
+		LOG.info("Context: {}", context);
 
 		List<String> chunks = ContextChunker.chunk(context);
 		if (chunks.isEmpty())
