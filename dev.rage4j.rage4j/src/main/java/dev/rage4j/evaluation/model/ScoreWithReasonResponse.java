@@ -1,8 +1,8 @@
 package dev.rage4j.evaluation.model;
 
 /**
- * Structured response for evaluators that need both a numeric score and a
- * short explanation.
+ * Structured response for evaluators that need both a numeric score and a short
+ * explanation.
  */
 public class ScoreWithReasonResponse
 {

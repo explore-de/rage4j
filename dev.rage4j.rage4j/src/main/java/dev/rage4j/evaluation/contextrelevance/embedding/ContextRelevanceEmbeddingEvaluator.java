@@ -54,8 +54,6 @@ public class ContextRelevanceEmbeddingEvaluator implements Evaluator
 			best = Math.max(best, s);
 		}
 
-
-
 		LOG.info("Context relevance best similarity: {}", best);
 		return new Evaluation(METRIC_NAME, best);
 	}
