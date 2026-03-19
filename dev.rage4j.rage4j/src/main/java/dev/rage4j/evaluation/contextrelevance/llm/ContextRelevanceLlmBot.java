@@ -4,7 +4,6 @@ import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 
-
 public interface ContextRelevanceLlmBot
 {
 	@SystemMessage("""
@@ -26,5 +25,5 @@ public interface ContextRelevanceLlmBot
 		Return exactly one integer: 0, 1, 2, or 3. Output must contain only that single digit and nothing else.
 		""")
 	@UserMessage("Evaluate the chunk.")
-	String generateScore(@V("question") String question, @V("answer") String answer);
+	String generateScore(@V("question") String question, @V("chunk") String chunk);
 }
