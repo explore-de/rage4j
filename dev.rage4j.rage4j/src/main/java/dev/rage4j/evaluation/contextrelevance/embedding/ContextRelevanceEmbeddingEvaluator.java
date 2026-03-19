@@ -2,7 +2,6 @@ package dev.rage4j.evaluation.contextrelevance.embedding;
 
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
-import dev.rage4j.evaluation.answerrelevance.embedding.AnswerRelevanceEmbeddingEvaluator;
 import dev.rage4j.model.Sample;
 import dev.rage4j.util.ContextChunker;
 import org.slf4j.Logger;
@@ -16,11 +15,12 @@ public class ContextRelevanceEmbeddingEvaluator implements Evaluator
 
 	private static final String METRIC_NAME = "context relevance embedding";
 	private static final Logger LOG = LoggerFactory.getLogger(ContextRelevanceEmbeddingEvaluator.class);
-	private final BiFunction<String, String, Double> stringSimilarityComputer;
+	private final BiFunction<String, List<String>, List<Double>> stringSimilarityBatchComputer;
 
-	public ContextRelevanceEmbeddingEvaluator(BiFunction<String, String, Double> stringSimilarityComputer)
+	public ContextRelevanceEmbeddingEvaluator(BiFunction<String, List<String>, List<Double>> stringSimilarityBatchComputer)
 	{
-		this.stringSimilarityComputer = stringSimilarityComputer;
+		this.stringSimilarityBatchComputer = stringSimilarityBatchComputer;
+
 	}
 
 	@Override
@@ -47,15 +47,13 @@ public class ContextRelevanceEmbeddingEvaluator implements Evaluator
 			return new Evaluation(METRIC_NAME, 0.0);
 		}
 
-		double best = 0.0;
-		for (String chunk : chunks)
-		{
-			double s = stringSimilarityComputer.apply(question, chunk);
-			best = Math.max(best, s);
-		}
+		var similarityScores = stringSimilarityBatchComputer.apply(question, chunks);
 
-		LOG.info("Context relevance best similarity: {}", best);
-		return new Evaluation(METRIC_NAME, best);
+		double sumSimilarity = similarityScores.stream().mapToDouble(Double::doubleValue).sum();
+		double result = sumSimilarity / similarityScores.size();
+
+		LOG.info("Context relevance best similarity: {}", result);
+		return new Evaluation(METRIC_NAME, result);
 	}
 
 }

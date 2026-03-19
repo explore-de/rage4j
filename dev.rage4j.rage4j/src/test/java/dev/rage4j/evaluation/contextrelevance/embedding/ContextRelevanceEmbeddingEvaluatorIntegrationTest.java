@@ -6,6 +6,7 @@ import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.config.ConfigFactory;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.model.Sample;
+import dev.rage4j.util.StringSimilarityBatchComputer;
 import dev.rage4j.util.StringSimilarityComputer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -34,7 +35,7 @@ class ContextRelevanceEmbeddingEvaluatorIntegrationTest
 			.apiKey(OPEN_AI_KEY)
 			.build();
 
-		evaluator = new ContextRelevanceEmbeddingEvaluator(new StringSimilarityComputer(embeddingModel));
+		evaluator = new ContextRelevanceEmbeddingEvaluator(new StringSimilarityBatchComputer(embeddingModel));
 	}
 
 	@Tag("integration")
