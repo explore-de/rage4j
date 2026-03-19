@@ -34,7 +34,8 @@ public final class ContextChunker
 				List<String> flattened = new ArrayList<>();
 				flattenJson(root, "", flattened);
 
-				// Optional: group tiny lines into bigger chunks (to reduce embed calls)
+				// Optional: group tiny lines into bigger chunks (to reduce
+				// embed calls)
 				return groupLines(flattened, 800);
 			}
 			catch (JsonProcessingException ignored)
@@ -103,7 +104,8 @@ public final class ContextChunker
 				continue;
 			}
 
-			// If a single line is huge, just emit it (or you could further split it)
+			// If a single line is huge, just emit it (or you could further
+			// split it)
 			if (line.length() > maxChars)
 			{
 				if (!current.isEmpty())
