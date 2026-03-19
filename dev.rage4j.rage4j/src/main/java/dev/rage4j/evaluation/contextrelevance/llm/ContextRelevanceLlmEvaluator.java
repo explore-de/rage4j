@@ -1,0 +1,71 @@
+package dev.rage4j.evaluation.contextrelevance.llm;
+
+import dev.rage4j.evaluation.Evaluation;
+import dev.rage4j.evaluation.Evaluator;
+import dev.rage4j.evaluation.contextrelevance.embedding.ContextRelevanceEmbeddingEvaluator;
+import dev.rage4j.model.Sample;
+import dev.rage4j.util.ContextChunker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+public class ContextRelevanceLlmEvaluator implements Evaluator
+{
+
+	private static final String METRIC_NAME = "context relevance embedding";
+	private static final Logger LOG = LoggerFactory.getLogger(ContextRelevanceEmbeddingEvaluator.class);
+
+	private final ContextRelevanceLlmBot bot;
+
+	public ContextRelevanceLlmEvaluator(ContextRelevanceLlmBot bot)
+	{
+		this.bot = bot;
+	}
+
+	/**
+	 * Evaluates the given sample according to a specific metric and returns the result as an {@code Evaluation}.
+	 *
+	 * @param sample
+	 * 	The sample containing data (such as context and answer) to be evaluated.
+	 * @return An {@code Evaluation} object representing the metric name and its calculated value.
+	 * @throws IllegalArgumentException
+	 * 	if the sample is invalid or cannot be evaluated.
+	 */
+	@Override
+	public Evaluation evaluate(Sample sample)
+	{
+		if (!sample.hasContext())
+		{
+			throw new IllegalArgumentException("Sample must have an answer for Answer Relevance LLM evaluation");
+		}
+		if (!sample.hasQuestion())
+		{
+			throw new IllegalArgumentException("Sample must have a question for Answer Relevance LLM evaluation");
+		}
+
+		String question = sample.getQuestion();
+		String context = sample.getContext();
+		LOG.info("Evaluating new sample");
+		LOG.info("Question: {}", question);
+		LOG.info("Context: {}", context);
+
+		List<String> chunks = ContextChunker.chunk(context);
+		if (chunks.isEmpty())
+		{
+			return new Evaluation(METRIC_NAME, 0.0);
+		}
+
+		List<Double> scores = chunks
+			.stream()
+			.map(chunk -> Double.parseDouble(bot.generateScore(question, chunk)))
+			.toList();
+		double sumScores = scores.stream()
+			.mapToDouble(Double::doubleValue)
+			.sum();
+		double result = sumScores / scores.size();
+		LOG.info("Evaluation result: {}", result);
+
+		return new Evaluation(METRIC_NAME, result);
+	}
+}

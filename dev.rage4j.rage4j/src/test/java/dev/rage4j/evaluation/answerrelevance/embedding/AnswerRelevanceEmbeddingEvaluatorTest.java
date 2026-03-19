@@ -91,7 +91,7 @@ class AnswerRelevanceEmbeddingEvaluatorTest
 			.build();
 
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullAnswerSample));
-		assertEquals("Sample must have an answer for Answer Relevance embedding evaluation ", exception.getMessage());
+		assertEquals("Sample must have an answer for Answer Relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Test
