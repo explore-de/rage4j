@@ -7,11 +7,7 @@ import dev.rage4j.evaluation.model.ArrayResponse;
 
 public interface AnswerRelevanceEmbeddingBot
 {
-
-	@SystemMessage("""
-		Generate EXACTLY 5 concise questions that the answer directly answers.
-		If fewer possible: Generate maximum possible (never less than 3 if content exists).
-		""")
+	@SystemMessage("You are a question predictor LLM. You task is the prediction of 5 short questions that can be answered by the sentence provided by user. If the answer is empty, return an empty Array `[]`.")
 	@UserMessage("Predict 5 questions for this answer:  '{{answer}}'")
 	ArrayResponse getGeneratedQuestions(@V("answer") String answer);
 }
