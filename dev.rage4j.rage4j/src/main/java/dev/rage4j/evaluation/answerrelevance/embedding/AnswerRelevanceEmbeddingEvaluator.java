@@ -100,29 +100,26 @@ public class AnswerRelevanceEmbeddingEvaluator implements Evaluator
 			LOG.info("No generated questions found.");
 			return new Evaluation(METRIC_NAME, 0);
 		}
-
-		double robustCosineSimilarity = computeMedianSimilarity(question, generatedQuestions);
-		LOG.info("Answer Relevance Metric: {}", robustCosineSimilarity);
-		double clipped = Math.max(0.0, Math.min(1.0, robustCosineSimilarity));
-		LOG.info("Clipped Answer: {}", clipped);
-		return new Evaluation(METRIC_NAME, clipped);
+		double meanSimilarity = getMeanCosineSimilarity(question, generatedQuestions);
+		LOG.info("Answer Relevance Metric: {}", meanSimilarity);
+		return new Evaluation(METRIC_NAME, meanSimilarity);
 	}
 
-	private double computeMedianSimilarity(String originalQuestion, String[] questions)
+	/**
+	 * Computes the mean cosine similarity between the original question and an array of generated questions. The similarities are calculated using a string similarity computer.
+	 *
+	 * @param originalQuestion
+	 * 	The original question in the sample.
+	 * @param generatedQuestions
+	 * 	The questions generated from the answer.
+	 * @return The mean cosine similarity score.
+	 */
+	private double getMeanCosineSimilarity(String originalQuestion, String[] generatedQuestions)
 	{
-		DescriptiveStatistics stats = new DescriptiveStatistics();
-
-		Arrays.stream(questions)
-			.map(q -> stringSimilarityComputer.apply(originalQuestion, q))
-			.filter(Objects::nonNull)
-			.forEach(stats::addValue);
-
-		if (stats.getN() == 0)
-		{
-			return 0.0;
-		}
-
-		double median = stats.getPercentile(50.0);
-		return Math.max(0.0, Math.min(1.0, median));
+		DescriptiveStatistics similaritiesSum = new DescriptiveStatistics();
+		Arrays.stream(generatedQuestions)
+			.map(generatedQuestion -> stringSimilarityComputer.apply(originalQuestion, generatedQuestion))
+			.forEach(similaritiesSum::addValue);
+		return similaritiesSum.getMean();
 	}
 }
