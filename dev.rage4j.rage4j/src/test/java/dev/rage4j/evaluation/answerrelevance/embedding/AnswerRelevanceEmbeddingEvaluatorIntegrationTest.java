@@ -107,7 +107,7 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
 			() -> evaluator.evaluate(sample));
-		assertEquals("Sample must have an answer for Answer Relevance embedding evaluation", exception.getMessage());
+		assertEquals("Sample must have an answer for answer relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -122,7 +122,7 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
 			() -> evaluator.evaluate(sample));
-		assertEquals("Sample must have a question for Answer Relevance embedding evaluation", exception.getMessage());
+		assertEquals("Sample must have a question for answer relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")

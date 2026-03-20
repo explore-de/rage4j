@@ -81,11 +81,11 @@ public class AnswerRelevanceEmbeddingEvaluator implements Evaluator
 	{
 		if (!sample.hasAnswer())
 		{
-			throw new IllegalArgumentException("Sample must have an answer for Answer Relevance embedding evaluation");
+			throw new IllegalArgumentException("Sample must have an answer for answer relevance embedding evaluation");
 		}
 		if (!sample.hasQuestion())
 		{
-			throw new IllegalArgumentException("Sample must have a question for Answer Relevance embedding evaluation");
+			throw new IllegalArgumentException("Sample must have a question for answer relevance embedding evaluation");
 		}
 
 		String answer = sample.getAnswer();
