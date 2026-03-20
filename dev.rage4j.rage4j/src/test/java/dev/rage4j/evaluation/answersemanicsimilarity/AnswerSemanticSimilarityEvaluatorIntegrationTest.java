@@ -29,7 +29,7 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 	@BeforeEach
 	void setUp()
 	{
-		// Initialise the evaluator using OpenAIEmbeddingModel
+		// Initialize the evaluator using OpenAIEmbeddingModel
 		EmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
 			.modelName(OPEN_AI_EMBEDDING_MODEL)
 			.apiKey(OPEN_AI_KEY)
