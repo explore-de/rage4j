@@ -98,7 +98,7 @@ class ContextRelevanceEmbeddingEvaluatorIntegrationTest
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
 			() -> evaluator.evaluate(sample));
-		assertEquals("Sample must have a question for Answer Relevance embedding evaluation", exception.getMessage());
+		assertEquals("Sample must have a question for context relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -113,6 +113,6 @@ class ContextRelevanceEmbeddingEvaluatorIntegrationTest
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
 			() -> evaluator.evaluate(sample));
-		assertEquals("Sample must have context for Context Relevance embedding evaluation", exception.getMessage());
+		assertEquals("Sample must have context for context relevance embedding evaluation", exception.getMessage());
 	}
 }

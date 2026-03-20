@@ -29,12 +29,12 @@ public class ContextRelevanceEmbeddingEvaluator implements Evaluator
 
 		if (!sample.hasQuestion())
 		{
-			throw new IllegalArgumentException("Sample must have a question for Answer Relevance embedding evaluation");
+			throw new IllegalArgumentException("Sample must have a question for context relevance embedding evaluation");
 		}
 
 		if (!sample.hasContext())
 		{
-			throw new IllegalArgumentException("Sample must have context for Context Relevance embedding evaluation");
+			throw new IllegalArgumentException("Sample must have context for context relevance embedding evaluation");
 		}
 
 		String question = sample.getQuestion();
