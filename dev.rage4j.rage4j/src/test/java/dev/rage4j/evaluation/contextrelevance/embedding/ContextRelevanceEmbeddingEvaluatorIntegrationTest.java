@@ -81,7 +81,6 @@ class ContextRelevanceEmbeddingEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("context relevance embedding", result.getName());
-		// Best chunk (relevant one) should yield a high score
 		assertTrue(result.getValue() <= 0.5);
 	}
 
