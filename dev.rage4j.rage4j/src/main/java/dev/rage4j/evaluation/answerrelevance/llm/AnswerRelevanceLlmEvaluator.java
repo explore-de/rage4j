@@ -17,9 +17,9 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 
 	private final AnswerRelevanceLlmBot bot;
 
-	public AnswerRelevanceLlmEvaluator(ChatModel JudgeModel)
+	public AnswerRelevanceLlmEvaluator(ChatModel judgeModel)
 	{
-		bot = AiServices.create(AnswerRelevanceLlmBot.class, JudgeModel);
+		bot = AiServices.create(AnswerRelevanceLlmBot.class, judgeModel);
 	}
 
 	/**
