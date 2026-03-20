@@ -52,7 +52,7 @@ class AnswerRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer relevance llm", result.getName());
-		assertEquals(3, result.getValue(), "Expected score >= 2 for a relevant answer");
+		assertEquals(3, result.getValue(), "Expected score = 3 for a relevant answer");
 	}
 
 	@Tag("integration")
