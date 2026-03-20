@@ -54,7 +54,7 @@ public class ContextRelevanceEmbeddingEvaluator implements Evaluator
 		double sumSimilarity = similarityScores.stream().mapToDouble(Double::doubleValue).sum();
 		double result = sumSimilarity / similarityScores.size();
 
-		LOG.info("Context relevance best similarity: {}", result);
+		LOG.info("Context relevance average similarity: {}", result);
 		return new Evaluation(METRIC_NAME, result);
 	}
 
