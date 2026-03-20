@@ -138,6 +138,6 @@ class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer relevance embedding", result.getName());
-		assertEquals(0.85, result.getValue(), 0.15);
+		assertEquals(0.8, result.getValue(), 0.1);
 	}
 }
