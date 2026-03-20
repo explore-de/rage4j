@@ -115,7 +115,7 @@ class ContextRelevanceEmbeddingEvaluatorTest
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
 			() -> evaluator.evaluate(nullQuestionSample));
-		assertEquals("Sample must have a question for Answer Relevance embedding evaluation", exception.getMessage());
+		assertEquals("Sample must have a question for context relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Test
@@ -129,6 +129,6 @@ class ContextRelevanceEmbeddingEvaluatorTest
 		IllegalArgumentException exception = assertThrows(
 			IllegalArgumentException.class,
 			() -> evaluator.evaluate(nullContextSample));
-		assertEquals("Sample must have context for Context Relevance embedding evaluation", exception.getMessage());
+		assertEquals("Sample must have context for context relevance embedding evaluation", exception.getMessage());
 	}
 }
