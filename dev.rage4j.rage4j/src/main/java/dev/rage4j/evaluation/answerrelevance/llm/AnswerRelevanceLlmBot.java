@@ -32,10 +32,10 @@ public interface AnswerRelevanceLlmBot
 		You are evaluating the relevance of an answer.
 
 		Question:
-		{question}
+		{{question}}
 
 		Answer:
-		{answer}
+		{{answer}}
 
 		Score how well the answer addresses the question.
 
