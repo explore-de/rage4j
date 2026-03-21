@@ -8,10 +8,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public final class ContextChunker
 {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
+
+	private static final int JSON_GROUP_MAX_CHARS = 800;
+	private static final int TEXT_MAX_CHARS = 1000;
+	private static final int TEXT_OVERLAP_CHARS = 150;
+	private static final String JSON_PATH_SEPARATOR = ".";
+	private static final String KEY_VALUE_SEPARATOR = " = ";
 
 	private ContextChunker()
 	{
@@ -19,33 +26,39 @@ public final class ContextChunker
 
 	public static List<String> chunk(String context)
 	{
-		if (context == null || context.isBlank())
+		if (isNullOrBlank(context))
 		{
 			return List.of();
 		}
 
 		String trimmed = context.trim();
-		// Try JSON first (robust) and fallback to text if parsing fails
+
 		if (looksLikeJson(trimmed))
 		{
-			try
+			Optional<List<String>> jsonChunks = tryChunkJson(trimmed);
+			if (jsonChunks.isPresent())
 			{
-				JsonNode root = MAPPER.readTree(trimmed);
-				List<String> flattened = new ArrayList<>();
-				flattenJson(root, "", flattened);
-
-				// Optional: group tiny lines into bigger chunks (to reduce
-				// embed calls)
-				return groupLines(flattened, 800);
-			}
-			catch (JsonProcessingException ignored)
-			{
-				// fallback below
+				return jsonChunks.get();
 			}
 		}
 
-		// Plain text fallback
-		return chunkPlainText(trimmed, 1000, 150);
+		return chunkPlainText(trimmed, TEXT_MAX_CHARS, TEXT_OVERLAP_CHARS);
+	}
+
+	private static Optional<List<String>> tryChunkJson(String json)
+	{
+		try
+		{
+			JsonNode root = MAPPER.readTree(json);
+			List<String> flattened = new ArrayList<>();
+			flattenJson(root, "", flattened);
+			return Optional.of(groupLines(flattened, JSON_GROUP_MAX_CHARS));
+		}
+		catch (JsonProcessingException ignored)
+		{
+			// Fall back to plain text chunking when JSON parsing fails.
+			return Optional.empty();
+		}
 	}
 
 	private static boolean looksLikeJson(String s)
@@ -65,31 +78,34 @@ public final class ContextChunker
 			Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
 			while (fields.hasNext())
 			{
-				Map.Entry<String, JsonNode> e = fields.next();
-				String childPath = path.isEmpty() ? e.getKey() : path + "." + e.getKey();
-				flattenJson(e.getValue(), childPath, out);
+				Map.Entry<String, JsonNode> entry = fields.next();
+				String childPath = path.isEmpty() ? entry.getKey() : path + JSON_PATH_SEPARATOR + entry.getKey();
+				flattenJson(entry.getValue(), childPath, out);
 			}
 			return;
 		}
 
 		if (node.isArray())
 		{
-			int i = 0;
+			int index = 0;
 			for (JsonNode child : node)
 			{
-				String childPath = path + "[" + i + "]";
-				flattenJson(child, childPath, out);
-				i++;
+				flattenJson(child, path + "[" + index + "]", out);
+				index++;
 			}
 			return;
 		}
 
-		// value node (string/number/boolean)
 		String value = node.asText("");
 		if (!value.isBlank())
 		{
-			out.add(path + " = " + value);
+			out.add(path + KEY_VALUE_SEPARATOR + value);
 		}
+	}
+
+	private static boolean isNullOrBlank(String value)
+	{
+		return value == null || value.isBlank();
 	}
 
 	private static List<String> groupLines(List<String> lines, int maxChars)
@@ -104,60 +120,57 @@ public final class ContextChunker
 				continue;
 			}
 
-			// If a single line is huge, just emit it (or you could further
-			// split it)
 			if (line.length() > maxChars)
 			{
-				if (!current.isEmpty())
-				{
-					chunks.add(current.toString());
-					current.setLength(0);
-				}
+				flushCurrent(chunks, current);
 				chunks.add(line);
 				continue;
 			}
 
-			if (current.length() + line.length() + 1 > maxChars)
+			int separatorLength = current.isEmpty() ? 0 : 1;
+			if (current.length() + separatorLength + line.length() > maxChars)
 			{
-				if (!current.isEmpty())
-				{
-					chunks.add(current.toString());
-					current.setLength(0);
-				}
+				flushCurrent(chunks, current);
 			}
 
 			if (!current.isEmpty())
 			{
-				current.append("\n");
+				current.append('\n');
 			}
 			current.append(line);
 		}
 
+		flushCurrent(chunks, current);
+		return chunks;
+	}
+
+	private static void flushCurrent(List<String> chunks, StringBuilder current)
+	{
 		if (!current.isEmpty())
 		{
 			chunks.add(current.toString());
+			current.setLength(0);
 		}
-
-		return chunks;
 	}
 
 	private static List<String> chunkPlainText(String text, int maxChars, int overlapChars)
 	{
-		// 1) split by paragraphs
 		String[] paragraphs = text.split("\\n\\n+");
-		List<String> initial = new ArrayList<>();
-		for (String p : paragraphs)
+		List<String> nonEmptyParagraphs = new ArrayList<>();
+
+		for (String paragraph : paragraphs)
 		{
-			String t = p.trim();
-			if (!t.isBlank())
+			String trimmedParagraph = paragraph.trim();
+			if (!trimmedParagraph.isBlank())
 			{
-				initial.add(t);
+				nonEmptyParagraphs.add(trimmedParagraph);
 			}
 		}
 
-		// 2) ensure max size via sliding window chunking
+		List<String> sourceParts = nonEmptyParagraphs.isEmpty() ? List.of(text) : nonEmptyParagraphs;
 		List<String> chunks = new ArrayList<>();
-		for (String part : initial.isEmpty() ? List.of(text) : initial)
+
+		for (String part : sourceParts)
 		{
 			if (part.length() <= maxChars)
 			{
