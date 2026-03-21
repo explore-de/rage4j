@@ -52,7 +52,7 @@ class AnswerRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer relevance llm", result.getName());
-		assertEquals(3, result.getValue(), "Expected score = 3 for a relevant answer");
+		assertEquals(1.0, result.getValue(), "Expected normalized score = 1.0 for a relevant answer");
 	}
 
 	@Tag("integration")
@@ -82,7 +82,7 @@ class AnswerRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer relevance llm", result.getName());
-		assertEquals(1, result.getValue(), "Expected score 1 for a partially relevant answer");
+		assertEquals(1.0 / 3.0, result.getValue(), "Expected normalized score 1/3 for a partially relevant answer");
 	}
 
 	@Tag("integration")
@@ -97,7 +97,7 @@ class AnswerRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer relevance llm", result.getName());
-		assertEquals(2, result.getValue(), "Expected score 2 for a mostly relevant answer");
+		assertEquals(2.0 / 3.0, result.getValue(), "Expected normalized score 2/3 for a mostly relevant answer");
 	}
 
 	@Tag("integration")
@@ -142,6 +142,6 @@ class AnswerRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer relevance llm", result.getName());
-		assertTrue(result.getValue() >= 0 && result.getValue() <= 3, "Score must be in range [0, 3]");
+		assertTrue(result.getValue() >= 0 && result.getValue() <= 1, "Score must be in range [0, 1]");
 	}
 }

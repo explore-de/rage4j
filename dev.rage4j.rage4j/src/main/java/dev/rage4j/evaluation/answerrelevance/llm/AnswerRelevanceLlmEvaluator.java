@@ -13,6 +13,8 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 {
 
 	private static final String METRIC_NAME = "Answer relevance llm";
+	private static final double MIN_SCORE = 0.0;
+	private static final double MAX_SCORE = 3.0;
 	private static final Logger LOG = LoggerFactory.getLogger(AnswerRelevanceLlmEvaluator.class);
 
 	private final AnswerRelevanceLlmBot bot;
@@ -68,7 +70,7 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 		LOG.info("Question: {}", question);
 		LOG.info("Answer: {}", answer);
 
-		int score = parseScore(question, answer);
+		double score = normalize(parseScore(question, answer));
 
 		return new Evaluation(METRIC_NAME, score);
 
@@ -92,5 +94,11 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 
 		String scoreGeneratedByJudge = bot.generateScore(question, answer);
 		return Integer.parseInt(scoreGeneratedByJudge);
+	}
+
+	private static double normalize(double score)
+	{
+		double normalized = (score - MIN_SCORE) / (MAX_SCORE - MIN_SCORE);
+		return Math.max(0.0, Math.min(1.0, normalized));
 	}
 }
