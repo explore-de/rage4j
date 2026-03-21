@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(LoggingTestWatcher.class)
@@ -89,7 +91,7 @@ class ContextRelevanceLlmEvaluatorTest
 	}
 
 	@Test
-	void testEvaluateWithMultipleChunksReturnsAverage()
+	void testEvaluateWithCompositeContextUsesSingleFullContextScore()
 	{
 		String chunk1 = "Paris is the capital of France.";
 		String chunk2 = "London is the capital of England.";
@@ -100,13 +102,13 @@ class ContextRelevanceLlmEvaluatorTest
 			.withContext(multiChunkContext)
 			.build();
 
-		when(mockBot.generateScore(QUESTION, chunk1)).thenReturn("3");
-		when(mockBot.generateScore(QUESTION, chunk2)).thenReturn("1");
+		when(mockBot.generateScore(QUESTION, multiChunkContext)).thenReturn("2");
 
 		Evaluation result = evaluator.evaluate(multiChunkSample);
 
-		assertEquals(0.66, result.getValue(), 0.01);
+		assertEquals(2.0 / 3.0, result.getValue(), 0.001);
 		assertEquals("context relevance llm", result.getName());
+		verify(mockBot).generateScore(QUESTION, multiChunkContext);
 	}
 
 	@Test
@@ -119,8 +121,9 @@ class ContextRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(emptyContextSample);
 
-		assertEquals(0.0, result.getValue(), 0.01);
+		assertEquals(0.0, result.getValue(), 0.001);
 		assertEquals("context relevance llm", result.getName());
+		verify(mockBot, never()).generateScore(QUESTION, "   ");
 	}
 
 	@Test

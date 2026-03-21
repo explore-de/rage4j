@@ -5,11 +5,8 @@ import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
-import dev.rage4j.util.ContextChunker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class ContextRelevanceLlmEvaluator implements Evaluator
 {
@@ -61,20 +58,17 @@ public class ContextRelevanceLlmEvaluator implements Evaluator
 		LOG.info("Question: {}", question);
 		LOG.info("Context: {}", context);
 
-		List<String> chunks = ContextChunker.chunk(context);
-		if (chunks.isEmpty())
+		if (context.isBlank())
 		{
 			return new Evaluation(METRIC_NAME, 0.0);
 		}
 
-		List<Double> scores = chunks
-			.stream()
-			.map(chunk -> normalize(Double.parseDouble(bot.generateScore(question, chunk))))
-			.toList();
-		double sumScores = scores.stream()
-			.mapToDouble(Double::doubleValue)
-			.sum();
-		double result = sumScores / scores.size();
+		String scoreRaw = bot.generateScore(question, context);
+
+		int score = Integer.parseInt(scoreRaw);
+		LOG.info("Raw score from LLM: {}", score);
+
+		double result = normalize(score);
 		LOG.info("Evaluation result: {}", result);
 
 		return new Evaluation(METRIC_NAME, result);
