@@ -99,6 +99,6 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 	private static double normalize(double score)
 	{
 		double normalized = (score - MIN_SCORE) / (MAX_SCORE - MIN_SCORE);
-		return Math.max(0.0, Math.min(1.0, normalized));
+		return Math.clamp(normalized, 0.0, 1.0);
 	}
 }
