@@ -42,7 +42,7 @@ class AnswerRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals(3, result.getValue());
+		assertEquals(1.0, result.getValue(), 0.001);
 		assertEquals("Answer relevance llm", result.getName());
 	}
 
@@ -53,7 +53,7 @@ class AnswerRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals(2, result.getValue());
+		assertEquals(2.0 / 3.0, result.getValue(), 0.001);
 		assertEquals("Answer relevance llm", result.getName());
 	}
 
@@ -69,7 +69,7 @@ class AnswerRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(irrelevantSample);
 
-		assertEquals(1, result.getValue());
+		assertEquals(1.0 / 3.0, result.getValue(), 0.001);
 		assertEquals("Answer relevance llm", result.getName());
 	}
 
@@ -85,7 +85,7 @@ class AnswerRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(irrelevantSample);
 
-		assertEquals(0, result.getValue());
+		assertEquals(0.0, result.getValue(), 0.001);
 		assertEquals("Answer relevance llm", result.getName());
 	}
 
@@ -121,7 +121,7 @@ class AnswerRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals(2, result.getValue());
+		assertEquals(2.0 / 3.0, result.getValue(), 0.001);
 		assertEquals("Answer relevance llm", result.getName());
 	}
 }
