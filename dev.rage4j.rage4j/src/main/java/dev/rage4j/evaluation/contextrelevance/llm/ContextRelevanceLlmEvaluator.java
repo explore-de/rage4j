@@ -15,6 +15,8 @@ public class ContextRelevanceLlmEvaluator implements Evaluator
 {
 
 	private static final String METRIC_NAME = "context relevance llm";
+	private static final double MIN_SCORE = 0.0;
+	private static final double MAX_SCORE = 3.0;
 	private static final Logger LOG = LoggerFactory.getLogger(ContextRelevanceLlmEvaluator.class);
 
 	private final ContextRelevanceLlmBot bot;
@@ -67,7 +69,7 @@ public class ContextRelevanceLlmEvaluator implements Evaluator
 
 		List<Double> scores = chunks
 			.stream()
-			.map(chunk -> Double.parseDouble(bot.generateScore(question, chunk)))
+			.map(chunk -> normalize(Double.parseDouble(bot.generateScore(question, chunk))))
 			.toList();
 		double sumScores = scores.stream()
 			.mapToDouble(Double::doubleValue)
@@ -76,5 +78,11 @@ public class ContextRelevanceLlmEvaluator implements Evaluator
 		LOG.info("Evaluation result: {}", result);
 
 		return new Evaluation(METRIC_NAME, result);
+	}
+
+	private static double normalize(double score)
+	{
+		double normalized = (score - MIN_SCORE) / (MAX_SCORE - MIN_SCORE);
+		return Math.max(0.0, Math.min(1.0, normalized));
 	}
 }

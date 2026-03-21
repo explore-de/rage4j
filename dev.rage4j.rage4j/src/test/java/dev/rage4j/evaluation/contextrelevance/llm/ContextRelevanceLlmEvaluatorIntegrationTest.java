@@ -49,7 +49,7 @@ class ContextRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("context relevance llm", result.getName());
-		assertEquals(3.0, result.getValue(), "Expected score 3 for highly relevant context");
+		assertEquals(1.0, result.getValue(), "Expected normalized score 1.0 for highly relevant context");
 	}
 
 	@Tag("integration")
@@ -79,7 +79,7 @@ class ContextRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("context relevance llm", result.getName());
-		assertTrue(result.getValue() >= 0 && result.getValue() <= 3, "Score must be in range [0, 3]");
+		assertTrue(result.getValue() >= 0 && result.getValue() <= 1, "Score must be in range [0, 1]");
 	}
 
 	@Tag("integration")

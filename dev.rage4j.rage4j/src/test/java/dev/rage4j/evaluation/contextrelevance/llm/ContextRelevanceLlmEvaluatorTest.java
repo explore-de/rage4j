@@ -41,7 +41,7 @@ class ContextRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals(3.0, result.getValue(), 0.001);
+		assertEquals(1.0, result.getValue(), 0.001);
 		assertEquals("context relevance llm", result.getName());
 	}
 
@@ -52,7 +52,7 @@ class ContextRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals(2.0, result.getValue(), 0.001);
+		assertEquals(2.0 / 3.0, result.getValue(), 0.001);
 		assertEquals("context relevance llm", result.getName());
 	}
 
@@ -68,7 +68,7 @@ class ContextRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(irrelevantSample);
 
-		assertEquals(1.0, result.getValue(), 0.001);
+		assertEquals(0.33, result.getValue(), 0.01);
 		assertEquals("context relevance llm", result.getName());
 	}
 
@@ -84,7 +84,7 @@ class ContextRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(irrelevantSample);
 
-		assertEquals(0.0, result.getValue(), 0.001);
+		assertEquals(0.0, result.getValue(), 0.01);
 		assertEquals("context relevance llm", result.getName());
 	}
 
@@ -105,7 +105,7 @@ class ContextRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(multiChunkSample);
 
-		assertEquals(2.0, result.getValue(), 0.001);
+		assertEquals(0.66, result.getValue(), 0.01);
 		assertEquals("context relevance llm", result.getName());
 	}
 
@@ -119,7 +119,7 @@ class ContextRelevanceLlmEvaluatorTest
 
 		Evaluation result = evaluator.evaluate(emptyContextSample);
 
-		assertEquals(0.0, result.getValue(), 0.001);
+		assertEquals(0.0, result.getValue(), 0.01);
 		assertEquals("context relevance llm", result.getName());
 	}
 
