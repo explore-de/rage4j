@@ -7,15 +7,15 @@ import dev.langchain4j.service.V;
 public interface ContextRelevanceLlmBot
 {
 	@SystemMessage("""
-		You are evaluating the relevance of this context chunk concerning the given question.
+		You are evaluating the relevance of this context concerning the given question.
 
-		chunk:
-		{{chunk}}
+		context:
+		{{context}}
 
 		Question:
 		{{question}}
 
-		Score how well the chunk addresses the question.
+		Score how well the context addresses the question.
 
 		0 = completely irrelevant
 		1 = partially relevant
@@ -24,6 +24,6 @@ public interface ContextRelevanceLlmBot
 
 		Return exactly one integer: 0, 1, 2, or 3. Output must contain only that single digit and nothing else.
 		""")
-	@UserMessage("Evaluate the chunk.")
-	String generateScore(@V("question") String question, @V("chunk") String chunk);
+	@UserMessage("Evaluate the context.")
+	String generateScore(@V("question") String question, @V("context") String context);
 }
