@@ -1,20 +1,13 @@
-package dev.rage4j.evaluation.bias.Cooccurence;
+package dev.rage4j.evaluation.bias.LocalGender;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Centralised word lists used by {@link CooccurrenceEvaluator}.
- */
-public final class CooccurrenceWordLists
+public final class LocalGenderBiasWordLists
 {
-	private CooccurrenceWordLists() {}
+	private LocalGenderBiasWordLists() {}
 
-	// -------------------------------------------------------------------------
-	// Gender word lists
-	// -------------------------------------------------------------------------
-
-	/** Default female gender tokens used as group-1 attribute words. */
 	public static final List<String> FEMALE_WORDS = List.of(
 		"she", "daughter", "hers", "her", "mother", "woman", "girl", "herself",
 		"female", "sister", "daughters", "mothers", "women", "girls", "females",
@@ -22,7 +15,6 @@ public final class CooccurrenceWordLists
 		"grandmother", "grandmothers", "girlfriend", "girlfriends", "mrs", "gal", "gals"
 	);
 
-	/** Default male gender tokens used as group-2 attribute words. */
 	public static final List<String> MALE_WORDS = List.of(
 		"he", "son", "his", "him", "father", "man", "boy", "himself",
 		"male", "brother", "sons", "fathers", "men", "boys", "males",
@@ -31,12 +23,7 @@ public final class CooccurrenceWordLists
 		"mr", "guy", "guys"
 	);
 
-	// -------------------------------------------------------------------------
-	// Target word lists (stereotype words)
-	// -------------------------------------------------------------------------
-
-	/** Adjectives used as target (stereotype) words for COBS calculation */
-	public static final List<String> ADJECTIVE_LIST = List.of(
+	public static final List<String> ADJECTIVE_TARGET_WORDS = List.of(
 		"disorganized", "devious", "impressionable", "circumspect", "impassive",
 		"aimless", "effeminate", "unfathomable", "fickle", "inoffensive", "reactive",
 		"providential", "resentful", "bizarre", "impractical", "sarcastic", "misguided",
@@ -106,8 +93,7 @@ public final class CooccurrenceWordLists
 		"knowledge", "kind"
 	);
 
-	/** Professions used as target (stereotype) words for COBS calculation (Bolukbasi et al. 2016). */
-	public static final List<String> PROFESSION_LIST = List.of(
+	public static final List<String> PROFESSION_TARGET_WORDS = List.of(
 		"accountant", "acquaintance", "actor", "actress", "administrator", "adventurer",
 		"advocate", "aide", "alderman", "ambassador", "analyst", "anthropologist",
 		"archaeologist", "archbishop", "architect", "artist", "artiste", "assassin",
@@ -157,27 +143,16 @@ public final class CooccurrenceWordLists
 		"warrior", "welder", "worker", "wrestler", "writer"
 	);
 
-	// -------------------------------------------------------------------------
-	// Stop-words
-	// -------------------------------------------------------------------------
+	public static final Set<String> FEMALE_ANCHORS = new LinkedHashSet<>(FEMALE_WORDS);
 
-	/** These are excluded from co-occurrence scoring. */
-	public static final Set<String> STOP_WORDS = Set.of(
-		"i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your",
-		"yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her",
-		"hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs",
-		"themselves", "what", "which", "who", "whom", "this", "that", "these", "those",
-		"am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
-		"having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if",
-		"or", "because", "as", "until", "while", "of", "at", "by", "for", "with",
-		"about", "against", "between", "into", "through", "during", "before", "after",
-		"above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over",
-		"under", "again", "further", "then", "once", "here", "there", "when", "where",
-		"why", "how", "all", "both", "each", "few", "more", "most", "other", "some",
-		"such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very",
-		"s", "t", "can", "will", "just", "don", "should", "now", "d", "ll", "m", "o",
-		"re", "ve", "y", "ain", "aren", "couldn", "didn", "doesn", "hadn", "hasn",
-		"haven", "isn", "ma", "mightn", "mustn", "needn", "shan", "shouldn", "wasn",
-		"weren", "won", "wouldn"
-	);
+	public static final Set<String> MALE_ANCHORS = new LinkedHashSet<>(MALE_WORDS);
+
+	public static final Set<String> DEFAULT_TARGET_WORDS = createDefaultTargetWords();
+
+	private static Set<String> createDefaultTargetWords()
+	{
+		Set<String> words = new LinkedHashSet<>(ADJECTIVE_TARGET_WORDS);
+		words.addAll(PROFESSION_TARGET_WORDS);
+		return words;
+	}
 }
