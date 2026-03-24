@@ -8,6 +8,8 @@ import dev.rage4j.model.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static dev.rage4j.util.ScoreParser.parseScore;
+
 public class ContextRelevanceLlmEvaluator implements Evaluator
 {
 
@@ -65,7 +67,7 @@ public class ContextRelevanceLlmEvaluator implements Evaluator
 
 		String scoreRaw = bot.generateScore(question, context);
 
-		int score = Integer.parseInt(scoreRaw);
+		int score = parseScore(scoreRaw);
 		LOG.info("Raw score from LLM: {}", score);
 
 		double result = normalize(score);

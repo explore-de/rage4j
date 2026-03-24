@@ -6,6 +6,7 @@ import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.evaluation.model.ScoreWithReasonResponse;
 import dev.rage4j.model.Sample;
+import dev.rage4j.util.ScoreParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +26,10 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 	}
 
 	/**
-	 * Constructs a new {@code AnswerRelevanceLlmEvaluator} with a provided
-	 * {@code AnswerRelevanceLlmBot}. This constructor is useful for testing
-	 * purposes, where the {@code AnswerRelevanceLlmBot} can be mocked and
-	 * directly injected, bypassing the need to create it via
-	 * {@code AiServices}.
+	 * Constructs a new {@code AnswerRelevanceLlmEvaluator} with a provided {@code AnswerRelevanceLlmBot}. This constructor is useful for testing purposes, where the {@code AnswerRelevanceLlmBot} can be mocked and directly injected, bypassing the need to create it via {@code AiServices}.
 	 *
 	 * @param bot
-	 *            The {@code AnswerRelevanceLlmBot} to be used for generating
-	 *            the relevance score.
+	 * 	The {@code AnswerRelevanceLlmBot} to be used for generating the relevance score.
 	 */
 	public AnswerRelevanceLlmEvaluator(AnswerRelevanceLlmBot bot)
 	{
@@ -41,16 +37,13 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 	}
 
 	/**
-	 * Evaluates the given sample according to a specific metric and returns the
-	 * result as an {@code Evaluation}.
+	 * Evaluates the given sample according to a specific metric and returns the result as an {@code Evaluation}.
 	 *
 	 * @param sample
-	 *            The sample containing data (such as context and answer) to be
-	 *            evaluated.
-	 * @return An {@code Evaluation} object representing the metric name and its
-	 *         calculated value.
+	 * 	The sample containing data (such as context and answer) to be evaluated.
+	 * @return An {@code Evaluation} object representing the metric name and its calculated value.
 	 * @throws IllegalArgumentException
-	 *             if the sample is invalid or cannot be evaluated.
+	 * 	if the sample is invalid or cannot be evaluated.
 	 */
 	@Override
 	public Evaluation evaluate(Sample sample)
@@ -93,26 +86,12 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 		}
 
 		String scoreGeneratedByJudge = bot.generateScore(question, answer);
-		return sanitizeScore(scoreGeneratedByJudge);
+		return ScoreParser.parseScore(scoreGeneratedByJudge);
 	}
 
 	private static double normalize(double score)
 	{
 		double normalized = (score - MIN_SCORE) / (MAX_SCORE - MIN_SCORE);
 		return Math.clamp(normalized, 0.0, 1.0);
-	}
-
-	private static int sanitizeScore(String scoreGeneratedByJudge)
-	{
-		try
-		{
-			return Integer.parseInt(scoreGeneratedByJudge);
-		}
-		catch (NumberFormatException e)
-		{
-			LOG.warn("Failed to parse score from judge response: '{}'", scoreGeneratedByJudge, e);
-			return 0;
-		}
-
 	}
 }
