@@ -13,7 +13,7 @@ import java.util.function.BiFunction;
 public class ContextRelevanceEmbeddingEvaluator implements Evaluator
 {
 
-	private static final String METRIC_NAME = "context relevance embedding";
+	private static final String METRIC_NAME = "Context relevance embedding";
 	private static final Logger LOG = LoggerFactory.getLogger(ContextRelevanceEmbeddingEvaluator.class);
 	private final BiFunction<String, List<String>, List<Double>> stringSimilarityBatchComputer;
 
