@@ -44,7 +44,7 @@ class ContextRelevanceLlmEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(1.0, result.getValue(), 0.001);
-		assertEquals("context relevance llm", result.getName());
+		assertEquals("Context relevance LLM", result.getName());
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class ContextRelevanceLlmEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(2.0 / 3.0, result.getValue(), 0.001);
-		assertEquals("context relevance llm", result.getName());
+		assertEquals("Context relevance LLM", result.getName());
 	}
 
 	@Test
@@ -71,7 +71,7 @@ class ContextRelevanceLlmEvaluatorTest
 		Evaluation result = evaluator.evaluate(irrelevantSample);
 
 		assertEquals(0.33, result.getValue(), 0.01);
-		assertEquals("context relevance llm", result.getName());
+		assertEquals("Context relevance LLM", result.getName());
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class ContextRelevanceLlmEvaluatorTest
 		Evaluation result = evaluator.evaluate(irrelevantSample);
 
 		assertEquals(0.0, result.getValue(), 0.01);
-		assertEquals("context relevance llm", result.getName());
+		assertEquals("Context relevance LLM", result.getName());
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class ContextRelevanceLlmEvaluatorTest
 		Evaluation result = evaluator.evaluate(multiChunkSample);
 
 		assertEquals(2.0 / 3.0, result.getValue(), 0.001);
-		assertEquals("context relevance llm", result.getName());
+		assertEquals("Context relevance LLM", result.getName());
 		verify(mockBot).generateScore(QUESTION, multiChunkContext);
 	}
 
@@ -122,7 +122,7 @@ class ContextRelevanceLlmEvaluatorTest
 		Evaluation result = evaluator.evaluate(emptyContextSample);
 
 		assertEquals(0.0, result.getValue(), 0.001);
-		assertEquals("context relevance llm", result.getName());
+		assertEquals("Context relevance LLM", result.getName());
 		verify(mockBot, never()).generateScore(QUESTION, "   ");
 	}
 
