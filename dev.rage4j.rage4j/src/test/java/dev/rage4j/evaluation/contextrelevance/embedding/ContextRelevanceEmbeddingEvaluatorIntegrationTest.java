@@ -48,7 +48,7 @@ class ContextRelevanceEmbeddingEvaluatorIntegrationTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals("context relevance embedding", result.getName());
+		assertEquals("Context relevance embedding", result.getName());
 		assertTrue(result.getValue() >= 0.6);
 	}
 
@@ -63,7 +63,7 @@ class ContextRelevanceEmbeddingEvaluatorIntegrationTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals("context relevance embedding", result.getName());
+		assertEquals("Context relevance embedding", result.getName());
 		assertTrue(result.getValue() < 0.5);
 	}
 
@@ -80,7 +80,7 @@ class ContextRelevanceEmbeddingEvaluatorIntegrationTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals("context relevance embedding", result.getName());
+		assertEquals("Context relevance embedding", result.getName());
 		assertTrue(result.getValue() <= 0.5);
 	}
 

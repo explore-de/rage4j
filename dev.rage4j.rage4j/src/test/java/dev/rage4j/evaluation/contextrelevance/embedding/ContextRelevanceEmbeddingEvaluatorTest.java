@@ -45,7 +45,7 @@ class ContextRelevanceEmbeddingEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(0.95, result.getValue(), 0.01);
-		assertEquals("context relevance embedding", result.getName());
+		assertEquals("Context relevance embedding", result.getName());
 	}
 
 	@Test
@@ -56,7 +56,7 @@ class ContextRelevanceEmbeddingEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(0.2, result.getValue(), 0.01);
-		assertEquals("context relevance embedding", result.getName());
+		assertEquals("Context relevance embedding", result.getName());
 	}
 
 	@Test
@@ -67,7 +67,7 @@ class ContextRelevanceEmbeddingEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(0.0, result.getValue(), 0.01);
-		assertEquals("context relevance embedding", result.getName());
+		assertEquals("Context relevance embedding", result.getName());
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class ContextRelevanceEmbeddingEvaluatorTest
 		Evaluation result = evaluator.evaluate(multiChunkSample);
 
 		assertEquals(0.6, result.getValue(), 0.01);
-		assertEquals("context relevance embedding", result.getName());
+		assertEquals("Context relevance embedding", result.getName());
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class ContextRelevanceEmbeddingEvaluatorTest
 		Evaluation result = evaluator.evaluate(emptyContextSample);
 
 		assertEquals(0.0, result.getValue(), 0.01);
-		assertEquals("context relevance embedding", result.getName());
+		assertEquals("Context relevance embedding", result.getName());
 	}
 
 	@Test
