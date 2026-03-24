@@ -131,7 +131,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer correctness", result.getName());
-		// Expect a value less then 0.6 due to:
+		// Expect a value less than 0.6 due to:
 		// - TP: "Paris is the Capital of France"
 		// - FN: "...of France"
 		//
