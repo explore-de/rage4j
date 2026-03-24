@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class ContextRelevanceLlmEvaluator implements Evaluator
 {
 
-	private static final String METRIC_NAME = "context relevance llm";
+	private static final String METRIC_NAME = "Context relevance LLM";
 	private static final double MIN_SCORE = 0.0;
 	private static final double MAX_SCORE = 3.0;
 	private static final Logger LOG = LoggerFactory.getLogger(ContextRelevanceLlmEvaluator.class);
