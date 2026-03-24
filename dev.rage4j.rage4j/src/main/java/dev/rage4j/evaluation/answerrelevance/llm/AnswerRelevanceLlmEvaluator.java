@@ -93,12 +93,26 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 		}
 
 		String scoreGeneratedByJudge = bot.generateScore(question, answer);
-		return Integer.parseInt(scoreGeneratedByJudge);
+		return sanitizeScore(scoreGeneratedByJudge);
 	}
 
 	private static double normalize(double score)
 	{
 		double normalized = (score - MIN_SCORE) / (MAX_SCORE - MIN_SCORE);
 		return Math.clamp(normalized, 0.0, 1.0);
+	}
+
+	private static int sanitizeScore(String scoreGeneratedByJudge)
+	{
+		try
+		{
+			return Integer.parseInt(scoreGeneratedByJudge);
+		}
+		catch (NumberFormatException e)
+		{
+			LOG.warn("Failed to parse score from judge response: '{}'", scoreGeneratedByJudge, e);
+			return 0;
+		}
+
 	}
 }
