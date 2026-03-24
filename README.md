@@ -27,7 +27,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>2.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -37,7 +37,7 @@ For fluent test assertions:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-assert</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>2.0.1-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ```
