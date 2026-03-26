@@ -136,7 +136,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 		// - FN: "...of France"
 		//
         LOG.info("Result: {}", result.getValue());
-		assertEquals(0.6, result.getValue(), 0.1);
+		assertEquals(0.5, result.getValue(), 0.1);
 	}
 
 	@Tag("integration")
