@@ -111,7 +111,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 
 		assertEquals("Answer correctness", result.getName());
 		// Expect a value of 0.0 due to:
-		// - No TP: because Answer and or GT is too short see testEvaluateWithFalseNegativeEnhanced() -> could be 1 TP or 0 TP
+		// - No TP: because Answer and/or GT is too short see testEvaluateWithFalseNegativeEnhanced() -> could be 1 TP or 0 TP
 		// - FN: "...of France"
 		var success =
 				result.getValue() >= 0 && result.getValue() <= 0.1 || // no TP extracted
