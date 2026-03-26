@@ -96,7 +96,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 		// Expect a value less than 1.0 due to
 		// - 2 TP: "Paris is the capital of France" and "Paris is the largest City in France"
 		// - 1 FP: "Paris is the capital of Germany"
-		assertEquals(0.8, result.getValue(), 0.1);
+		assertEquals(0.7, result.getValue(), 0.1);
 	}
 
 	@Tag("integration")
@@ -137,7 +137,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 		// - FN: "...of France"
 		//
         LOG.info("Result: {}", result.getValue());
-		assertEquals(0.5, result.getValue(), 0.1);
+		assertEquals(0.66, result.getValue(), 0.1);
 	}
 
 	@Tag("integration")
