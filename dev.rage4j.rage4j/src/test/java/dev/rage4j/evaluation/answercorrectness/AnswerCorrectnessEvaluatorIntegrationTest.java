@@ -76,7 +76,8 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer correctness", result.getName());
-		// Expect a value less than 1.0 due to false positive
+		// Expect a score of 0.0 because the answer contradicts the ground truth,
+		// leading to no true positives (and both a false positive and a false negative).
 		assertEquals(0.0, result.getValue(), 0.1);
 	}
 
