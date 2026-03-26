@@ -31,14 +31,6 @@ public interface AnswerCorrectnessBot
 			GT: "The description of the book with ID 'book-42' is: 'A historical novel about the rise and fall of an ancient empire'."
 			Answer: "The exact description of the book with ID 'book-42' is: 'A historical novel about the rise and fall of an ancient empire'."
 			Output: ["The description of the book with ID 'book-42' is: 'A historical novel about the rise and fall of an ancient empire'"]
-			
-			Ground truth:
-			{{groundTruth}}
-			
-			Generated answer:
-			{{actualAnswer}}
-			
-			True Positive Claims:
 			""")
 	@UserMessage(USER_MESSAGE_PROMPT)
 	ArrayResponse extractTruePositiveClaims(@V("groundTruth") String groundTruth, @V("actualAnswer") String actualAnswer);
@@ -61,14 +53,6 @@ public interface AnswerCorrectnessBot
 			    GT: "Paris is in France."
 			    Answer: "France contains Paris."
 			    Output: []  // Semantic match
-			
-			    Ground truth:
-			    {{groundTruth}}
-			
-			    Generated answer:
-			    {{actualAnswer}}
-			
-			    False Positive Claims:
 			""")
 	@UserMessage(USER_MESSAGE_PROMPT)
 	ArrayResponse extractFalsePositiveClaims(@V("groundTruth") String groundTruth, @V("actualAnswer") String actualAnswer);
@@ -90,14 +74,6 @@ public interface AnswerCorrectnessBot
                 GT: "The process handles orders."
                 Answer: "Order processing is managed by the workflow."
                 Output: []  // Semantic coverage
-                
-                Ground truth:
-                {{groundTruth}}
-            
-                Generated answer:
-                {{actualAnswer}}
-            
-                False Negative Claims:
             """)
 	@UserMessage(USER_MESSAGE_PROMPT)
 	ArrayResponse extractFalseNegativeClaims(@V("groundTruth") String groundTruth, @V("actualAnswer") String actualAnswer);
