@@ -24,7 +24,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	private static final String ANSWER_WITH_FALSE_POSITIVE = "Paris is the capital of Germany";
 	private static final String ANSWER_WITH_FALSE_NEGATIVE = "Paris is the capital.";
 
-	// Tests where not only one claim is extracted:
+	// Tests where more than one claim is extracted:
 	// Question could be here: "Which city is the capital of France and which is the largest city in France?"
 	private static final String GROUND_TRUTH_ENHANCED = "Paris is the capital and the largest city in France.";
 	private static final String ANSWER_WITH_FALSE_POSITIVE_ENHANCED = "Paris is the capital of Germany and France and the largest city in France.";
