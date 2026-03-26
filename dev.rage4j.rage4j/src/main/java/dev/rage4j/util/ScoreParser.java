@@ -15,6 +15,7 @@ public final class ScoreParser
 	{
 		try
 		{
+			score = score.trim();
 			return Integer.parseInt(score);
 		}
 		catch (NumberFormatException e)
