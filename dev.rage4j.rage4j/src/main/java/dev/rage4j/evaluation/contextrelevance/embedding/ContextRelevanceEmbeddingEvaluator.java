@@ -51,6 +51,18 @@ public class ContextRelevanceEmbeddingEvaluator implements Evaluator
 
 		var similarityScores = stringSimilarityBatchComputer.apply(question, chunks);
 
+		if (similarityScores == null || similarityScores.isEmpty())
+		{
+			LOG.warn("stringSimilarityBatchComputer returned {} for {} chunks; returning score 0.0", 
+					(similarityScores == null ? "null" : "an empty list"), chunks.size());
+			return new Evaluation(METRIC_NAME, 0.0);
+		}
+
+		if (similarityScores.size() != chunks.size())
+		{
+			LOG.warn("stringSimilarityBatchComputer returned {} similarity scores for {} chunks; proceeding with average over returned scores",
+					similarityScores.size(), chunks.size());
+		}
 		double sumSimilarity = similarityScores.stream().mapToDouble(Double::doubleValue).sum();
 		double result = sumSimilarity / similarityScores.size();
 
