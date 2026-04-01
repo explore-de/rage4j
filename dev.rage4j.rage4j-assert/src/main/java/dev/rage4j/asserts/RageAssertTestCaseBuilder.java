@@ -10,6 +10,9 @@ public class RageAssertTestCaseBuilder
 	private String question;
 	private String groundTruth;
 	private List<String> contextList;
+	private String comparisonQuestion;
+	private String comparisonGroundTruth;
+	private List<String> comparisonContextList;
 	private ChatModel chatModel;
 	private final EmbeddingModel embeddingModel;
 
@@ -37,8 +40,34 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
+	public RageAssertTestCaseBuilder comparisonQuestion(String comparisonQuestion)
+	{
+		this.comparisonQuestion = comparisonQuestion;
+		return this;
+	}
+
+	public RageAssertTestCaseBuilder comparisonGroundTruth(String comparisonGroundTruth)
+	{
+		this.comparisonGroundTruth = comparisonGroundTruth;
+		return this;
+	}
+
+	public RageAssertTestCaseBuilder comparisonContextList(List<String> comparisonContextList)
+	{
+		this.comparisonContextList = comparisonContextList;
+		return this;
+	}
+
 	public RageAssertTestCaseGiven when()
 	{
-		return new RageAssertTestCaseGiven(question, groundTruth, contextList, chatModel, embeddingModel);
+		return new RageAssertTestCaseGiven(
+			question,
+			groundTruth,
+			contextList,
+			comparisonQuestion,
+			comparisonGroundTruth,
+			comparisonContextList,
+			chatModel,
+			embeddingModel);
 	}
 }

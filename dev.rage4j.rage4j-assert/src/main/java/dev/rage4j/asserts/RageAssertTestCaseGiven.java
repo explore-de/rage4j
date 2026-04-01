@@ -11,15 +11,30 @@ public class RageAssertTestCaseGiven
 	private String question;
 	private String groundTruth;
 	private List<String> contextList;
+	private String comparisonQuestion;
+	private String comparisonGroundTruth;
+	private List<String> comparisonContextList;
 	private String answer;
+	private String comparisonAnswer;
 	private ChatModel chatLanguageModel;
 	private EmbeddingModel embeddingModel;
 
-	public RageAssertTestCaseGiven(String question, String groundTruth, List<String> contextList, ChatModel chatLanguageModel, EmbeddingModel embeddingModel)
+	public RageAssertTestCaseGiven(
+		String question,
+		String groundTruth,
+		List<String> contextList,
+		String comparisonQuestion,
+		String comparisonGroundTruth,
+		List<String> comparisonContextList,
+		ChatModel chatLanguageModel,
+		EmbeddingModel embeddingModel)
 	{
 		this.question = question;
 		this.groundTruth = groundTruth;
 		this.contextList = contextList;
+		this.comparisonQuestion = comparisonQuestion;
+		this.comparisonGroundTruth = comparisonGroundTruth;
+		this.comparisonContextList = comparisonContextList;
 		this.chatLanguageModel = chatLanguageModel;
 		this.embeddingModel = embeddingModel;
 	}
@@ -36,8 +51,34 @@ public class RageAssertTestCaseGiven
 		return this;
 	}
 
+	public RageAssertTestCaseGiven comparisonAnswer(String comparisonAnswer)
+	{
+		this.comparisonAnswer = comparisonAnswer;
+		return this;
+	}
+
+	public RageAssertTestCaseGiven comparisonAnswer(Function<String, String> callAi)
+	{
+		if (comparisonQuestion == null || comparisonQuestion.trim().isEmpty())
+		{
+			throw new IllegalStateException("comparisonQuestion must be set before comparisonAnswer(Function) is used");
+		}
+		this.comparisonAnswer = callAi.apply(comparisonQuestion);
+		return this;
+	}
+
 	public RageAssertTestCaseAssertions then()
 	{
-		return new RageAssertTestCaseAssertions(answer, groundTruth, question, contextList, chatLanguageModel, embeddingModel);
+		return new RageAssertTestCaseAssertions(
+			answer,
+			groundTruth,
+			question,
+			contextList,
+			comparisonAnswer,
+			comparisonGroundTruth,
+			comparisonQuestion,
+			comparisonContextList,
+			chatLanguageModel,
+			embeddingModel);
 	}
 }

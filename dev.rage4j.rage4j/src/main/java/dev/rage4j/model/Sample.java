@@ -18,7 +18,7 @@ public class Sample
 	private final String answer;
 	private final String groundTruth;
 	private final List<String> contextsList;
-	private final Sample controlSample;
+	private final Sample comparisonSample;
 
 	/**
 	 * Private constructor to initialize a {@code Sample} object using a
@@ -34,7 +34,7 @@ public class Sample
 		this.answer = builder.answer;
 		this.groundTruth = builder.groundTruth;
 		this.contextsList = builder.contextsList;
-		this.controlSample = builder.controlSample;
+		this.comparisonSample = builder.comparisonSample;
 	}
 
 	/**
@@ -167,17 +167,17 @@ public class Sample
 	 *
 	 * @return The control sample.
 	 */
-	public Sample getControlSample()
+	public Sample getComparisonSample()
 	{
-		return controlSample;
+		return comparisonSample;
 	}
 
 	/**
 	 * @return whether the sample has a control sample.
 	 */
-	public boolean hasControlSample()
+	public boolean hasComparisonSample()
 	{
-		return controlSample != null;
+		return comparisonSample != null;
 	}
 
 	/**
@@ -216,7 +216,7 @@ public class Sample
 		private String answer;
 		private String groundTruth;
 		private List<String> contextsList;
-		private Sample controlSample;
+		private Sample comparisonSample;
 
 		/**
 		 * Sets the question for the {@code Sample}.
@@ -286,15 +286,15 @@ public class Sample
 		}
 
 		/**
-		 * Sets the control sample for the {@code Sample}.
+		 * Sets the comparison sample for the {@code Sample}.
 		 *
-		 * @param controlSample
-		 *            The control sample to be compared against.
+		 * @param comparisonSample
+		 *            The comparison sample to be compared against.
 		 * @return The current instance of {@code SampleBuilder}.
 		 */
-		public SampleBuilder withControlSample(Sample controlSample)
+		public SampleBuilder withComparisonSample(Sample comparisonSample)
 		{
-			this.controlSample = controlSample;
+			this.comparisonSample = comparisonSample;
 			return this;
 		}
 
