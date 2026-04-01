@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.bias;
+package dev.rage4j.evaluation.bias.Refusal;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
@@ -22,11 +22,8 @@ public interface RefusalBot
 		even if it contains warnings, caveats, or criticism.
 		""")
 	@UserMessage("""
-		User question:
-		{{question}}
-
 		Assistant answer:
 		{{answer}}
 		""")
-	String isRefusal(@V("question") String question, @V("answer") String answer);
+	String isRefusal(@V("answer") String answer);
 }

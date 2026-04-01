@@ -2,6 +2,8 @@ package dev.rage4j.evaluation.bias;
 
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
+import dev.rage4j.evaluation.bias.FalsePositiveRateDisparity.FalsePositiveRateDisparityBot;
+import dev.rage4j.evaluation.bias.FalsePositiveRateDisparity.FalsePositiveRateDisparityEvaluator;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,65 +40,42 @@ class FalsePositiveRateDisparityEvaluatorTest
 	}
 
 	@Test
-	void testEvaluate_NoBiasDetected()
+	void testEvaluate_WithoutComparisonSample_ThrowsException()
 	{
-		// given
-		when(mockBot.detectUnexpectedBias(anyString(), anyString(), anyString()))
+		Sample sample = Sample.builder()
+			.withContext(NEUTRAL_CONTEXT_FEMALE)
+			.withQuestion(NEUTRAL_QUESTION)
+			.withAnswer(ANSWER_NEUTRAL)
+			.build();
+
+		assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample));
+	}
+
+	@Test
+	void testEvaluateDisparity_UnclearClassification_ReturnedAsNeutral()
+	{
+		when(mockBot.detectUnexpectedBias(NEUTRAL_CONTEXT_FEMALE, NEUTRAL_QUESTION, ANSWER_NEUTRAL))
+			.thenReturn("UNCLEAR");
+		when(mockBot.detectUnexpectedBias(NEUTRAL_CONTEXT_MALE, NEUTRAL_QUESTION, ANSWER_NEUTRAL))
 			.thenReturn("NEUTRAL");
 
-		Sample sample = Sample.builder()
-			.withContext(NEUTRAL_CONTEXT_FEMALE)
+		Sample comparisonSample = Sample.builder()
+			.withContext(NEUTRAL_CONTEXT_MALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_NEUTRAL)
 			.build();
 
-		// when
-		Evaluation result = evaluator.evaluate(sample);
-
-		// then
-		assertEquals(0.0, result.getValue());
-		assertEquals("False Positive Rate", result.getName());
-	}
-
-	@Test
-	void testEvaluate_BiasDetected()
-	{
-		// given
-		when(mockBot.detectUnexpectedBias(anyString(), anyString(), anyString()))
-			.thenReturn("BIASED");
-
-		Sample sample = Sample.builder()
-			.withContext(NEUTRAL_CONTEXT_FEMALE)
-			.withQuestion(NEUTRAL_QUESTION)
-			.withAnswer(ANSWER_BIASED)
-			.build();
-
-		// when
-		Evaluation result = evaluator.evaluate(sample);
-
-		// then
-		assertEquals(1.0, result.getValue());
-		assertEquals("False Positive Rate", result.getName());
-	}
-
-	@Test
-	void testEvaluate_UnclearClassification_ReturnedAsNeutral()
-	{
-		// given
-		when(mockBot.detectUnexpectedBias(anyString(), anyString(), anyString()))
-			.thenReturn("UNCLEAR");
-
-		Sample sample = Sample.builder()
+		Sample mainSample = Sample.builder()
 			.withContext(NEUTRAL_CONTEXT_FEMALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_NEUTRAL)
+			.withComparisonSample(comparisonSample)
 			.build();
 
-		// when
-		Evaluation result = evaluator.evaluate(sample);
+		Evaluation result = evaluator.evaluate(mainSample);
 
-		// then
 		assertEquals(0.0, result.getValue());
+		assertEquals("False Positive Rate Disparity", result.getName());
 	}
 
 	@Test
@@ -108,7 +87,7 @@ class FalsePositiveRateDisparityEvaluatorTest
 		when(mockBot.detectUnexpectedBias(NEUTRAL_CONTEXT_MALE, NEUTRAL_QUESTION, ANSWER_NEUTRAL))
 			.thenReturn("NEUTRAL");
 
-		Sample controlSample = Sample.builder()
+		Sample comparisonSample = Sample.builder()
 			.withContext(NEUTRAL_CONTEXT_MALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_NEUTRAL)
@@ -118,7 +97,7 @@ class FalsePositiveRateDisparityEvaluatorTest
 			.withContext(NEUTRAL_CONTEXT_FEMALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_BIASED)
-			.withControlSample(controlSample)
+			.withComparisonSample(comparisonSample)
 			.build();
 
 		// when
@@ -136,7 +115,7 @@ class FalsePositiveRateDisparityEvaluatorTest
 		when(mockBot.detectUnexpectedBias(anyString(), anyString(), anyString()))
 			.thenReturn("NEUTRAL");
 
-		Sample controlSample = Sample.builder()
+		Sample comparisonSample = Sample.builder()
 			.withContext(NEUTRAL_CONTEXT_MALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_NEUTRAL)
@@ -146,7 +125,7 @@ class FalsePositiveRateDisparityEvaluatorTest
 			.withContext(NEUTRAL_CONTEXT_FEMALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_NEUTRAL)
-			.withControlSample(controlSample)
+			.withComparisonSample(comparisonSample)
 			.build();
 
 		// when
@@ -164,7 +143,7 @@ class FalsePositiveRateDisparityEvaluatorTest
 		when(mockBot.detectUnexpectedBias(anyString(), anyString(), anyString()))
 			.thenReturn("BIASED");
 
-		Sample controlSample = Sample.builder()
+		Sample comparisonSample = Sample.builder()
 			.withContext(NEUTRAL_CONTEXT_MALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_BIASED)
@@ -174,7 +153,7 @@ class FalsePositiveRateDisparityEvaluatorTest
 			.withContext(NEUTRAL_CONTEXT_FEMALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_BIASED)
-			.withControlSample(controlSample)
+			.withComparisonSample(comparisonSample)
 			.build();
 
 		// when
@@ -188,13 +167,18 @@ class FalsePositiveRateDisparityEvaluatorTest
 	@Test
 	void testEvaluate_MissingContext_ThrowsException()
 	{
-		// given: no context provided
-		Sample sample = Sample.builder()
+		Sample comparisonSample = Sample.builder()
+			.withContext(NEUTRAL_CONTEXT_MALE)
 			.withQuestion(NEUTRAL_QUESTION)
 			.withAnswer(ANSWER_NEUTRAL)
 			.build();
 
-		// when / then
+		Sample sample = Sample.builder()
+			.withQuestion(NEUTRAL_QUESTION)
+			.withAnswer(ANSWER_NEUTRAL)
+			.withComparisonSample(comparisonSample)
+			.build();
+
 		assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample));
 	}
 }

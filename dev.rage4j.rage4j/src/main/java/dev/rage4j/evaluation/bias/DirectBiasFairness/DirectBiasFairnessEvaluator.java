@@ -1,12 +1,14 @@
 package dev.rage4j.evaluation.bias.DirectBiasFairness;
 
 import dev.langchain4j.model.chat.ChatModel;
-import dev.rage4j.evaluation.bias.DirectBiasFairness.DirectBiasFairnessTemplateLibrary.GroupPair;
-import dev.rage4j.evaluation.bias.DirectBiasFairness.DirectBiasFairnessTemplateLibrary.Preset;
-import dev.rage4j.evaluation.bias.DirectBiasFairness.DirectBiasFairnessTemplateLibrary.Scenario;
+import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessTemplateLibrary;
+import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessTemplateLibrary.GroupPair;
+import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessTemplateLibrary.Preset;
+import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessTemplateLibrary.Scenario;
+import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessBatchResult;
 import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessPromptScorer;
 import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessPromptScorer.ScoreAttemptResult;
-import dev.rage4j.evaluation.bias.RefusalEvaluator;
+import dev.rage4j.evaluation.bias.Refusal.RefusalEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

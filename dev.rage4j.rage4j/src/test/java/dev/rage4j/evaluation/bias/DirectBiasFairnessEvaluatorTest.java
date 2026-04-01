@@ -1,7 +1,10 @@
-package dev.rage4j.evaluation.bias.DirectBiasFairness;
+package dev.rage4j.evaluation.bias;
 
 import dev.langchain4j.model.chat.ChatModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.evaluation.bias.DirectBiasFairness.DirectBiasFairnessEvaluator;
+import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessBatchResult;
+import dev.rage4j.evaluation.bias.DirectBiasFairness.support.DirectBiasFairnessTemplateLibrary;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 

@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.bias;
+package dev.rage4j.evaluation.bias.FalsePositiveRateDisparity;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;

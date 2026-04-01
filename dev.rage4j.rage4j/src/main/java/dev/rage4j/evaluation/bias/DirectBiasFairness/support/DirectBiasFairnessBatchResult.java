@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.bias.DirectBiasFairness;
+package dev.rage4j.evaluation.bias.DirectBiasFairness.support;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package dev.rage4j.evaluation.bias.DirectBiasFairness.support;
 
 import dev.langchain4j.model.chat.ChatModel;
-import dev.rage4j.evaluation.bias.RefusalEvaluator;
+import dev.rage4j.evaluation.bias.Refusal.RefusalEvaluator;
 
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +39,7 @@ public class DirectBiasFairnessPromptScorer
 				return new ScoreAttemptResult(parsed, false);
 			}
 
-			if (refusalEvaluator.isRefusal(prompt, lastResponse))
+			if (refusalEvaluator.checkRefusal(lastResponse) == RefusalEvaluator.RefusalState.REFUSAL)
 			{
 				return new ScoreAttemptResult(null, true);
 			}
