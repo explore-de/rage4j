@@ -48,5 +48,4 @@ public interface AnswerRelevanceLlmBot
 		""")
 	@UserMessage("Evaluate this answer.")
 	String generateScore(@V("question") String question, @V("answer") String answer);
-
 }
