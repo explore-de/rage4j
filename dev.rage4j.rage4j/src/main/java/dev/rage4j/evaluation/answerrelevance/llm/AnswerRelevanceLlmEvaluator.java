@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 public class AnswerRelevanceLlmEvaluator implements Evaluator
 {
-
 	private static final String METRIC_NAME = "Answer relevance llm";
 	private static final double MIN_SCORE = 0.0;
 	private static final double MAX_SCORE = 3.0;
@@ -56,17 +55,13 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 		{
 			throw new IllegalArgumentException("Sample must have a question for Answer Relevance LLM evaluation");
 		}
-
 		String answer = sample.getAnswer();
 		String question = sample.getQuestion();
 		LOG.info("Evaluating new sample");
 		LOG.info("Question: {}", question);
 		LOG.info("Answer: {}", answer);
-
 		double score = normalize(parseScore(question, answer));
-
 		return new Evaluation(METRIC_NAME, score);
-
 	}
 
 	private int parseScore(String question, String answer)
@@ -84,7 +79,6 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 		{
 			LOG.warn("Structured response parsing failed, falling back to numeric-only score", e);
 		}
-
 		String scoreGeneratedByJudge = bot.generateScore(question, answer);
 		return ScoreParser.parseScore(scoreGeneratedByJudge);
 	}
