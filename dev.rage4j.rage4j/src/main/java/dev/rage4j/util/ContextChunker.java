@@ -120,28 +120,33 @@ public final class ContextChunker
 				continue;
 			}
 
-			if (line.length() > maxChars)
-			{
-				flushCurrent(chunks, current);
-				chunks.add(line);
-				continue;
-			}
-
-			int separatorLength = current.isEmpty() ? 0 : 1;
-			if (current.length() + separatorLength + line.length() > maxChars)
-			{
-				flushCurrent(chunks, current);
-			}
-
-			if (!current.isEmpty())
-			{
-				current.append('\n');
-			}
-			current.append(line);
+			appendLine(chunks, current, line, maxChars);
 		}
 
 		flushCurrent(chunks, current);
 		return chunks;
+	}
+
+	private static void appendLine(List<String> chunks, StringBuilder current, String line, int maxChars)
+	{
+		if (line.length() > maxChars)
+		{
+			flushCurrent(chunks, current);
+			chunks.add(line);
+			return;
+		}
+
+		int separatorLength = current.isEmpty() ? 0 : 1;
+		if (current.length() + separatorLength + line.length() > maxChars)
+		{
+			flushCurrent(chunks, current);
+		}
+
+		if (!current.isEmpty())
+		{
+			current.append('\n');
+		}
+		current.append(line);
 	}
 
 	private static void flushCurrent(List<String> chunks, StringBuilder current)
@@ -172,25 +177,27 @@ public final class ContextChunker
 
 		for (String part : sourceParts)
 		{
-			if (part.length() <= maxChars)
-			{
-				chunks.add(part);
-				continue;
-			}
-
-			int start = 0;
-			while (start < part.length())
-			{
-				int end = Math.min(start + maxChars, part.length());
-				chunks.add(part.substring(start, end));
-
-				if (end == part.length())
-				{
-					break;
-				}
-				start = Math.max(0, end - overlapChars);
-			}
+			appendPart(chunks, part, maxChars, overlapChars);
 		}
 		return chunks;
+	}
+
+	private static void appendPart(List<String> chunks, String part, int maxChars, int overlapChars)
+	{
+		if (part.length() <= maxChars)
+		{
+			chunks.add(part);
+			return;
+		}
+
+		int start = 0;
+		while (start < part.length())
+		{
+			int end = Math.min(start + maxChars, part.length());
+			chunks.add(part.substring(start, end));
+
+			boolean isLastChunk = end == part.length();
+			start = isLastChunk ? part.length() : Math.max(0, end - overlapChars);
+		}
 	}
 }
