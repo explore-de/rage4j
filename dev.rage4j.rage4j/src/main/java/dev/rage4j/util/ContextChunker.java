@@ -191,7 +191,6 @@ public final class ContextChunker
 				start = Math.max(0, end - overlapChars);
 			}
 		}
-
 		return chunks;
 	}
 }

@@ -6,6 +6,8 @@ import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -37,36 +39,15 @@ class ContextRelevanceEmbeddingEvaluatorTest
 			.build();
 	}
 
-	@Test
-	void testEvaluateWithHighSimilarity()
+	@ParameterizedTest
+	@ValueSource(doubles = {0.95, 0.2, 0.0})
+	void testEvaluateWithSimilarity(double similarity)
 	{
-		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(CONTEXT))).thenReturn(List.of(0.95));
+		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(CONTEXT))).thenReturn(List.of(similarity));
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals(0.95, result.getValue(), 0.01);
-		assertEquals("Context relevance embedding", result.getName());
-	}
-
-	@Test
-	void testEvaluateWithLowSimilarity()
-	{
-		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(CONTEXT))).thenReturn(List.of(0.2));
-
-		Evaluation result = evaluator.evaluate(sample);
-
-		assertEquals(0.2, result.getValue(), 0.01);
-		assertEquals("Context relevance embedding", result.getName());
-	}
-
-	@Test
-	void testEvaluateWithNoSimilarity()
-	{
-		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(CONTEXT))).thenReturn(List.of(0.0));
-
-		Evaluation result = evaluator.evaluate(sample);
-
-		assertEquals(0.0, result.getValue(), 0.01);
+		assertEquals(similarity, result.getValue(), 0.01);
 		assertEquals("Context relevance embedding", result.getName());
 	}
 
