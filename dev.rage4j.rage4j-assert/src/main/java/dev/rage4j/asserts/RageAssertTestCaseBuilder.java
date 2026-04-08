@@ -14,11 +14,13 @@ public class RageAssertTestCaseBuilder
 	private String comparisonGroundTruth;
 	private List<String> comparisonContextList;
 	private ChatModel chatModel;
+	private final ChatModel judgeChatModel;
 	private final EmbeddingModel embeddingModel;
 
-	public RageAssertTestCaseBuilder(ChatModel chatModel, EmbeddingModel embeddingModel)
+	public RageAssertTestCaseBuilder(ChatModel chatModel, ChatModel judgeChatModel, EmbeddingModel embeddingModel)
 	{
 		this.chatModel = chatModel;
+		this.judgeChatModel = judgeChatModel;
 		this.embeddingModel = embeddingModel;
 	}
 
@@ -68,6 +70,7 @@ public class RageAssertTestCaseBuilder
 			comparisonGroundTruth,
 			comparisonContextList,
 			chatModel,
+			judgeChatModel,
 			embeddingModel);
 	}
 }

@@ -17,6 +17,7 @@ public class RageAssertTestCaseGiven
 	private String answer;
 	private String comparisonAnswer;
 	private ChatModel chatLanguageModel;
+	private ChatModel judgeChatModel;
 	private EmbeddingModel embeddingModel;
 
 	public RageAssertTestCaseGiven(
@@ -27,6 +28,7 @@ public class RageAssertTestCaseGiven
 		String comparisonGroundTruth,
 		List<String> comparisonContextList,
 		ChatModel chatLanguageModel,
+		ChatModel judgeChatModel,
 		EmbeddingModel embeddingModel)
 	{
 		this.question = question;
@@ -36,6 +38,7 @@ public class RageAssertTestCaseGiven
 		this.comparisonGroundTruth = comparisonGroundTruth;
 		this.comparisonContextList = comparisonContextList;
 		this.chatLanguageModel = chatLanguageModel;
+		this.judgeChatModel = judgeChatModel;
 		this.embeddingModel = embeddingModel;
 	}
 
@@ -79,6 +82,7 @@ public class RageAssertTestCaseGiven
 			comparisonQuestion,
 			comparisonContextList,
 			chatLanguageModel,
+			judgeChatModel,
 			embeddingModel);
 	}
 }

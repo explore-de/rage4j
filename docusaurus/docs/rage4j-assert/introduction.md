@@ -17,6 +17,7 @@ RAGE4J-Assert, writing tests becomes both quicker and more comfortable.
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.asserts.RageAssert;
 import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
+import dev.rage4j.asserts.openai.OpenAiReasoningEffort;
 import org.junit.jupiter.api.Test;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
@@ -32,7 +33,9 @@ class RageAssertTest
 	@Test
 	void testCorrectnessApi()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = new OpenAiLLMBuilder()
+			.reasoningEffort(OpenAiReasoningEffort.MEDIUM)
+			.fromApiKey(key);
 		rageAssert.given()
 			.question("What is the capital of France?")
 			.groundTruth("Paris is the capital of France")
@@ -43,6 +46,23 @@ class RageAssertTest
 	}
 }
 ```
+
+## OpenAI Reasoning Effort
+
+If you use OpenAI reasoning-capable models such as `gpt-5.4`, you can configure the reasoning effort once on
+`OpenAiLLMBuilder`. The configured value is then used for the evaluated chat model and the judge chat model across all
+chat-based assertions.
+
+``` java
+RageAssert rageAssert = new OpenAiLLMBuilder()
+	.chatModelName("gpt-5.4")
+	.judgeModelName("gpt-5.4")
+	.reasoningEffort(OpenAiReasoningEffort.HIGH)
+	.fromApiKey(key);
+```
+
+Supported values are `NONE`, `MINIMAL`, `LOW`, `MEDIUM`, `HIGH`, and `XHIGH`. If you need different settings, use
+`chatReasoningEffort(...)` and `judgeReasoningEffort(...)`.
 
 ## Features
 
