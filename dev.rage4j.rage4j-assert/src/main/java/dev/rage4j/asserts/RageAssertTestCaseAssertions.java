@@ -94,10 +94,8 @@ public class RageAssertTestCaseAssertions
 	{
 		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(evaluatedChatModel, sample.hasImages());
 		Evaluation evaluation = evaluator.evaluate(sample);
-
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
-
 		if (!passed)
 		{
 			String message = MINVALUE + evaluation.getValue() + " answer: " + sample.getAnswer();
@@ -110,10 +108,8 @@ public class RageAssertTestCaseAssertions
 	{
 		AnswerCorrectnessEvaluator evaluator = new AnswerCorrectnessEvaluator(evaluatedChatModel);
 		Evaluation evaluation = evaluator.evaluate(sample);
-
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
-
 		if (!passed)
 		{
 			String message = MINVALUE + evaluation.getValue() + " answer: " + sample.getAnswer();
@@ -126,10 +122,8 @@ public class RageAssertTestCaseAssertions
 	{
 		AnswerRelevanceEmbeddingEvaluator evaluator = new AnswerRelevanceEmbeddingEvaluator(evaluatedChatModel, embeddingModel);
 		Evaluation evaluation = evaluator.evaluate(sample);
-
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
-
 		if (!passed)
 		{
 			String message = assertionFailureMessage(evaluation.getValue(), minValue, sample.getAnswer());
@@ -142,10 +136,8 @@ public class RageAssertTestCaseAssertions
 	{
 		AnswerSemanticSimilarityEvaluator evaluator = new AnswerSemanticSimilarityEvaluator(embeddingModel);
 		Evaluation evaluation = evaluator.evaluate(sample);
-
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
-
 		if (!passed)
 		{
 			String message = assertionFailureMessage(evaluation.getValue(), minValue, sample.getAnswer());
@@ -158,10 +150,8 @@ public class RageAssertTestCaseAssertions
 	{
 		BleuScoreEvaluator evaluator = new BleuScoreEvaluator();
 		Evaluation evaluation = evaluator.evaluate(sample);
-
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
-
 		if (!passed)
 		{
 			String message = assertionFailureMessage(evaluation.getValue(), minValue, sample.getAnswer());
@@ -174,10 +164,8 @@ public class RageAssertTestCaseAssertions
 	{
 		RougeScoreEvaluator evaluator = new RougeScoreEvaluator(rougeType, measureType);
 		Evaluation evaluation = evaluator.evaluate(sample);
-
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
-
 		if (!passed)
 		{
 			String message = assertionFailureMessage(evaluation.getValue(), minValue, sample.getAnswer());
@@ -209,14 +197,12 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new IllegalArgumentException("runs must be greater than 0");
 		}
-
 		RefusalEvaluator evaluator = new RefusalEvaluator(judgeChatModel);
 		double totalScore = 0.0;
 		int unfairRuns = 0;
 		int successfulRuns = 0;
 		int firstRefusals = 0;
 		int secondRefusals = 0;
-
 		for (int run = 0; run < runs; run++)
 		{
 			RefusalEvaluator.DisparityState comparison = evaluateRefusalRun(evaluator, runs);
@@ -224,7 +210,6 @@ public class RageAssertTestCaseAssertions
 			{
 				continue;
 			}
-
 			successfulRuns++;
 			if (evaluator.getLastFirstState() == RefusalEvaluator.RefusalState.REFUSAL)
 			{
@@ -240,19 +225,15 @@ public class RageAssertTestCaseAssertions
 				unfairRuns++;
 			}
 		}
-
 		if (successfulRuns == 0)
 		{
 			throw new IllegalStateException("Refusal disparity assertion produced no successful runs.");
 		}
-
 		double averageScore = totalScore / successfulRuns;
 		Evaluation evaluation = new Evaluation("Refusal Disparity", averageScore);
 		collectEvaluation(evaluation);
-
 		LOG.info("");
 		LOG.info("Refusal disparity aggregate: firstRefusals={}, secondRefusals={}, configuredRuns={}, successfulRuns={}, unfairRuns={}, averageScore={}", firstRefusals, secondRefusals, runs, successfulRuns, unfairRuns, averageScore);
-
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
@@ -267,18 +248,10 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new IllegalStateException("An implicitExplicitScenario must be set before assertImplicitExplicitBias is used.");
 		}
-
 		AdjectivePreset adjectivePreset = implicitExplicitScenario.adjectivePreset();
 		if (adjectivePreset != null)
 		{
-			return assertImplicitExplicitInternal(
-				implicitExplicitScenario.category(),
-				implicitExplicitScenario.mode().value(),
-				runs,
-				implicitExplicitScenario.groupPair(),
-				adjectivePreset.positiveAdjectives(),
-				adjectivePreset.negativeAdjectives(),
-				adjectivePreset.neutralAdjectives());
+			return assertImplicitExplicitInternal(implicitExplicitScenario.category(), implicitExplicitScenario.mode().value(), runs, implicitExplicitScenario.groupPair(), adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
 		}
 		return assertImplicitExplicitInternal(implicitExplicitScenario.category(), implicitExplicitScenario.mode().value(), runs, implicitExplicitScenario.groupPair(), null, null, null);
 	}
@@ -327,14 +300,11 @@ public class RageAssertTestCaseAssertions
 		{
 			throw new IllegalStateException("Implicit/explicit bias assertion requires a judge chat model for normalization.");
 		}
-
 		ImplicitExplicitEvaluator evaluator = new ImplicitExplicitEvaluator(category, mode, groupPair, judgeChatModel, positiveAdjectives, negativeAdjectives, neutralAdjectives);
-
 		double totalBiasScore = 0.0;
 		int validRuns = 0;
 		Map<String, Integer> wordCounts = new HashMap<>();
 		Set<String> allowedAdjectives = Set.of();
-
 		if (ImplicitExplicitEvaluator.IMPLICIT.equals(mode))
 		{
 			List<String> positive = positiveAdjectives;
@@ -347,14 +317,12 @@ public class RageAssertTestCaseAssertions
 				negative = adjectivePreset.negativeAdjectives();
 				neutral = adjectivePreset.neutralAdjectives();
 			}
-
 			ArrayList<String> all = new ArrayList<>();
 			all.addAll(positive);
 			all.addAll(negative);
 			all.addAll(neutral);
 			allowedAdjectives = toNormalizedSet(all);
 		}
-
 		for (int run = 0; run < runs; run++)
 		{
 			Evaluation runEvaluation = evaluateImplicitExplicitRun(evaluator, runs);
@@ -362,26 +330,21 @@ public class RageAssertTestCaseAssertions
 			{
 				continue;
 			}
-
 			totalBiasScore += runEvaluation.getValue();
 			validRuns++;
-
 			if (ImplicitExplicitEvaluator.IMPLICIT.equals(mode))
 			{
 				collectAdjectiveFrequencies(evaluator.getLastFirstNormalizedAnswer(), allowedAdjectives, wordCounts);
 				collectAdjectiveFrequencies(evaluator.getLastSecondNormalizedAnswer(), allowedAdjectives, wordCounts);
 			}
 		}
-
 		if (validRuns == 0)
 		{
 			throw new IllegalStateException("Implicit/explicit bias assertion produced no valid runs.");
 		}
-
 		double averageBiasScore = totalBiasScore / validRuns;
 		Evaluation evaluation = new Evaluation("Implicit/Explicit Bias", averageBiasScore);
 		collectEvaluation(evaluation);
-
 		double biasScore = evaluation.getValue();
 		String preferredGroup = "none";
 		if (biasScore > 0.0)
@@ -392,14 +355,12 @@ public class RageAssertTestCaseAssertions
 		{
 			preferredGroup = groupPair.firstAttribute();
 		}
-
 		LOG.info("");
 		LOG.info("Implicit/Explicit aggregate: biasScore={}, configuredRuns={}, validRuns={}, preferredGroup='{}'", fmt(biasScore), runs, validRuns, preferredGroup);
 		if (ImplicitExplicitEvaluator.IMPLICIT.equals(mode))
 		{
 			LOG.info("top adjectives: topWords='{}'", formatTopWords(wordCounts));
 		}
-
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
@@ -426,7 +387,6 @@ public class RageAssertTestCaseAssertions
 		{
 			return 0;
 		}
-
 		String[] entries = response.split(",");
 		int collected = 0;
 		for (String entry : entries)
@@ -448,7 +408,6 @@ public class RageAssertTestCaseAssertions
 		{
 			return "none";
 		}
-
 		return counts.entrySet().stream()
 			.sorted((left, right) ->
 			{
@@ -554,12 +513,10 @@ public class RageAssertTestCaseAssertions
 				throw new IllegalStateException("Repeated refusal disparity runs require an evaluated chat model so each run can generate fresh answers.");
 			}
 		}
-
 		if (evaluatedChatModel == null)
 		{
 			throw new IllegalStateException("Refusal disparity assertion requires either answers or an evaluated chat model.");
 		}
-
 		String generatedAnswer = evaluatedChatModel.chat(sample.getQuestion());
 		String generatedComparisonAnswer = evaluatedChatModel.chat(comparisonSample.getQuestion());
 		return buildRefusalSample(generatedAnswer, generatedComparisonAnswer);
@@ -574,7 +531,6 @@ public class RageAssertTestCaseAssertions
 			.withGroundTruth(comparisonSample.getGroundTruth())
 			.withContext(comparisonSample.getContext())
 			.build();
-
 		return Sample.builder()
 			.withAnswer(currentAnswer)
 			.withQuestion(sample.getQuestion())
@@ -596,7 +552,6 @@ public class RageAssertTestCaseAssertions
 			}
 			throw new IllegalStateException("Repeated implicit/explicit bias runs require an evaluated chat model so each run can generate fresh answers.");
 		}
-
 		String generatedAnswer = evaluatedChatModel.chat(sample.getQuestion());
 		String generatedComparisonAnswer = evaluatedChatModel.chat(comparisonSample.getQuestion());
 		return buildImplicitExplicitSample(generatedAnswer, generatedComparisonAnswer);
@@ -611,7 +566,6 @@ public class RageAssertTestCaseAssertions
 			.withGroundTruth(comparisonSample.getGroundTruth())
 			.withContext(comparisonSample.getContext())
 			.build();
-
 		return Sample.builder()
 			.withAnswer(currentAnswer)
 			.withQuestion(sample.getQuestion())
