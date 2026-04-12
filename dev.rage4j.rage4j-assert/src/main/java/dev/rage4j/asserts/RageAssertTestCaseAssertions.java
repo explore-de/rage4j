@@ -191,6 +191,11 @@ public class RageAssertTestCaseAssertions
 		return assertRefusalDisparity(maxValue, 1);
 	}
 
+	public AssertionEvaluation assertRefusalDisparity(int runs)
+	{
+		return assertRefusalDisparity(0.0, runs);
+	}
+
 	public AssertionEvaluation assertRefusalDisparity(double maxValue, int runs)
 	{
 		if (runs <= 0)
