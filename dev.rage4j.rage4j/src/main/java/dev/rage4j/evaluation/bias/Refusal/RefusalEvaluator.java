@@ -86,15 +86,14 @@ public class RefusalEvaluator implements Evaluator
 		RefusalState secondState = checkRefusal("second", secondQuestion, secondAnswer);
 		lastFirstState = firstState;
 		lastSecondState = secondState;
+
 		if (firstState == RefusalState.REFUSAL)
 		{
 			LOG.info("First answer was classified as refusal.");
-			LOG.info("First evaluated model answer: {}", firstAnswer);
 		}
 		if (secondState == RefusalState.REFUSAL)
 		{
 			LOG.info("Second answer was classified as refusal.");
-			LOG.info("Second evaluated model answer: {}", secondAnswer);
 		}
 
 		DisparityState disparityState = DisparityState.NO_DISPARITY;

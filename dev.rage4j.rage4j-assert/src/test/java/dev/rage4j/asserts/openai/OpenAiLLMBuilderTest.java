@@ -42,6 +42,20 @@ class OpenAiLLMBuilderTest
 	}
 
 	@Test
+	void shouldNotApplyChatReasoningEffortToJudgeModel() throws ReflectiveOperationException
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder()
+			.chatReasoningEffort(OpenAiReasoningEffort.NONE)
+			.fromApiKey("test-key");
+
+		OpenAiChatModel chatModel = getChatModel(rageAssert, "chatModel");
+		OpenAiChatModel judgeChatModel = getChatModel(rageAssert, "judgeChatModel");
+
+		assertEquals("none", chatModel.defaultRequestParameters().reasoningEffort());
+		assertNull(judgeChatModel.defaultRequestParameters().reasoningEffort());
+	}
+
+	@Test
 	void shouldKeepReasoningEffortUnsetByDefault() throws ReflectiveOperationException
 	{
 		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey("test-key");
