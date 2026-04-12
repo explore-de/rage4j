@@ -408,9 +408,19 @@ public class RageAssertTestCaseAssertions
 		int validRuns = 0;
 		Map<String, Integer> firstWordCounts = new HashMap<>();
 		Map<String, Integer> secondWordCounts = new HashMap<>();
-		Set<String> allowedAdjectives = ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode)
-			? buildAllowedAdjectiveSet(category, positiveAdjectives, negativeAdjectives, neutralAdjectives)
-			: Set.of();
+		Set<String> allowedAdjectives = Set.of();
+		Set<String> negativeAdjectiveSet = Set.of();
+		Map<String, Integer> firstNegativeWordCounts = new HashMap<>();
+		Map<String, Integer> secondNegativeWordCounts = new HashMap<>();
+		int firstNegativeSelections = 0;
+		int secondNegativeSelections = 0;
+		if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
+		{
+			AdjectivePreset adjectivePreset = resolveAdjectivePreset(
+				category, positiveAdjectives, negativeAdjectives, neutralAdjectives);
+			allowedAdjectives = buildAllowedAdjectiveSet(adjectivePreset);
+			negativeAdjectiveSet = toNormalizedSet(adjectivePreset.negativeAdjectives());
+		}
 
 		for (int run = 0; run < runs; run++)
 		{
@@ -433,6 +443,22 @@ public class RageAssertTestCaseAssertions
 				{
 					collectAdjectiveFrequencies(currentRun.normalizedFirstAnswer(), allowedAdjectives, firstWordCounts);
 					collectAdjectiveFrequencies(currentRun.normalizedSecondAnswer(), allowedAdjectives, secondWordCounts);
+					int firstNegativeSelectionsThisRun = collectAdjectiveFrequencies(
+						currentRun.normalizedFirstAnswer(),
+						negativeAdjectiveSet,
+						firstNegativeWordCounts);
+					int secondNegativeSelectionsThisRun = collectAdjectiveFrequencies(
+						currentRun.normalizedSecondAnswer(),
+						negativeAdjectiveSet,
+						secondNegativeWordCounts);
+					firstNegativeSelections += firstNegativeSelectionsThisRun;
+					secondNegativeSelections += secondNegativeSelectionsThisRun;
+					logNegativeImplicitSelections(
+						run + 1,
+						currentRun,
+						negativeAdjectiveSet,
+						firstNegativeSelectionsThisRun,
+						secondNegativeSelectionsThisRun);
 				}
 			}
 			else
@@ -462,12 +488,28 @@ public class RageAssertTestCaseAssertions
 		{
 			LOG.info("Implicit/explicit bias top adjectives [{}]: firstTopWords='{}', secondTopWords='{}'",
 				category, formatTopWords(firstWordCounts), formatTopWords(secondWordCounts));
+			LOG.info("Implicit/explicit bias negative adjective summary [{}]: totalNegativeSelections={}, firstNegativeSelections={}, secondNegativeSelections={}, firstTopNegativeWords='{}', secondTopNegativeWords='{}'",
+				category,
+				firstNegativeSelections + secondNegativeSelections,
+				firstNegativeSelections,
+				secondNegativeSelections,
+				formatTopWords(firstNegativeWordCounts),
+				formatTopWords(secondNegativeWordCounts));
 		}
 
 		if (Math.abs(biasScore) > maxBiasScore)
 		{
+			String negativeSelectionsSummary = "";
+			if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
+			{
+				negativeSelectionsSummary = ", Negative adjective selections over runs: total="
+					+ (firstNegativeSelections + secondNegativeSelections)
+					+ ", first=" + firstNegativeSelections
+					+ ", second=" + secondNegativeSelections;
+			}
 			throw new Rage4JImplicitExplicitBiasException(
-				ABSOLUTE_MAXVALUE + biasScore + ", Allowed: " + maxBiasScore + ", Preferred group: " + preferredGroup);
+				ABSOLUTE_MAXVALUE + biasScore + ", Allowed: " + maxBiasScore + ", Preferred group: " + preferredGroup
+					+ negativeSelectionsSummary);
 		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
@@ -597,30 +639,58 @@ public class RageAssertTestCaseAssertions
 		}
 	}
 
-	private Set<String> buildAllowedAdjectiveSet(String category, List<String> positiveAdjectives, List<String> negativeAdjectives,
+	private void logNegativeImplicitSelections(int runNumber, EvaluatedPromptPair evaluatedPromptPair,
+		Set<String> negativeAdjectives, int firstNegativeSelectionsThisRun, int secondNegativeSelectionsThisRun)
+	{
+		if (firstNegativeSelectionsThisRun == 0 && secondNegativeSelectionsThisRun == 0)
+		{
+			return;
+		}
+
+		LOG.info(
+			"Implicit/explicit bias run {} selected negative adjectives: firstCount={}, secondCount={}, firstWords='{}', secondWords='{}'",
+			runNumber,
+			firstNegativeSelectionsThisRun,
+			secondNegativeSelectionsThisRun,
+			formatMatchingWords(evaluatedPromptPair.normalizedFirstAnswer(), negativeAdjectives),
+			formatMatchingWords(evaluatedPromptPair.normalizedSecondAnswer(), negativeAdjectives));
+	}
+
+	private AdjectivePreset resolveAdjectivePreset(String category, List<String> positiveAdjectives, List<String> negativeAdjectives,
 		List<String> neutralAdjectives)
 	{
 		AdjectivePreset adjectivePreset = ImplicitExplicitBiasTemplateLibrary.adjectivePresetFor(category);
 		List<String> positive = positiveAdjectives != null ? positiveAdjectives : adjectivePreset.positiveAdjectives();
 		List<String> negative = negativeAdjectives != null ? negativeAdjectives : adjectivePreset.negativeAdjectives();
 		List<String> neutral = neutralAdjectives != null ? neutralAdjectives : adjectivePreset.neutralAdjectives();
+		return new AdjectivePreset(positive, negative, neutral);
+	}
+
+	private Set<String> buildAllowedAdjectiveSet(AdjectivePreset adjectivePreset)
+	{
 		java.util.ArrayList<String> all = new java.util.ArrayList<>();
-		all.addAll(positive);
-		all.addAll(negative);
-		all.addAll(neutral);
-		return all.stream()
+		all.addAll(adjectivePreset.positiveAdjectives());
+		all.addAll(adjectivePreset.negativeAdjectives());
+		all.addAll(adjectivePreset.neutralAdjectives());
+		return toNormalizedSet(all);
+	}
+
+	private Set<String> toNormalizedSet(List<String> adjectives)
+	{
+		return adjectives.stream()
 			.map(this::normalizeAdjectiveEntry)
 			.collect(Collectors.toSet());
 	}
 
-	private void collectAdjectiveFrequencies(String response, Set<String> allowedAdjectives, Map<String, Integer> counts)
+	private int collectAdjectiveFrequencies(String response, Set<String> allowedAdjectives, Map<String, Integer> counts)
 	{
 		if (response == null || response.isBlank())
 		{
-			return;
+			return 0;
 		}
 
 		String[] entries = response.split(",");
+		int collected = 0;
 		for (String entry : entries)
 		{
 			String cleaned = normalizeAdjectiveEntry(entry);
@@ -629,7 +699,33 @@ public class RageAssertTestCaseAssertions
 				continue;
 			}
 			counts.merge(cleaned, 1, Integer::sum);
+			collected++;
 		}
+		return collected;
+	}
+
+	private String formatMatchingWords(String response, Set<String> allowedAdjectives)
+	{
+		if (response == null || response.isBlank())
+		{
+			return "none";
+		}
+
+		List<String> matches = new java.util.ArrayList<>();
+		String[] entries = response.split(",");
+		for (String entry : entries)
+		{
+			String cleaned = normalizeAdjectiveEntry(entry);
+			if (!cleaned.isEmpty() && allowedAdjectives.contains(cleaned))
+			{
+				matches.add(cleaned);
+			}
+		}
+		if (matches.isEmpty())
+		{
+			return "none";
+		}
+		return String.join(", ", matches);
 	}
 
 	private String formatTopWords(Map<String, Integer> counts)
