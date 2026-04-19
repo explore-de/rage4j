@@ -15,8 +15,6 @@ public class RefusalEvaluator implements Evaluator
 	private static final Logger LOG = LoggerFactory.getLogger(RefusalEvaluator.class);
 	private static final String METRIC_NAME = "Refusal Disparity";
 
-	private final ChatModel evaluatedModel;
-	private final ChatModel refusalDetectionModel;
 	private final RefusalBot bot;
 
 	public enum RefusalState
@@ -36,22 +34,14 @@ public class RefusalEvaluator implements Evaluator
 	private RefusalState lastFirstState = RefusalState.UNKNOWN;
 	private RefusalState lastSecondState = RefusalState.UNKNOWN;
 
-	public RefusalEvaluator(ChatModel evaluatedModel, ChatModel refusalDetectionModel)
+	public RefusalEvaluator(ChatModel refusalDetectionModel)
 	{
-		this.evaluatedModel = evaluatedModel;
-		this.refusalDetectionModel = Objects.requireNonNull(refusalDetectionModel, "refusal detection model must not be null");
-		this.bot = AiServices.create(RefusalBot.class, this.refusalDetectionModel);
+		Objects.requireNonNull(refusalDetectionModel, "refusal detection model must not be null");
+		this.bot = AiServices.create(RefusalBot.class, refusalDetectionModel);
 	}
 
 	public RefusalEvaluator(RefusalBot bot)
 	{
-		this(null, bot);
-	}
-
-	public RefusalEvaluator(ChatModel evaluatedModel, RefusalBot bot)
-	{
-		this.evaluatedModel = evaluatedModel;
-		this.refusalDetectionModel = null;
 		this.bot = Objects.requireNonNull(bot, "refusal bot must not be null");
 	}
 
@@ -77,10 +67,10 @@ public class RefusalEvaluator implements Evaluator
 		}
 
 		Sample comparisonSample = sample.getComparisonSample();
-		String firstAnswer = resolveAnswer(sample);
-		String secondAnswer = resolveAnswer(comparisonSample);
-		String firstQuestion = resolveQuestion(sample);
-		String secondQuestion = resolveQuestion(comparisonSample);
+		String firstAnswer = sample.getAnswerOrFail();
+		String secondAnswer = comparisonSample.getAnswerOrFail();
+		String firstQuestion = sample.getQuestionOrFail();
+		String secondQuestion = comparisonSample.getQuestionOrFail();
 
 		RefusalState firstState = checkRefusal("first", firstQuestion, firstAnswer);
 		RefusalState secondState = checkRefusal("second", secondQuestion, secondAnswer);
@@ -156,35 +146,5 @@ public class RefusalEvaluator implements Evaluator
 	private String classifyRefusal(String question, String answer)
 	{
 		return bot.isRefusal(question, answer);
-	}
-
-	private String resolveAnswer(Sample sample)
-	{
-		if (sample.hasAnswer())
-		{
-			return sample.getAnswerOrFail();
-		}
-		if (evaluatedModel == null)
-		{
-			throw new IllegalStateException(
-				"Refusal evaluation requires an answer in the sample or an evaluated model in the constructor");
-		}
-
-		String question = sample.getQuestionOrFail();
-		String answer = evaluatedModel.chat(question);
-		if (answer == null)
-		{
-			throw new IllegalStateException("Evaluated model returned null for refusal evaluation");
-		}
-		return answer;
-	}
-
-	private String resolveQuestion(Sample sample)
-	{
-		if (!sample.hasQuestion())
-		{
-			return "";
-		}
-		return sample.getQuestionOrFail();
 	}
 }

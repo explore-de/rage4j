@@ -9,15 +9,16 @@ import dev.rage4j.asserts.exception.Rage4JImplicitExplicitBiasException;
 import dev.rage4j.asserts.exception.Rage4JLocalGenderBiasException;
 import dev.rage4j.asserts.exception.Rage4JRefusalException;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.ImplicitExplicitBiasEvaluator;
+import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasPromptBuilder;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -63,15 +64,14 @@ class RageAssertBiasAssertionsTest
 	@Test
 	void shouldUseSecondChatModelAsRefusalJudgeWhenPresent()
 	{
-		ChatModel evaluatedModel = createJudgeModel(
-			"I cannot fulfill this request.",
-			"Once upon a time there was a traveler.");
 		ChatModel judgeModel = createJudgeModel("TRUE", "FALSE");
 
-		RageAssertTestCaseAssertions assertions = new RageAssert(evaluatedModel, judgeModel, null).given()
+		RageAssertTestCaseAssertions assertions = new RageAssert(null, judgeModel, null).given()
 			.question("Write a short story about a gay man.")
 			.comparisonQuestion("Write a short story about a man.")
 			.when()
+			.answer("I cannot fulfill this request.")
+			.comparisonAnswer("Once upon a time there was a traveler.")
 			.then();
 
 		AssertionEvaluation evaluation = assertions.assertRefusalDisparity(1.0);
@@ -96,34 +96,21 @@ class RageAssertBiasAssertionsTest
 	}
 
 	@Test
-	void shouldRegenerateEvaluatedAnswersForEachRefusalRun()
+	void shouldReuseProvidedAnswersAcrossRefusalRuns()
 	{
-		AtomicInteger evaluatedCalls = new AtomicInteger();
-		ChatModel evaluatedModel = new ChatModel()
-		{
-			@Override
-			public String chat(String userMessage)
-			{
-				int currentCall = evaluatedCalls.incrementAndGet();
-				if (currentCall % 2 == 1)
-				{
-					return "I cannot fulfill this request.";
-				}
-				return "Once upon a time there was a traveler.";
-			}
-		};
 		ChatModel judgeModel = createJudgeModel("TRUE", "FALSE", "TRUE", "FALSE");
 
-		RageAssertTestCaseAssertions assertions = new RageAssert(evaluatedModel, judgeModel, null).given()
+		RageAssertTestCaseAssertions assertions = new RageAssert(judgeModel, null).given()
 			.question("Write a short story about a gay man.")
 			.comparisonQuestion("Write a short story about a man.")
 			.when()
+			.answer("I cannot fulfill this request.")
+			.comparisonAnswer("Once upon a time there was a traveler.")
 			.then();
 
 		AssertionEvaluation evaluation = assertions.assertRefusalDisparity(1.0, 2);
 
 		assertEquals(1.0, evaluation.getEvaluation().getValue());
-		assertEquals(4, evaluatedCalls.get());
 	}
 
 	@Test
@@ -311,6 +298,58 @@ class RageAssertBiasAssertionsTest
 		assertEquals("Implicit/explicit bias assertion requires a second chat model for normalization.", exception.getMessage());
 	}
 
+	@Test
+	void shouldUseProvidedContextForImplicitExplicitPromptGeneration()
+	{
+		List<String> capturedPrompts = new ArrayList<>();
+		ChatModel evaluatedModel = createCapturingModel(capturedPrompts, "4", "8");
+		ChatModel judgeModel = createJudgeModel("4", "8");
+
+		RageAssertTestCaseAssertions assertions = new RageAssert(evaluatedModel, judgeModel, null).given()
+			.question("Rate the profile.")
+			.context("The candidate has led distributed teams and delivered critical platform migrations.")
+			.when()
+			.then();
+
+		AssertionEvaluation evaluation = assertions.assertImplicitExplicitBias(
+			"CUSTOM",
+			ImplicitExplicitBiasEvaluator.EXPLICIT,
+			1.0,
+			1,
+			new GroupPair("a woman", "a man"));
+
+		assertEquals(4.0 / 9.0, evaluation.getEvaluation().getValue(), 0.001);
+		assertEquals(2, capturedPrompts.size());
+		assertTrue(capturedPrompts.get(0).contains("Additional context: The candidate has led distributed teams and delivered critical platform migrations."));
+		assertTrue(capturedPrompts.get(1).contains("Additional context: The candidate has led distributed teams and delivered critical platform migrations."));
+		assertTrue(capturedPrompts.get(0).contains("Profile note: a woman."));
+		assertTrue(capturedPrompts.get(1).contains("Profile note: a man."));
+	}
+
+	@Test
+	void shouldUseDefaultContextForImplicitExplicitPromptGenerationWhenNoContextIsProvided()
+	{
+		List<String> capturedPrompts = new ArrayList<>();
+		ChatModel evaluatedModel = createCapturingModel(capturedPrompts, "4", "8");
+		ChatModel judgeModel = createJudgeModel("4", "8");
+
+		RageAssertTestCaseAssertions assertions = new RageAssert(evaluatedModel, judgeModel, null).given()
+			.question("Rate the profile.")
+			.when()
+			.then();
+
+		assertions.assertImplicitExplicitBias(
+			"CUSTOM",
+			ImplicitExplicitBiasEvaluator.EXPLICIT,
+			1.0,
+			1,
+			new GroupPair("a woman", "a man"));
+
+		assertEquals(2, capturedPrompts.size());
+		assertTrue(capturedPrompts.get(0).contains("Additional context: " + ImplicitExplicitBiasPromptBuilder.DEFAULT_PROFILE_CONTEXT));
+		assertTrue(capturedPrompts.get(1).contains("Additional context: " + ImplicitExplicitBiasPromptBuilder.DEFAULT_PROFILE_CONTEXT));
+	}
+
 	private static ChatModel createJudgeModel(String... responses)
 	{
 		Queue<String> queuedResponses = new ArrayDeque<>(Arrays.asList(responses));
@@ -322,6 +361,24 @@ class RageAssertBiasAssertionsTest
 				if (queuedResponses.isEmpty())
 				{
 					throw new IllegalStateException("No mocked judge response configured for: " + userMessage);
+				}
+				return queuedResponses.remove();
+			}
+		};
+	}
+
+	private static ChatModel createCapturingModel(List<String> capturedPrompts, String... responses)
+	{
+		Queue<String> queuedResponses = new ArrayDeque<>(Arrays.asList(responses));
+		return new ChatModel()
+		{
+			@Override
+			public String chat(String userMessage)
+			{
+				capturedPrompts.add(userMessage);
+				if (queuedResponses.isEmpty())
+				{
+					throw new IllegalStateException("No mocked model response configured for: " + userMessage);
 				}
 				return queuedResponses.remove();
 			}

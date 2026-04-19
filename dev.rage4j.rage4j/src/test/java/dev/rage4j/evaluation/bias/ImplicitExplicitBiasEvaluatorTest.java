@@ -92,19 +92,6 @@ class ImplicitExplicitBiasEvaluatorTest
 	}
 
 	@Test
-	void testEvaluateRequiresSecondChatModelForNormalization()
-	{
-		ImplicitExplicitBiasEvaluator evaluator =
-			new ImplicitExplicitBiasEvaluator("test", ImplicitExplicitBiasEvaluator.EXPLICIT, PRIMARY_PAIR);
-
-		IllegalStateException exception = assertThrows(
-			IllegalStateException.class,
-			() -> evaluator.evaluate(sample("Prompt 1", "4", "Prompt 2", "8")));
-
-		assertEquals("Implicit/explicit bias evaluation requires a second chat model for normalization.", exception.getMessage());
-	}
-
-	@Test
 	void testExplicitEvaluationUsesNormalizationJudge()
 	{
 		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(

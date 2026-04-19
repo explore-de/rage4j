@@ -203,12 +203,11 @@ public class RageAssertTestCaseAssertions
 			throw new IllegalArgumentException("runs must be greater than 0");
 		}
 
-		ChatModel evaluatedModel = chatModel;
 		ChatModel judgeModel = judgeChatModel != null
 			? judgeChatModel
 			: requireChatModel("Refusal disparity assertion requires a chat model.");
 
-		RefusalEvaluator evaluator = new RefusalEvaluator(evaluatedModel, judgeModel);
+		RefusalEvaluator evaluator = new RefusalEvaluator(judgeModel);
 		double totalScore = 0.0;
 		int unfairRuns = 0;
 		int firstRefusals = 0;
@@ -216,7 +215,7 @@ public class RageAssertTestCaseAssertions
 
 		for (int run = 0; run < runs; run++)
 		{
-			Sample sample = buildRefusalSample(evaluatedModel != null);
+			Sample sample = buildPairedSample();
 			RefusalEvaluator.DisparityState comparison = evaluator.compare(sample);
 			if (evaluator.getLastFirstState() == RefusalEvaluator.RefusalState.REFUSAL)
 			{
@@ -519,9 +518,20 @@ public class RageAssertTestCaseAssertions
 		GroupPair groupPair, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
 		String baseScenario = optionalQuestion();
+		String firstProfileContext = resolveFirstBiasContext();
+		String secondProfileContext = resolveSecondBiasContext(firstProfileContext);
 		if (groupPair != null)
 		{
-			PromptPair promptPair = buildPromptPair(category, mode, baseScenario, groupPair, positiveAdjectives, negativeAdjectives, neutralAdjectives);
+			PromptPair promptPair = buildPromptPair(
+				category,
+				mode,
+				baseScenario,
+				groupPair,
+				firstProfileContext,
+				secondProfileContext,
+				positiveAdjectives,
+				negativeAdjectives,
+				neutralAdjectives);
 			ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
 				category,
 				mode,
@@ -540,12 +550,18 @@ public class RageAssertTestCaseAssertions
 			return null;
 		}
 
-		for (PromptPair promptPair : ImplicitExplicitBiasPromptBuilder.buildPresetPromptPairs(category, mode, baseScenario))
+		for (PromptPair promptPair : ImplicitExplicitBiasPromptBuilder.buildPresetPromptPairs(
+			category,
+			mode,
+			baseScenario,
+			firstProfileContext,
+			secondProfileContext))
 		{
 			if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode)
 				&& positiveAdjectives != null && negativeAdjectives != null && neutralAdjectives != null)
 			{
 				promptPair = buildPromptPair(category, mode, baseScenario, promptPair.groupPair(),
+					firstProfileContext, secondProfileContext,
 					positiveAdjectives, negativeAdjectives, neutralAdjectives);
 			}
 			ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
@@ -568,6 +584,7 @@ public class RageAssertTestCaseAssertions
 	}
 
 	private PromptPair buildPromptPair(String category, String mode, String baseScenario, GroupPair groupPair,
+		String firstProfileContext, String secondProfileContext,
 		List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
 		if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode)
@@ -577,13 +594,30 @@ public class RageAssertTestCaseAssertions
 			adjectiveList.addAll(positiveAdjectives);
 			adjectiveList.addAll(negativeAdjectives);
 			adjectiveList.addAll(neutralAdjectives);
-			return ImplicitExplicitBiasPromptBuilder.buildPromptPair(mode, baseScenario, groupPair, adjectiveList);
+			return ImplicitExplicitBiasPromptBuilder.buildPromptPair(
+				mode,
+				baseScenario,
+				groupPair,
+				adjectiveList,
+				firstProfileContext,
+				secondProfileContext);
 		}
 		if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
 		{
-			return ImplicitExplicitBiasPromptBuilder.buildPromptPair(category, mode, baseScenario, groupPair);
+			return ImplicitExplicitBiasPromptBuilder.buildPromptPair(
+				category,
+				mode,
+				baseScenario,
+				groupPair,
+				firstProfileContext,
+				secondProfileContext);
 		}
-		return ImplicitExplicitBiasPromptBuilder.buildPromptPair(mode, baseScenario, groupPair);
+		return ImplicitExplicitBiasPromptBuilder.buildPromptPair(
+			mode,
+			baseScenario,
+			groupPair,
+			firstProfileContext,
+			secondProfileContext);
 	}
 
 	private EvaluatedPromptPair evaluatePromptPair(PromptPair promptPair, ChatModel evaluatedModel,
@@ -593,9 +627,11 @@ public class RageAssertTestCaseAssertions
 		String rawSecondAnswer = evaluatedModel.chat(promptPair.secondPrompt());
 		Sample sample = Sample.builder()
 			.withQuestion(promptPair.firstPrompt())
+			.withContext(promptPair.firstContext())
 			.withAnswer(rawFirstAnswer)
 			.withComparisonSample(Sample.builder()
 				.withQuestion(promptPair.secondPrompt())
+				.withContext(promptPair.secondContext())
 				.withAnswer(rawSecondAnswer)
 				.build())
 			.build();
@@ -804,6 +840,24 @@ public class RageAssertTestCaseAssertions
 		return question;
 	}
 
+	private String resolveFirstBiasContext()
+	{
+		if (contextList == null || contextList.isEmpty())
+		{
+			return null;
+		}
+		return contextList.get(0);
+	}
+
+	private String resolveSecondBiasContext(String fallbackContext)
+	{
+		if (comparisonContextList == null || comparisonContextList.isEmpty())
+		{
+			return fallbackContext;
+		}
+		return comparisonContextList.get(0);
+	}
+
 	private Sample buildSingleSample()
 	{
 		Sample.SampleBuilder builder = Sample.builder()
@@ -851,31 +905,6 @@ public class RageAssertTestCaseAssertions
 			mainBuilder.withContextsList(contextList);
 		}
 		return mainBuilder.build();
-	}
-
-	private Sample buildRefusalSample(boolean regenerateAnswers)
-	{
-		if (!regenerateAnswers)
-		{
-			return buildPairedSample();
-		}
-
-		if (comparisonQuestion == null || comparisonQuestion.trim().isEmpty())
-		{
-			throw new IllegalStateException("Comparison question is required for paired bias assertions.");
-		}
-		if (question == null || question.trim().isEmpty())
-		{
-			throw new IllegalStateException("Question is required for paired bias assertions.");
-		}
-
-		Sample comparisonSample = Sample.builder()
-			.withQuestion(comparisonQuestion)
-			.build();
-		return Sample.builder()
-			.withQuestion(question)
-			.withComparisonSample(comparisonSample)
-			.build();
 	}
 
 	private void requireComparisonSample()

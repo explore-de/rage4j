@@ -8,7 +8,6 @@ import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.AdjectiveSampler;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.Preset;
 import dev.rage4j.model.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,54 +46,38 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 	private String lastFirstNormalizedAnswer;
 	private String lastSecondNormalizedAnswer;
 
-	public ImplicitExplicitBiasEvaluator(String category, String mode)
+	public ImplicitExplicitBiasEvaluator(String category, String mode, ChatModel normalizationModel)
 	{
-		Preset preset = ImplicitExplicitBiasTemplateLibrary.presetFor(category);
-		AdjectivePreset adjectivePreset = ImplicitExplicitBiasTemplateLibrary.adjectivePresetFor(category);
-		this.category = preset.category();
-		this.mode = requireMode(mode);
-		this.groupPair = preset.primaryGroupPair();
-		this.adjectiveSampler = new AdjectiveSampler(
-			adjectivePreset.positiveAdjectives(),
-			adjectivePreset.negativeAdjectives(),
-			adjectivePreset.neutralAdjectives());
-		this.adjectiveWordBank = ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(adjectivePreset);
-		this.normalizationBot = null;
+		this(category, mode, null, normalizationModel, null, null, null);
 	}
 
-	public ImplicitExplicitBiasEvaluator(String category, String mode,
-		GroupPair groupPair)
-	{
-		this(category, mode, groupPair, null, null, null, null);
-	}
-
-	public ImplicitExplicitBiasEvaluator(String category, String mode,
-		GroupPair groupPair, ChatModel normalizationModel)
+	public ImplicitExplicitBiasEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel)
 	{
 		this(category, mode, groupPair, normalizationModel, null, null, null);
 	}
 
-	public ImplicitExplicitBiasEvaluator(String category, String mode,
-		GroupPair groupPair, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
-	{
-		this(category, mode, groupPair, null, positiveAdjectives, negativeAdjectives, neutralAdjectives);
-	}
-
-	public ImplicitExplicitBiasEvaluator(String category, String mode,
-		GroupPair groupPair, ChatModel normalizationModel, List<String> positiveAdjectives, List<String> negativeAdjectives,
+	public ImplicitExplicitBiasEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel, List<String> positiveAdjectives, List<String> negativeAdjectives,
 		List<String> neutralAdjectives)
 	{
 		if (groupPair == null)
 		{
 			throw new IllegalArgumentException("groupPair must not be null");
 		}
+
 		if (category == null || category.isBlank())
 		{
 			throw new IllegalArgumentException("category must not be blank");
 		}
+
+		if (!EXPLICIT.equals(mode) && !IMPLICIT.equals(mode))
+		{
+			throw new IllegalArgumentException("mode must be EXPLICIT or IMPLICIT");
+		}
+
 		this.category = category.trim();
-		this.mode = requireMode(mode);
+		this.mode = mode;
 		this.groupPair = groupPair;
+
 		if (positiveAdjectives != null && negativeAdjectives != null && neutralAdjectives != null)
 		{
 			this.adjectiveSampler = new AdjectiveSampler(positiveAdjectives, negativeAdjectives, neutralAdjectives);
@@ -109,9 +92,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 				adjectivePreset.neutralAdjectives());
 			this.adjectiveWordBank = ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(adjectivePreset);
 		}
-		this.normalizationBot = normalizationModel != null
-			? AiServices.create(ImplicitExplicitBiasNormalizationBot.class, normalizationModel)
-			: null;
+		this.normalizationBot = normalizationModel != null ? AiServices.create(ImplicitExplicitBiasNormalizationBot.class, normalizationModel) : null;
 	}
 
 	@Override
@@ -151,7 +132,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			throw new IllegalStateException("Implicit/explicit bias evaluation requires a second chat model for normalization.");
 		}
 
-		Sample normalizedSample = buildNormalizeSample(sample);
+		Sample normalizedSample = buildNormalizedSample(sample);
 
 		String firstAnswer = normalizedSample.getAnswerOrFail();
 		Double firstValue = parseExplicitScore(firstAnswer);
@@ -184,7 +165,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			throw new IllegalStateException("Implicit/explicit bias evaluation requires a second chat model for normalization.");
 		}
 
-		Sample evaluationSample = buildNormalizeSample(sample);
+		Sample evaluationSample = buildNormalizedSample(sample);
 
 		String firstAnswer = evaluationSample.getAnswerOrFail();
 		Integer firstAdjectiveScore = adjectiveSampler.convertAdjectiveScore(firstAnswer);
@@ -208,7 +189,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		return biasScore;
 	}
 
-	private Sample buildNormalizeSample(Sample sample)
+	private Sample buildNormalizedSample(Sample sample)
 	{
 		String firstNormalized = normalizeAnswer(sample.getAnswerOrFail());
 		String secondNormalized = normalizeAnswer(sample.getComparisonSample().getAnswerOrFail());
@@ -393,15 +374,6 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			return text.substring(end + 8).trim();
 		}
 		return text.trim();
-	}
-
-	private String requireMode(String mode)
-	{
-		if (!EXPLICIT.equals(mode) && !IMPLICIT.equals(mode))
-		{
-			throw new IllegalArgumentException("mode must be EXPLICIT or IMPLICIT");
-		}
-		return mode;
 	}
 
 	private static String buildAdjectiveWordBank(List<String> positiveAdjectives, List<String> negativeAdjectives,
