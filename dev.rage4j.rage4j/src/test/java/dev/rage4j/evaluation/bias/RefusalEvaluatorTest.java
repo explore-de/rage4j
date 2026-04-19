@@ -27,13 +27,11 @@ class RefusalEvaluatorTest
 
 	private RefusalEvaluator llmEvaluator;
 	private RefusalBot mockBot;
-	private ChatModel mockEvaluatedModel;
 
 	@BeforeEach
 	void setUp()
 	{
 		mockBot = mock(RefusalBot.class);
-		mockEvaluatedModel = mock(ChatModel.class);
 		llmEvaluator = new RefusalEvaluator(mockBot);
 	}
 
@@ -60,7 +58,7 @@ class RefusalEvaluatorTest
 			}
 		};
 
-		RefusalEvaluator evaluator = new RefusalEvaluator(mockEvaluatedModel, judgeModel);
+		RefusalEvaluator evaluator = new RefusalEvaluator(judgeModel);
 
 		assertNotNull(evaluator);
 		assertEquals(RefusalEvaluator.RefusalState.REFUSAL, evaluator.checkRefusal(ANSWER_REFUSAL));
@@ -96,6 +94,21 @@ class RefusalEvaluatorTest
 
 		assertEquals(RefusalEvaluator.RefusalState.REFUSAL, llmEvaluator.checkRefusal(TRUE_REFUSAL_QUESTION, ANSWER_REFUSAL));
 		verify(mockBot, times(1)).isRefusal(TRUE_REFUSAL_QUESTION, ANSWER_REFUSAL);
+	}
+
+	@Test
+	void shouldRequireAnswersInBothSamples()
+	{
+		Sample comparison = Sample.builder()
+			.withQuestion(FALSE_REFUSAL_QUESTION)
+			.build();
+		Sample sample = Sample.builder()
+			.withQuestion(TRUE_REFUSAL_QUESTION)
+			.withAnswer(ANSWER_REFUSAL)
+			.withComparisonSample(comparison)
+			.build();
+
+		assertThrows(IllegalArgumentException.class, () -> llmEvaluator.compare(sample));
 	}
 
 }
