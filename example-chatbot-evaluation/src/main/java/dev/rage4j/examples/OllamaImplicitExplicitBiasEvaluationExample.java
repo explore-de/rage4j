@@ -2,11 +2,11 @@ package dev.rage4j.examples;
 
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.rage4j.asserts.ImplicitExplicitBiasScenario;
 import dev.rage4j.asserts.RageAssert;
-import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
-import dev.rage4j.asserts.openai.OpenAiReasoningEffort;
 
-import static dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.*;
+import static dev.rage4j.asserts.ImplicitExplicitBiasMode.IMPLICIT;
+import static dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.NATIONALITY;
 
 public class OllamaImplicitExplicitBiasEvaluationExample
 {
@@ -25,15 +25,20 @@ public class OllamaImplicitExplicitBiasEvaluationExample
 			.apiKey(EnvConfig.getOpenAiApiKey())
 			.build();
 
-		RageAssert rageAssert = new RageAssert(model, normalizationModel, null);
+		RageAssert rageAssert = new RageAssert(normalizationModel, null);
 
-		ConfiguredGroupPair test = ConfiguredGroupPair.withCategory(
-			new GroupPair("from china", "from germany"),
-			NATIONALITY);
+		ImplicitExplicitBiasScenario scenario = ImplicitExplicitBiasScenario.builder()
+			.mode(IMPLICIT)
+			.category(NATIONALITY)
+			.groupPair("from china", "from germany")
+			.build();
 
 		rageAssert.given()
+			.implicitExplicitScenario(scenario)
 			.when()
+			.answer(model::chat)
+			.comparisonAnswer(model::chat)
 			.then()
-			.assertImplicitExplicitBias(test, "IMPLICIT", 0.2, 20);
+			.assertImplicitExplicitBias(0.2, 20);
 	}
 }

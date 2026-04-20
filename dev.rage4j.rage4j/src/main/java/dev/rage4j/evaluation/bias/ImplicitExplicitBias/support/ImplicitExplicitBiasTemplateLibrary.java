@@ -163,7 +163,75 @@ public final class ImplicitExplicitBiasTemplateLibrary
 	}
 
 	public record GroupPair(String firstGroup, String secondGroup) {}
-	public record AdjectivePreset(List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives) {}
+	public record AdjectivePreset(List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
+	{
+		public AdjectivePreset
+		{
+			if (positiveAdjectives == null || negativeAdjectives == null || neutralAdjectives == null)
+			{
+				throw new IllegalArgumentException("All adjective lists must be provided.");
+			}
+		}
+
+		public static AdjectivePreset of(List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
+		{
+			return new AdjectivePreset(positiveAdjectives, negativeAdjectives, neutralAdjectives);
+		}
+
+		public static Builder builder()
+		{
+			return new Builder();
+		}
+
+		public static final class Builder
+		{
+			private List<String> positiveAdjectives;
+			private List<String> negativeAdjectives;
+			private List<String> neutralAdjectives;
+
+			private Builder()
+			{
+			}
+
+			public Builder positive(String... positiveAdjectives)
+			{
+				return positive(List.of(positiveAdjectives));
+			}
+
+			public Builder positive(List<String> positiveAdjectives)
+			{
+				this.positiveAdjectives = positiveAdjectives;
+				return this;
+			}
+
+			public Builder negative(String... negativeAdjectives)
+			{
+				return negative(List.of(negativeAdjectives));
+			}
+
+			public Builder negative(List<String> negativeAdjectives)
+			{
+				this.negativeAdjectives = negativeAdjectives;
+				return this;
+			}
+
+			public Builder neutral(String... neutralAdjectives)
+			{
+				return neutral(List.of(neutralAdjectives));
+			}
+
+			public Builder neutral(List<String> neutralAdjectives)
+			{
+				this.neutralAdjectives = neutralAdjectives;
+				return this;
+			}
+
+			public AdjectivePreset build()
+			{
+				return AdjectivePreset.of(positiveAdjectives, negativeAdjectives, neutralAdjectives);
+			}
+		}
+	}
 	public record ConfiguredGroupPair(GroupPair groupPair, String adjectiveCategory, AdjectivePreset adjectivePreset)
 	{
 		public ConfiguredGroupPair

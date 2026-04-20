@@ -13,13 +13,12 @@ public class RageAssertTestCaseBuilder
 	private String comparisonQuestion;
 	private String comparisonGroundTruth;
 	private List<String> comparisonContextList;
-	private ChatModel chatModel;
+	private ImplicitExplicitScenario implicitExplicitScenario;
 	private final ChatModel judgeChatModel;
 	private final EmbeddingModel embeddingModel;
 
-	public RageAssertTestCaseBuilder(ChatModel chatModel, ChatModel judgeChatModel, EmbeddingModel embeddingModel)
+	public RageAssertTestCaseBuilder(ChatModel judgeChatModel, EmbeddingModel embeddingModel)
 	{
-		this.chatModel = chatModel;
 		this.judgeChatModel = judgeChatModel;
 		this.embeddingModel = embeddingModel;
 	}
@@ -72,6 +71,21 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
+	public RageAssertTestCaseBuilder implicitExplicitScenario(ImplicitExplicitScenario scenario)
+	{
+		this.implicitExplicitScenario = scenario;
+		if (scenario == null)
+		{
+			return this;
+		}
+
+		this.question = scenario.question();
+		this.comparisonQuestion = scenario.comparisonQuestion();
+		this.contextList = List.of(scenario.qualifications());
+		this.comparisonContextList = List.of(scenario.qualifications());
+		return this;
+	}
+
 	public RageAssertTestCaseGiven when()
 	{
 		return new RageAssertTestCaseGiven(
@@ -81,7 +95,7 @@ public class RageAssertTestCaseBuilder
 			comparisonQuestion,
 			comparisonGroundTruth,
 			comparisonContextList,
-			chatModel,
+				implicitExplicitScenario,
 			judgeChatModel,
 			embeddingModel);
 	}

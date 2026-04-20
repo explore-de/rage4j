@@ -13,46 +13,40 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class OpenAiLLMBuilderTest
 {
 	@Test
-	void shouldConfigureReasoningEffortForBothChatModels() throws ReflectiveOperationException
+	void shouldConfigureReasoningEffortForJudgeModel() throws ReflectiveOperationException
 	{
 		RageAssert rageAssert = new OpenAiLLMBuilder()
 			.reasoningEffort(OpenAiReasoningEffort.HIGH)
 			.fromApiKey("test-key");
 
-		OpenAiChatModel chatModel = getChatModel(rageAssert, "chatModel");
-		OpenAiChatModel judgeChatModel = getChatModel(rageAssert, "judgeChatModel");
+		OpenAiChatModel judgeChatModel = getJudgeChatModel(rageAssert);
 
-		assertEquals("high", chatModel.defaultRequestParameters().reasoningEffort());
 		assertEquals("high", judgeChatModel.defaultRequestParameters().reasoningEffort());
 	}
 
 	@Test
-	void shouldAllowSeparateReasoningEffortPerChatModel() throws ReflectiveOperationException
+	void shouldTreatChatReasoningEffortAsJudgeConfiguration() throws ReflectiveOperationException
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder()
+			.chatReasoningEffort(OpenAiReasoningEffort.LOW)
+			.fromApiKey("test-key");
+
+		OpenAiChatModel judgeChatModel = getJudgeChatModel(rageAssert);
+
+		assertEquals("low", judgeChatModel.defaultRequestParameters().reasoningEffort());
+	}
+
+	@Test
+	void shouldPreferExplicitJudgeReasoningEffort() throws ReflectiveOperationException
 	{
 		RageAssert rageAssert = new OpenAiLLMBuilder()
 			.chatReasoningEffort(OpenAiReasoningEffort.LOW)
 			.judgeReasoningEffort(OpenAiReasoningEffort.XHIGH)
 			.fromApiKey("test-key");
 
-		OpenAiChatModel chatModel = getChatModel(rageAssert, "chatModel");
-		OpenAiChatModel judgeChatModel = getChatModel(rageAssert, "judgeChatModel");
+		OpenAiChatModel judgeChatModel = getJudgeChatModel(rageAssert);
 
-		assertEquals("low", chatModel.defaultRequestParameters().reasoningEffort());
 		assertEquals("xhigh", judgeChatModel.defaultRequestParameters().reasoningEffort());
-	}
-
-	@Test
-	void shouldNotApplyChatReasoningEffortToJudgeModel() throws ReflectiveOperationException
-	{
-		RageAssert rageAssert = new OpenAiLLMBuilder()
-			.chatReasoningEffort(OpenAiReasoningEffort.NONE)
-			.fromApiKey("test-key");
-
-		OpenAiChatModel chatModel = getChatModel(rageAssert, "chatModel");
-		OpenAiChatModel judgeChatModel = getChatModel(rageAssert, "judgeChatModel");
-
-		assertEquals("none", chatModel.defaultRequestParameters().reasoningEffort());
-		assertNull(judgeChatModel.defaultRequestParameters().reasoningEffort());
 	}
 
 	@Test
@@ -60,10 +54,8 @@ class OpenAiLLMBuilderTest
 	{
 		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey("test-key");
 
-		OpenAiChatModel chatModel = getChatModel(rageAssert, "chatModel");
-		OpenAiChatModel judgeChatModel = getChatModel(rageAssert, "judgeChatModel");
+		OpenAiChatModel judgeChatModel = getJudgeChatModel(rageAssert);
 
-		assertNull(chatModel.defaultRequestParameters().reasoningEffort());
 		assertNull(judgeChatModel.defaultRequestParameters().reasoningEffort());
 	}
 
@@ -74,10 +66,8 @@ class OpenAiLLMBuilderTest
 			.reasoningEffort(OpenAiReasoningEffort.NONE)
 			.fromApiKey("test-key");
 
-		OpenAiChatModel chatModel = getChatModel(rageAssert, "chatModel");
-		OpenAiChatModel judgeChatModel = getChatModel(rageAssert, "judgeChatModel");
+		OpenAiChatModel judgeChatModel = getJudgeChatModel(rageAssert);
 
-		assertEquals("none", chatModel.defaultRequestParameters().reasoningEffort());
 		assertEquals("none", judgeChatModel.defaultRequestParameters().reasoningEffort());
 	}
 
@@ -88,10 +78,8 @@ class OpenAiLLMBuilderTest
 			.reasoningEffort(OpenAiReasoningEffort.MINIMAL)
 			.fromApiKey("test-key");
 
-		OpenAiChatModel chatModel = getChatModel(rageAssert, "chatModel");
-		OpenAiChatModel judgeChatModel = getChatModel(rageAssert, "judgeChatModel");
+		OpenAiChatModel judgeChatModel = getJudgeChatModel(rageAssert);
 
-		assertEquals("minimal", chatModel.defaultRequestParameters().reasoningEffort());
 		assertEquals("minimal", judgeChatModel.defaultRequestParameters().reasoningEffort());
 	}
 
@@ -102,10 +90,8 @@ class OpenAiLLMBuilderTest
 			.reasoningEffort(OpenAiReasoningEffort.XHIGH)
 			.fromApiKey("test-key");
 
-		OpenAiChatModel chatModel = getChatModel(rageAssert, "chatModel");
-		OpenAiChatModel judgeChatModel = getChatModel(rageAssert, "judgeChatModel");
+		OpenAiChatModel judgeChatModel = getJudgeChatModel(rageAssert);
 
-		assertEquals("xhigh", chatModel.defaultRequestParameters().reasoningEffort());
 		assertEquals("xhigh", judgeChatModel.defaultRequestParameters().reasoningEffort());
 	}
 
@@ -121,9 +107,9 @@ class OpenAiLLMBuilderTest
 			exception.getMessage());
 	}
 
-	private static OpenAiChatModel getChatModel(RageAssert rageAssert, String fieldName) throws ReflectiveOperationException
+	private static OpenAiChatModel getJudgeChatModel(RageAssert rageAssert) throws ReflectiveOperationException
 	{
-		Field field = RageAssert.class.getDeclaredField(fieldName);
+		Field field = RageAssert.class.getDeclaredField("judgeChatModel");
 		field.setAccessible(true);
 		return (OpenAiChatModel) field.get(rageAssert);
 	}
