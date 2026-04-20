@@ -87,12 +87,6 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
-	public RageAssertTestCaseBuilder context(String context)
-	{
-		this.contextList = context == null ? null : List.of(context);
-		return this;
-	}
-
 	public RageAssertTestCaseBuilder comparisonQuestion(String comparisonQuestion)
 	{
 		this.comparisonQuestion = comparisonQuestion;
@@ -124,17 +118,10 @@ public class RageAssertTestCaseBuilder
 		{
 			return this;
 		}
-
 		this.question = scenario.question();
 		this.comparisonQuestion = scenario.comparisonQuestion();
 		this.context = scenario.qualifications();
 		this.comparisonContext = scenario.qualifications();
-		return this;
-	}
-
-	public RageAssertTestCaseBuilder comparisonContext(String comparisonContext)
-	{
-		this.comparisonContextList = comparisonContext == null ? null : List.of(comparisonContext);
 		return this;
 	}
 

@@ -11,23 +11,19 @@ public class OpenAiLLMBuilder implements LLMBuilder<OpenAiLLMBuilder>
 	private static final String DEFAULT_CHAT_MODEL = "gpt-5.1";
 	private static final String DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small";
 
-	private String chatModelName = DEFAULT_CHAT_MODEL;
 	private String judgeChatModelName = DEFAULT_CHAT_MODEL;
 	private String embeddingModelName = DEFAULT_EMBEDDING_MODEL;
-	private String chatReasoningEffort;
 	private String judgeReasoningEffort;
 
 	public OpenAiLLMBuilder modelName(String modelName)
 	{
-		this.chatModelName = modelName;
 		this.judgeChatModelName = modelName;
 		return this;
 	}
 
 	public OpenAiLLMBuilder chatModelName(String modelName)
 	{
-		this.chatModelName = modelName;
-		return this;
+		return judgeModelName(modelName);
 	}
 
 	public OpenAiLLMBuilder judgeModelName(String modelName)
@@ -61,8 +57,7 @@ public class OpenAiLLMBuilder implements LLMBuilder<OpenAiLLMBuilder>
 
 	public OpenAiLLMBuilder reasoningEffort(String reasoningEffort)
 	{
-		return chatReasoningEffort(reasoningEffort)
-			.judgeReasoningEffort(reasoningEffort);
+		return judgeReasoningEffort(reasoningEffort);
 	}
 
 	public OpenAiLLMBuilder chatReasoningEffort(OpenAiReasoningEffort reasoningEffort)
@@ -72,8 +67,7 @@ public class OpenAiLLMBuilder implements LLMBuilder<OpenAiLLMBuilder>
 
 	public OpenAiLLMBuilder chatReasoningEffort(String reasoningEffort)
 	{
-		this.chatReasoningEffort = normalizeReasoningEffort(reasoningEffort);
-		return this;
+		return judgeReasoningEffort(reasoningEffort);
 	}
 
 	public OpenAiLLMBuilder judgeReasoningEffort(OpenAiReasoningEffort reasoningEffort)
@@ -90,7 +84,6 @@ public class OpenAiLLMBuilder implements LLMBuilder<OpenAiLLMBuilder>
 	@Override
 	public RageAssert fromApiKey(String apiKey)
 	{
-		OpenAiChatModel chatModel = createChatModel(apiKey, chatModelName, chatReasoningEffort);
 		OpenAiChatModel judgeChatModel = createChatModel(apiKey, judgeChatModelName, judgeReasoningEffort);
 
 		OpenAiEmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
@@ -98,7 +91,7 @@ public class OpenAiLLMBuilder implements LLMBuilder<OpenAiLLMBuilder>
 			.modelName(embeddingModelName)
 			.build();
 
-		return new RageAssert(chatModel, judgeChatModel, embeddingModel);
+		return new RageAssert(judgeChatModel, embeddingModel);
 	}
 
 	private static OpenAiChatModel createChatModel(String apiKey, String modelName, String reasoningEffort)

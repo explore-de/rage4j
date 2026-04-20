@@ -90,12 +90,10 @@ public class RageAssertTestCaseGiven
 			.withQuestion(question)
 			.withContext(context)
 			.withImages(images);
-
 		if (comparisonSample != null)
 		{
 			builder.withComparisonSample(comparisonSample);
 		}
-
 		return new RageAssertTestCaseAssertions(
 			builder.build(),
 			implicitExplicitScenario,
@@ -111,7 +109,6 @@ public class RageAssertTestCaseGiven
 		{
 			return null;
 		}
-
 		return Sample.builder()
 			.withAnswer(comparisonAnswer)
 			.withGroundTruth(comparisonGroundTruth)
