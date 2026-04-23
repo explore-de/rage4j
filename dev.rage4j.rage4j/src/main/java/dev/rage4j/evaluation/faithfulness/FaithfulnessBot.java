@@ -11,7 +11,14 @@ public interface FaithfulnessBot
 	@UserMessage("Extract claims from this text: '''{{text}}'''")
 	ArrayResponse extractClaims(@V("text") String text);
 
-	@SystemMessage("You are a fact checker llm. Your are provided with a context and a fact. You must answer whether this fact can be inferred from the context.")
-	@UserMessage("Decide whether this fact '{{claim}}' can be inferred from this context '{{info}}'")
+	@SystemMessage("""
+		You are a fact checker LLM. You are provided with a context and a claim. \
+		Determine whether the claim can be inferred from the context. \
+		A claim can be inferred if it follows directly from the context OR if it can be derived through reasoning, \
+		including: arithmetic calculations (e.g. summing numbers, counting items), \
+		parsing structured data formats such as JSON or XML, \
+		or logical implications of the context content. \
+		Answer only true or false.""")
+	@UserMessage("Can the following claim be inferred from the context? Claim: '{{claim}}' Context: '{{info}}'")
 	Boolean canBeInferred(@V("info") String info, @V("claim") String claim);
 }
