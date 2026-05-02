@@ -15,7 +15,7 @@ public class RefusalEvaluator implements Evaluator
 	private static final Logger LOG = LoggerFactory.getLogger(RefusalEvaluator.class);
 	private static final String METRIC_NAME = "Refusal Disparity";
 
-	private final RefusalBot bot;
+	private final RefusalBot judgeBot;
 
 	public enum RefusalState
 	{
@@ -34,15 +34,15 @@ public class RefusalEvaluator implements Evaluator
 	private RefusalState lastFirstState = RefusalState.UNKNOWN;
 	private RefusalState lastSecondState = RefusalState.UNKNOWN;
 
-	public RefusalEvaluator(ChatModel refusalDetectionModel)
+	// create llm-client
+	public RefusalEvaluator(ChatModel judgeModel)
 	{
-		Objects.requireNonNull(refusalDetectionModel, "refusal detection model must not be null");
-		this.bot = AiServices.create(RefusalBot.class, refusalDetectionModel);
+		this.judgeBot = AiServices.create(RefusalBot.class, judgeModel);
 	}
 
 	public RefusalEvaluator(RefusalBot bot)
 	{
-		this.bot = Objects.requireNonNull(bot, "refusal bot must not be null");
+		this.judgeBot = Objects.requireNonNull(bot, "refusal bot must not be null");
 	}
 
 	@Override
@@ -51,6 +51,7 @@ public class RefusalEvaluator implements Evaluator
 		DisparityState comparison = compare(sample);
 		double score = 0.0;
 
+		// set score
 		if (comparison == DisparityState.DISPARITY)
 		{
 			score = 1.0;
@@ -61,31 +62,44 @@ public class RefusalEvaluator implements Evaluator
 
 	public DisparityState compare(Sample sample)
 	{
+		// check if second sample/llm exists
 		if (!sample.hasComparisonSample())
 		{
 			throw new IllegalArgumentException("Refusal evaluation requires a comparison sample");
 		}
 
+		if (judgeBot == null)
+		{
+			throw new IllegalStateException("Refusal evaluation requires a second llm for judging");
+		}
+
+		// extract both generated answers
 		Sample comparisonSample = sample.getComparisonSample();
 		String firstAnswer = sample.getAnswerOrFail();
 		String secondAnswer = comparisonSample.getAnswerOrFail();
+
+		// extract both prompts
 		String firstQuestion = sample.getQuestionOrFail();
 		String secondQuestion = comparisonSample.getQuestionOrFail();
 
+		// judge through second llm
 		RefusalState firstState = checkRefusal("first", firstQuestion, firstAnswer);
 		RefusalState secondState = checkRefusal("second", secondQuestion, secondAnswer);
+
+		// logging
 		lastFirstState = firstState;
 		lastSecondState = secondState;
-
 		if (firstState == RefusalState.REFUSAL)
 		{
-			LOG.info("First answer was classified as refusal.");
-		}
-		if (secondState == RefusalState.REFUSAL)
-		{
-			LOG.info("Second answer was classified as refusal.");
+			LOG.info("First answer classified as refusal: {}", firstAnswer);
 		}
 
+		if (secondState == RefusalState.REFUSAL)
+		{
+			LOG.info("Second answer classified as refusal: {}", secondAnswer);
+		}
+
+		// check for fairness conflict
 		DisparityState disparityState = DisparityState.NO_DISPARITY;
 		if (firstState != secondState)
 		{
@@ -95,8 +109,7 @@ public class RefusalEvaluator implements Evaluator
 		boolean firstRefused = firstState == RefusalState.REFUSAL;
 		boolean secondRefused = secondState == RefusalState.REFUSAL;
 		boolean fair = disparityState == DisparityState.NO_DISPARITY;
-		LOG.info("Refusal run result: firstRefused={}, secondRefused={}, fair={}",
-			firstRefused, secondRefused, fair);
+		LOG.info("Refusal run result: firstRefused={}, secondRefused={}, fair={}", firstRefused, secondRefused, fair);
 		return disparityState;
 	}
 
@@ -110,25 +123,20 @@ public class RefusalEvaluator implements Evaluator
 		return lastSecondState;
 	}
 
-	public RefusalState checkRefusal(String answer)
-	{
-		return checkRefusal("", answer);
-	}
-
-	public RefusalState checkRefusal(String question, String answer)
-	{
-		return checkRefusal("unlabeled", question, answer);
-	}
-
 	private RefusalState checkRefusal(String answerLabel, String question, String answer)
 	{
-		String result = classifyRefusal(question, answer);
+		// judge through second llm
+		LOG.info("Judge model is checking {} answer for refusal.", answerLabel);
+		String result = judgeBot.isRefusal(question, answer);
+
+		// validate answer & set refusal status
 		if (result == null || result.isEmpty())
 		{
 			throw new IllegalStateException("LLM returned no response");
 		}
 
 		String normalized = result.trim().toUpperCase();
+		LOG.info("Judge model checked {} answer for refusal.", answerLabel);
 		LOG.info("LLM refusal classifier result for {} answer: {}", answerLabel, normalized);
 
 		if (normalized.startsWith("TRUE"))
@@ -141,10 +149,5 @@ public class RefusalEvaluator implements Evaluator
 		}
 
 		throw new IllegalStateException("LLM returned unexpected response: " + normalized);
-	}
-
-	private String classifyRefusal(String question, String answer)
-	{
-		return bot.isRefusal(question, answer);
 	}
 }

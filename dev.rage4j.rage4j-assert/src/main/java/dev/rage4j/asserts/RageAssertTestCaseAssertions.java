@@ -17,7 +17,6 @@ import dev.rage4j.evaluation.answercorrectness.AnswerCorrectnessEvaluator;
 import dev.rage4j.evaluation.answerrelevance.AnswerRelevanceEvaluator;
 import dev.rage4j.evaluation.answersemanticsimilarity.AnswerSemanticSimilarityEvaluator;
 import dev.rage4j.evaluation.bleuscore.BleuScoreEvaluator;
-import dev.rage4j.evaluation.bias.FalsePositiveRateDisparity.FalsePositiveRateDisparityEvaluator;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.ImplicitExplicitBiasEvaluator;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
@@ -44,6 +43,7 @@ public class RageAssertTestCaseAssertions
 	private static final String MAXVALUE = "Answer exceeded allowed max value! Evaluated value: ";
 	private static final String ABSOLUTE_MAXVALUE = "Answer exceeded allowed max absolute value! Evaluated value: ";
 	private static final int DEFAULT_RUNS_PER_SCENARIO = 10;
+	private static final int RETRIES_PER_INVALID_RUN = 3;
 
 	private final EmbeddingModel embeddingModel;
 	private final String question;
@@ -56,6 +56,7 @@ public class RageAssertTestCaseAssertions
 	private final String comparisonAnswer;
 	private final ImplicitExplicitScenario implicitExplicitScenario;
 	private final ChatModel judgeChatModel;
+	private final ChatModel evaluatedChatModel;
 
 	public RageAssertTestCaseAssertions(
 		String answer,
@@ -68,6 +69,7 @@ public class RageAssertTestCaseAssertions
 		List<String> comparisonContextList,
 		ImplicitExplicitScenario implicitExplicitScenario,
 		ChatModel judgeChatModel,
+		ChatModel evaluatedChatModel,
 		EmbeddingModel embeddingModel)
 	{
 		this.answer = answer;
@@ -80,6 +82,7 @@ public class RageAssertTestCaseAssertions
 		this.comparisonContextList = comparisonContextList;
 		this.implicitExplicitScenario = implicitExplicitScenario;
 		this.judgeChatModel = judgeChatModel;
+		this.evaluatedChatModel = evaluatedChatModel;
 		this.embeddingModel = embeddingModel;
 	}
 
@@ -213,7 +216,7 @@ public class RageAssertTestCaseAssertions
 
 		for (int run = 0; run < runs; run++)
 		{
-			Sample sample = buildPairedSample();
+			Sample sample = buildRefusalSampleForRun(runs, run + 1);
 			RefusalEvaluator.DisparityState comparison = evaluator.compare(sample);
 			if (evaluator.getLastFirstState() == RefusalEvaluator.RefusalState.REFUSAL)
 			{
@@ -239,21 +242,6 @@ public class RageAssertTestCaseAssertions
 		if (evaluation.getValue() > maxValue)
 		{
 			throw new Rage4JRefusalException(MAXVALUE + evaluation.getValue() + ", Allowed: " + maxValue);
-		}
-		return AssertionEvaluation.from(evaluation, this);
-	}
-
-	public AssertionEvaluation assertFalsePositiveRateDisparity(double maxValue)
-	{
-		ChatModel judgeModel = requireJudgeChatModel("False Positive Rate Disparity assertion requires a judge chat model.");
-		FalsePositiveRateDisparityEvaluator evaluator = new FalsePositiveRateDisparityEvaluator(judgeModel);
-		Sample sample = buildPairedSample();
-		Evaluation evaluation = evaluator.evaluate(sample);
-
-		if (evaluation.getValue() > maxValue)
-		{
-			throw new Rage4JFalsePositiveRateDisparityException(
-				MAXVALUE + evaluation.getValue() + ", Allowed: " + maxValue);
 		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
@@ -377,7 +365,6 @@ public class RageAssertTestCaseAssertions
 		ChatModel normalizationModel =
 			requireJudgeChatModel("Implicit/explicit bias assertion requires a judge chat model for normalization.");
 		GroupPair resolvedGroupPair = resolveImplicitExplicitGroupPair(category, groupPair);
-		Sample sample = buildImplicitExplicitBiasSample();
 		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
 			category,
 			mode,
@@ -407,41 +394,39 @@ public class RageAssertTestCaseAssertions
 
 		for (int run = 0; run < runs; run++)
 		{
-			try
+			Evaluation runEvaluation = evaluateImplicitExplicitBiasRun(evaluator, runs, run + 1);
+			if (runEvaluation == null)
 			{
-				Evaluation runEvaluation = evaluator.evaluate(sample);
-				totalBiasScore += runEvaluation.getValue();
-				validRuns++;
-				LOG.info("Run bias score: {}", fmt(runEvaluation.getValue()));
-
-				if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
-				{
-					String normalizedFirstAnswer = evaluator.getLastFirstNormalizedAnswer();
-					String normalizedSecondAnswer = evaluator.getLastSecondNormalizedAnswer();
-					collectAdjectiveFrequencies(normalizedFirstAnswer, allowedAdjectives, firstWordCounts);
-					collectAdjectiveFrequencies(normalizedSecondAnswer, allowedAdjectives, secondWordCounts);
-					int firstNegativeSelectionsThisRun = collectAdjectiveFrequencies(
-						normalizedFirstAnswer,
-						negativeAdjectiveSet,
-						firstNegativeWordCounts);
-					int secondNegativeSelectionsThisRun = collectAdjectiveFrequencies(
-						normalizedSecondAnswer,
-						negativeAdjectiveSet,
-						secondNegativeWordCounts);
-					firstNegativeSelections += firstNegativeSelectionsThisRun;
-					secondNegativeSelections += secondNegativeSelectionsThisRun;
-					logNegativeImplicitSelections(
-						run + 1,
-						normalizedFirstAnswer,
-						normalizedSecondAnswer,
-						negativeAdjectiveSet,
-						firstNegativeSelectionsThisRun,
-						secondNegativeSelectionsThisRun);
-				}
+				continue;
 			}
-			catch (IllegalStateException e)
+
+			totalBiasScore += runEvaluation.getValue();
+			validRuns++;
+			LOG.info("Run bias score: {}", fmt(runEvaluation.getValue()));
+
+			if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
 			{
-				LOG.info("Implicit/explicit bias run {} was skipped: {}", run + 1, e.getMessage());
+				String normalizedFirstAnswer = evaluator.getLastFirstNormalizedAnswer();
+				String normalizedSecondAnswer = evaluator.getLastSecondNormalizedAnswer();
+				collectAdjectiveFrequencies(normalizedFirstAnswer, allowedAdjectives, firstWordCounts);
+				collectAdjectiveFrequencies(normalizedSecondAnswer, allowedAdjectives, secondWordCounts);
+				int firstNegativeSelectionsThisRun = collectAdjectiveFrequencies(
+					normalizedFirstAnswer,
+					negativeAdjectiveSet,
+					firstNegativeWordCounts);
+				int secondNegativeSelectionsThisRun = collectAdjectiveFrequencies(
+					normalizedSecondAnswer,
+					negativeAdjectiveSet,
+					secondNegativeWordCounts);
+				firstNegativeSelections += firstNegativeSelectionsThisRun;
+				secondNegativeSelections += secondNegativeSelectionsThisRun;
+				logNegativeImplicitSelections(
+					run + 1,
+					normalizedFirstAnswer,
+					normalizedSecondAnswer,
+					negativeAdjectiveSet,
+					firstNegativeSelectionsThisRun,
+					secondNegativeSelectionsThisRun);
 			}
 		}
 
@@ -652,6 +637,60 @@ public class RageAssertTestCaseAssertions
 		return judgeChatModel;
 	}
 
+	private Evaluation evaluateImplicitExplicitBiasRun(ImplicitExplicitBiasEvaluator evaluator, int runs, int runNumber)
+	{
+		int maxAttempts = RETRIES_PER_INVALID_RUN + 1;
+		for (int attempt = 1; attempt <= maxAttempts; attempt++)
+		{
+			Sample sample = buildImplicitExplicitBiasSampleForRun(runs, runNumber);
+			try
+			{
+				return evaluator.evaluate(sample);
+			}
+			catch (IllegalStateException e)
+			{
+				if (isRetryableImplicitExplicitBiasFailure(e) && attempt < maxAttempts)
+				{
+					LOG.info("Implicit/explicit bias run {} attempt {} was invalid and will be retried: {}",
+						runNumber, attempt, e.getMessage());
+					continue;
+				}
+				LOG.info("Implicit/explicit bias run {} was skipped: {}", runNumber, e.getMessage());
+				return null;
+			}
+		}
+		return null;
+	}
+
+	private boolean isRetryableImplicitExplicitBiasFailure(IllegalStateException e)
+	{
+		String message = e.getMessage();
+		return "answer is refused".equals(message)
+			|| "answer is invalid".equals(message)
+			|| "Explicit bias evaluation requires both answers to be exact integers from 1 to 10.".equals(message)
+			|| "Implicit bias evaluation requires both answers to contain analyzable adjectives.".equals(message);
+	}
+
+	private Sample buildRefusalSampleForRun(int runs, int runNumber)
+	{
+		if (runs <= 1)
+		{
+			return buildPairedSample();
+		}
+		if (evaluatedChatModel == null)
+		{
+			throw new IllegalStateException(
+				"Repeated refusal disparity runs require an evaluated chat model so each run can generate fresh answers.");
+		}
+
+		requireRefusalGenerationInputs();
+		String generatedAnswer = evaluatedChatModel.chat(question);
+		LOG.info("Evaluated model generated first answer for refusal run {}/{}.", runNumber, runs);
+		String generatedComparisonAnswer = evaluatedChatModel.chat(comparisonQuestion);
+		LOG.info("Evaluated model generated comparison answer for refusal run {}/{}.", runNumber, runs);
+		return buildPairedSample(generatedAnswer, generatedComparisonAnswer);
+	}
+
 	private Sample buildSingleSample()
 	{
 		Sample.SampleBuilder builder = Sample.builder()
@@ -671,10 +710,17 @@ public class RageAssertTestCaseAssertions
 
 	private Sample buildPairedSample()
 	{
-		requireComparisonSample();
+		return buildPairedSample(answer, comparisonAnswer);
+	}
+
+	private Sample buildPairedSample(String currentAnswer, String currentComparisonAnswer)
+	{
+		requireComparisonQuestion();
+		requireAnswer("Answer is required for paired bias assertions.", currentAnswer);
+		requireAnswer("Comparison answer is required for paired bias assertions.", currentComparisonAnswer);
 
 		Sample.SampleBuilder comparisonBuilder = Sample.builder()
-			.withAnswer(comparisonAnswer)
+			.withAnswer(currentComparisonAnswer)
 			.withQuestion(comparisonQuestion);
 		if (comparisonGroundTruth != null)
 		{
@@ -687,7 +733,7 @@ public class RageAssertTestCaseAssertions
 
 		Sample comparisonSample = comparisonBuilder.build();
 		Sample.SampleBuilder mainBuilder = Sample.builder()
-			.withAnswer(answer)
+			.withAnswer(currentAnswer)
 			.withQuestion(question)
 			.withComparisonSample(comparisonSample);
 		if (groundTruth != null)
@@ -703,17 +749,36 @@ public class RageAssertTestCaseAssertions
 
 	private Sample buildImplicitExplicitBiasSample()
 	{
-		if (comparisonAnswer == null)
+		return buildImplicitExplicitBiasSample(answer, comparisonAnswer);
+	}
+
+	private Sample buildImplicitExplicitBiasSampleForRun(int runs, int runNumber)
+	{
+		if (runs <= 1)
 		{
-			throw new IllegalStateException("Comparison answer is required for paired bias assertions.");
+			return buildImplicitExplicitBiasSample();
 		}
-		if (answer == null)
+		if (evaluatedChatModel == null)
 		{
-			throw new IllegalStateException("Answer is required for paired bias assertions.");
+			throw new IllegalStateException(
+				"Repeated implicit/explicit bias runs require an evaluated chat model so each run can generate fresh answers.");
 		}
 
+		requireImplicitExplicitGenerationInputs();
+		String generatedAnswer = evaluatedChatModel.chat(question);
+		LOG.info("Evaluated model generated first answer for implicit/explicit bias run {}/{}.", runNumber, runs);
+		String generatedComparisonAnswer = evaluatedChatModel.chat(comparisonQuestion);
+		LOG.info("Evaluated model generated comparison answer for implicit/explicit bias run {}/{}.", runNumber, runs);
+		return buildImplicitExplicitBiasSample(generatedAnswer, generatedComparisonAnswer);
+	}
+
+	private Sample buildImplicitExplicitBiasSample(String currentAnswer, String currentComparisonAnswer)
+	{
+		requireAnswer("Comparison answer is required for paired bias assertions.", currentComparisonAnswer);
+		requireAnswer("Answer is required for paired bias assertions.", currentAnswer);
+
 		Sample.SampleBuilder comparisonBuilder = Sample.builder()
-			.withAnswer(comparisonAnswer);
+			.withAnswer(currentComparisonAnswer);
 		if (comparisonQuestion != null)
 		{
 			comparisonBuilder.withQuestion(comparisonQuestion);
@@ -728,7 +793,7 @@ public class RageAssertTestCaseAssertions
 		}
 
 		Sample.SampleBuilder mainBuilder = Sample.builder()
-			.withAnswer(answer)
+			.withAnswer(currentAnswer)
 			.withComparisonSample(comparisonBuilder.build());
 		if (question != null)
 		{
@@ -747,17 +812,42 @@ public class RageAssertTestCaseAssertions
 
 	private void requireComparisonSample()
 	{
+		requireComparisonQuestion();
+		requireAnswer("Comparison answer is required for paired bias assertions.", comparisonAnswer);
+		requireAnswer("Answer is required for paired bias assertions.", answer);
+	}
+
+	private void requireRefusalGenerationInputs()
+	{
+		if (question == null || question.trim().isEmpty())
+		{
+			throw new IllegalStateException("Question is required for repeated refusal disparity runs.");
+		}
+		requireComparisonQuestion();
+	}
+
+	private void requireImplicitExplicitGenerationInputs()
+	{
+		if (question == null || question.trim().isEmpty())
+		{
+			throw new IllegalStateException("Question is required for repeated implicit/explicit bias runs.");
+		}
+		requireComparisonQuestion();
+	}
+
+	private void requireComparisonQuestion()
+	{
 		if (comparisonQuestion == null || comparisonQuestion.trim().isEmpty())
 		{
 			throw new IllegalStateException("Comparison question is required for paired bias assertions.");
 		}
-		if (comparisonAnswer == null)
+	}
+
+	private void requireAnswer(String message, String currentAnswer)
+	{
+		if (currentAnswer == null)
 		{
-			throw new IllegalStateException("Comparison answer is required for paired bias assertions.");
-		}
-		if (answer == null)
-		{
-			throw new IllegalStateException("Answer is required for paired bias assertions.");
+			throw new IllegalStateException(message);
 		}
 	}
 }

@@ -18,6 +18,7 @@ public class RageAssertTestCaseGiven
 	private String answer;
 	private String comparisonAnswer;
 	private ChatModel judgeChatModel;
+	private ChatModel evaluatedChatModel;
 	private EmbeddingModel embeddingModel;
 
 	public RageAssertTestCaseGiven(
@@ -29,6 +30,7 @@ public class RageAssertTestCaseGiven
 		List<String> comparisonContextList,
 		ImplicitExplicitScenario implicitExplicitScenario,
 		ChatModel judgeChatModel,
+		ChatModel evaluatedChatModel,
 		EmbeddingModel embeddingModel)
 	{
 		this.question = question;
@@ -39,6 +41,7 @@ public class RageAssertTestCaseGiven
 		this.comparisonContextList = comparisonContextList;
 		this.implicitExplicitScenario = implicitExplicitScenario;
 		this.judgeChatModel = judgeChatModel;
+		this.evaluatedChatModel = evaluatedChatModel;
 		this.embeddingModel = embeddingModel;
 	}
 
@@ -83,6 +86,7 @@ public class RageAssertTestCaseGiven
 			comparisonContextList,
 				implicitExplicitScenario,
 			judgeChatModel,
+			evaluatedChatModel,
 			embeddingModel);
 	}
 }

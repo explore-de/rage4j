@@ -15,11 +15,18 @@ public class RageAssertTestCaseBuilder
 	private List<String> comparisonContextList;
 	private ImplicitExplicitScenario implicitExplicitScenario;
 	private final ChatModel judgeChatModel;
+	private final ChatModel evaluatedChatModel;
 	private final EmbeddingModel embeddingModel;
 
 	public RageAssertTestCaseBuilder(ChatModel judgeChatModel, EmbeddingModel embeddingModel)
 	{
+		this(judgeChatModel, null, embeddingModel);
+	}
+
+	public RageAssertTestCaseBuilder(ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel)
+	{
 		this.judgeChatModel = judgeChatModel;
+		this.evaluatedChatModel = evaluatedChatModel;
 		this.embeddingModel = embeddingModel;
 	}
 
@@ -97,6 +104,7 @@ public class RageAssertTestCaseBuilder
 			comparisonContextList,
 				implicitExplicitScenario,
 			judgeChatModel,
+			evaluatedChatModel,
 			embeddingModel);
 	}
 }
