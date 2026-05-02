@@ -1,5 +1,6 @@
 package dev.rage4j.asserts;
 
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.asserts.exception.Rage4JBleuScoreException;
 import dev.rage4j.asserts.exception.Rage4JCorrectnessException;
@@ -8,6 +9,7 @@ import dev.rage4j.asserts.exception.Rage4JRelevanceException;
 import dev.rage4j.asserts.exception.Rage4JRougeScoreException;
 import dev.rage4j.asserts.exception.Rage4JSimilarityException;
 import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
+import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -195,6 +198,21 @@ class RageAssertTest
 	}
 
 	@Test
+	void shouldEvaluateBleuScoreWithoutThreshold()
+	{
+		AssertionEvaluation assertionEvaluation = new RageAssert((ChatModel) null).given()
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(ANSWER)
+			.then()
+			.assertBleuScore();
+
+		Evaluation evaluation = assertionEvaluation.getEvaluation();
+		assertEquals("BLEU score", evaluation.getName());
+		assertTrue(evaluation.getValue() >= 0.0);
+	}
+
+	@Test
 	void testRougeScoreApi()
 	{
 		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
@@ -223,6 +241,21 @@ class RageAssertTest
 			() -> testCaseAssertions.assertRougeScore(0.9, RougeScoreEvaluator.RougeType.ROUGE1, RougeScoreEvaluator.MeasureType.PRECISION));
 
 		assertTrue(ex.getMessage().startsWith(MINVALUE));
+	}
+
+	@Test
+	void shouldEvaluateRougeScoreWithoutThreshold()
+	{
+		AssertionEvaluation assertionEvaluation = new RageAssert((ChatModel) null).given()
+			.groundTruth(GROUND_TRUTH)
+			.when()
+			.answer(ANSWER)
+			.then()
+			.assertRougeScore();
+
+		Evaluation evaluation = assertionEvaluation.getEvaluation();
+		assertEquals("ROUGE score ROUGE1", evaluation.getName());
+		assertTrue(evaluation.getValue() >= 0.0);
 	}
 
 	private static String obtainOpenAiKey()

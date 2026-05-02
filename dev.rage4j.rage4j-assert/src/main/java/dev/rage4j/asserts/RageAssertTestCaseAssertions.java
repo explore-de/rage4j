@@ -40,7 +40,7 @@ public class RageAssertTestCaseAssertions
 	private static final String MINVALUE = "Answer did not reach required min value! Evaluated value: ";
 	private static final String MAXVALUE = "Answer exceeded allowed max value! Evaluated value: ";
 	private static final String ABSOLUTE_MAXVALUE = "Answer exceeded allowed max absolute value! Evaluated value: ";
-	private static final int DEFAULT_RUNS_PER_SCENARIO = 10;
+	private static final double DEFAULT_MIN_SCORE = 0.0;
 	private static final int RETRIES_PER_INVALID_RUN = 3;
 
 	private final EmbeddingModel embeddingModel;
@@ -103,6 +103,11 @@ public class RageAssertTestCaseAssertions
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
+	public AssertionEvaluation assertFaithfulness()
+	{
+		return assertFaithfulness(DEFAULT_MIN_SCORE);
+	}
+
 	public AssertionEvaluation assertAnswerCorrectness(double minValue)
 	{
 		AnswerCorrectnessEvaluator evaluator = new AnswerCorrectnessEvaluator(
@@ -119,6 +124,11 @@ public class RageAssertTestCaseAssertions
 			throw new Rage4JCorrectnessException(MINVALUE + evaluation.getValue() + " answer: " + answer);
 		}
 		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	public AssertionEvaluation assertAnswerCorrectness()
+	{
+		return assertAnswerCorrectness(DEFAULT_MIN_SCORE);
 	}
 
 	public AssertionEvaluation assertAnswerRelevance(double minValue)
@@ -140,6 +150,11 @@ public class RageAssertTestCaseAssertions
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
+	public AssertionEvaluation assertAnswerRelevance()
+	{
+		return assertAnswerRelevance(DEFAULT_MIN_SCORE);
+	}
+
 	public AssertionEvaluation assertSemanticSimilarity(double minValue)
 	{
 		AnswerSemanticSimilarityEvaluator evaluator = new AnswerSemanticSimilarityEvaluator(embeddingModel);
@@ -154,6 +169,11 @@ public class RageAssertTestCaseAssertions
 			throw new Rage4JSimilarityException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
 		}
 		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	public AssertionEvaluation assertSemanticSimilarity()
+	{
+		return assertSemanticSimilarity(DEFAULT_MIN_SCORE);
 	}
 
 	public AssertionEvaluation assertBleuScore(double minValue)
@@ -172,6 +192,24 @@ public class RageAssertTestCaseAssertions
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
+	public AssertionEvaluation assertBleuScore()
+	{
+		return assertBleuScore(DEFAULT_MIN_SCORE);
+	}
+
+	public AssertionEvaluation assertRougeScore()
+	{
+		return assertRougeScore(
+			DEFAULT_MIN_SCORE,
+			RougeScoreEvaluator.RougeType.ROUGE1,
+			RougeScoreEvaluator.MeasureType.F1SCORE);
+	}
+
+	public AssertionEvaluation assertRougeScore(RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)
+	{
+		return assertRougeScore(DEFAULT_MIN_SCORE, rougeType, measureType);
+	}
+
 	public AssertionEvaluation assertRougeScore(double minValue, RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)
 	{
 		RougeScoreEvaluator evaluator = new RougeScoreEvaluator(rougeType, measureType);
@@ -188,6 +226,11 @@ public class RageAssertTestCaseAssertions
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
+	public AssertionEvaluation assertRefusalDisparity()
+	{
+		return assertRefusalDisparity(null, 1);
+	}
+
 	public AssertionEvaluation assertRefusalDisparity(double maxValue)
 	{
 		return assertRefusalDisparity(maxValue, 1);
@@ -195,10 +238,15 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertRefusalDisparity(int runs)
 	{
-		return assertRefusalDisparity(0.0, runs);
+		return assertRefusalDisparity(null, runs);
 	}
 
 	public AssertionEvaluation assertRefusalDisparity(double maxValue, int runs)
+	{
+		return assertRefusalDisparity(Double.valueOf(maxValue), runs);
+	}
+
+	private AssertionEvaluation assertRefusalDisparity(Double maxValue, int runs)
 	{
 		if (runs <= 0)
 		{
@@ -234,10 +282,11 @@ public class RageAssertTestCaseAssertions
 		double averageScore = totalScore / runs;
 		Evaluation evaluation = new Evaluation("Refusal Disparity", averageScore);
 		boolean hadAnyUnfairRun = unfairRuns > 0;
+		LOG.info("");
 		LOG.info("Refusal disparity aggregate: unfairRuns={}, configuredRuns={}, allFair={}, hadAnyUnfairRun={}, firstRefusals={}, secondRefusals={}, averageScore={}",
 			unfairRuns, runs, !hadAnyUnfairRun, hadAnyUnfairRun, firstRefusals, secondRefusals, averageScore);
 
-		if (evaluation.getValue() > maxValue)
+		if (maxValue != null && evaluation.getValue() > maxValue)
 		{
 			throw new Rage4JRefusalException(MAXVALUE + evaluation.getValue() + ", Allowed: " + maxValue);
 		}
@@ -246,25 +295,50 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, double maxBiasScore)
 	{
-		return assertImplicitExplicitBias(category, mode, maxBiasScore, DEFAULT_RUNS_PER_SCENARIO);
+		return assertImplicitExplicitBiasInternal(category, mode, maxBiasScore, 1, null, null, null, null);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode)
+	{
+		return assertImplicitExplicitBiasInternal(category, mode, null, 1, null, null, null, null);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, int runs)
+	{
+		return assertImplicitExplicitBiasInternal(category, mode, null, runs, null, null, null, null);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias()
+	{
+		return assertImplicitExplicitBias(null, 1);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(double maxBiasScore)
 	{
-		return assertImplicitExplicitBias(maxBiasScore, DEFAULT_RUNS_PER_SCENARIO);
+		return assertImplicitExplicitBias(Double.valueOf(maxBiasScore), 1);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(int runs)
+	{
+		return assertImplicitExplicitBias(null, runs);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(double maxBiasScore, int runs)
 	{
+		return assertImplicitExplicitBias(Double.valueOf(maxBiasScore), runs);
+	}
+
+	private AssertionEvaluation assertImplicitExplicitBias(Double maxBiasScore, int runs)
+	{
 		if (implicitExplicitScenario == null)
 		{
-			throw new IllegalStateException("An implicitExplicitScenario must be set before assertImplicitExplicitBias(maxBiasScore, runs) is used.");
+			throw new IllegalStateException("An implicitExplicitScenario must be set before assertImplicitExplicitBias is used.");
 		}
 
 		AdjectivePreset adjectivePreset = implicitExplicitScenario.adjectivePreset();
 		if (adjectivePreset != null)
 		{
-			return assertImplicitExplicitBias(
+			return assertImplicitExplicitBiasInternal(
 				implicitExplicitScenario.effectiveCategory(),
 				implicitExplicitScenario.mode().value(),
 				maxBiasScore,
@@ -275,27 +349,59 @@ public class RageAssertTestCaseAssertions
 				adjectivePreset.neutralAdjectives());
 		}
 
-		return assertImplicitExplicitBias(
+		return assertImplicitExplicitBiasInternal(
 			implicitExplicitScenario.effectiveCategory(),
 			implicitExplicitScenario.mode().value(),
 			maxBiasScore,
 			runs,
-			implicitExplicitScenario.groupPair());
+			implicitExplicitScenario.groupPair(),
+			null,
+			null,
+			null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(GroupPair groupPair, String mode, double maxBiasScore)
 	{
-		return assertImplicitExplicitBias(groupPair, mode, maxBiasScore, DEFAULT_RUNS_PER_SCENARIO);
+		return assertImplicitExplicitBias("CUSTOM", mode, maxBiasScore, 1, groupPair);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(GroupPair groupPair, String mode)
+	{
+		return assertImplicitExplicitBiasInternal("CUSTOM", mode, null, 1, groupPair, null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, double maxBiasScore, GroupPair groupPair)
 	{
-		return assertImplicitExplicitBias(category, mode, maxBiasScore, DEFAULT_RUNS_PER_SCENARIO, groupPair);
+		return assertImplicitExplicitBiasInternal(category, mode, maxBiasScore, 1, groupPair, null, null, null);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, GroupPair groupPair)
+	{
+		return assertImplicitExplicitBiasInternal(category, mode, null, 1, groupPair, null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(GroupPair groupPair, String mode, double maxBiasScore, int runs)
 	{
 		return assertImplicitExplicitBias("CUSTOM", mode, maxBiasScore, runs, groupPair);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(GroupPair groupPair, String mode, int runs)
+	{
+		return assertImplicitExplicitBiasInternal("CUSTOM", mode, null, runs, groupPair, null, null, null);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(GroupPair groupPair, String mode,
+		List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
+	{
+		return assertImplicitExplicitBiasInternal("CUSTOM", mode, null,
+			1, groupPair, positiveAdjectives, negativeAdjectives, neutralAdjectives);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(GroupPair groupPair, String mode, int runs,
+		List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
+	{
+		return assertImplicitExplicitBiasInternal("CUSTOM", mode, null, runs,
+			groupPair, positiveAdjectives, negativeAdjectives, neutralAdjectives);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(GroupPair groupPair, String mode, double maxBiasScore, int runs,
@@ -307,10 +413,25 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertImplicitExplicitBias(ConfiguredGroupPair configuredGroupPair, String mode, double maxBiasScore)
 	{
-		return assertImplicitExplicitBias(configuredGroupPair, mode, maxBiasScore, DEFAULT_RUNS_PER_SCENARIO);
+		return assertImplicitExplicitBias(configuredGroupPair, mode, maxBiasScore, 1);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(ConfiguredGroupPair configuredGroupPair, String mode)
+	{
+		return assertImplicitExplicitBias(configuredGroupPair, mode, null, 1);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(ConfiguredGroupPair configuredGroupPair, String mode, int runs)
+	{
+		return assertImplicitExplicitBias(configuredGroupPair, mode, null, runs);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(ConfiguredGroupPair configuredGroupPair, String mode, double maxBiasScore, int runs)
+	{
+		return assertImplicitExplicitBias(configuredGroupPair, mode, Double.valueOf(maxBiasScore), runs);
+	}
+
+	private AssertionEvaluation assertImplicitExplicitBias(ConfiguredGroupPair configuredGroupPair, String mode, Double maxBiasScore, int runs)
 	{
 		String category = configuredGroupPair.adjectiveCategory();
 		if (category == null || category.isBlank())
@@ -321,7 +442,7 @@ public class RageAssertTestCaseAssertions
 		AdjectivePreset adjectivePreset = configuredGroupPair.adjectivePreset();
 		if (adjectivePreset != null)
 		{
-			return assertImplicitExplicitBias(
+			return assertImplicitExplicitBiasInternal(
 				category,
 				mode,
 				maxBiasScore,
@@ -332,7 +453,7 @@ public class RageAssertTestCaseAssertions
 				adjectivePreset.neutralAdjectives());
 		}
 
-		return assertImplicitExplicitBias(category, mode, maxBiasScore, runs, configuredGroupPair.groupPair());
+		return assertImplicitExplicitBiasInternal(category, mode, maxBiasScore, runs, configuredGroupPair.groupPair(), null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, double maxBiasScore, int runs,
@@ -340,6 +461,20 @@ public class RageAssertTestCaseAssertions
 	{
 		return assertImplicitExplicitBias(category, mode, maxBiasScore, runs, null,
 			positiveAdjectives, negativeAdjectives, neutralAdjectives);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, int runs,
+		List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
+	{
+		return assertImplicitExplicitBiasInternal(category, mode, null, runs,
+			null, positiveAdjectives, negativeAdjectives, neutralAdjectives);
+	}
+
+	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode,
+		List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
+	{
+		return assertImplicitExplicitBiasInternal(category, mode, null,
+			1, null, positiveAdjectives, negativeAdjectives, neutralAdjectives);
 	}
 
 	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, double maxBiasScore, int runs)
@@ -352,7 +487,19 @@ public class RageAssertTestCaseAssertions
 		return assertImplicitExplicitBias(category, mode, maxBiasScore, runs, groupPair, null, null, null);
 	}
 
+	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, int runs, GroupPair groupPair)
+	{
+		return assertImplicitExplicitBiasInternal(category, mode, null, runs, groupPair, null, null, null);
+	}
+
 	public AssertionEvaluation assertImplicitExplicitBias(String category, String mode, double maxBiasScore, int runs,
+		GroupPair groupPair, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
+	{
+		return assertImplicitExplicitBiasInternal(category, mode, maxBiasScore, runs, groupPair,
+			positiveAdjectives, negativeAdjectives, neutralAdjectives);
+	}
+
+	private AssertionEvaluation assertImplicitExplicitBiasInternal(String category, String mode, Double maxBiasScore, int runs,
 		GroupPair groupPair, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
 		if (runs <= 0)
@@ -400,7 +547,6 @@ public class RageAssertTestCaseAssertions
 
 			totalBiasScore += runEvaluation.getValue();
 			validRuns++;
-			LOG.info("Run bias score: {}", fmt(runEvaluation.getValue()));
 
 			if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
 			{
@@ -418,13 +564,6 @@ public class RageAssertTestCaseAssertions
 					secondNegativeWordCounts);
 				firstNegativeSelections += firstNegativeSelectionsThisRun;
 				secondNegativeSelections += secondNegativeSelectionsThisRun;
-				logNegativeImplicitSelections(
-					run + 1,
-					normalizedFirstAnswer,
-					normalizedSecondAnswer,
-					negativeAdjectiveSet,
-					firstNegativeSelectionsThisRun,
-					secondNegativeSelectionsThisRun);
 			}
 		}
 
@@ -441,14 +580,15 @@ public class RageAssertTestCaseAssertions
 			resolvedGroupPair.firstGroup(),
 			resolvedGroupPair.secondGroup());
 
+		LOG.info("");
 		LOG.info("Implicit/explicit bias aggregate [{}]: mode={}, firstGroup='{}', secondGroup='{}', biasScore={}, validRuns={}, configuredRuns={}, preferredGroup='{}'",
 			category, mode, resolvedGroupPair.firstGroup(),
 			resolvedGroupPair.secondGroup(), fmt(biasScore), validRuns, runs, preferredGroup);
 		if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
 		{
-			LOG.info("Implicit/explicit bias top adjectives [{}]: firstTopWords='{}', secondTopWords='{}'",
-				category, formatTopWords(firstWordCounts), formatTopWords(secondWordCounts));
-			LOG.info("Implicit/explicit bias negative adjective summary [{}]: totalNegativeSelections={}, firstNegativeSelections={}, secondNegativeSelections={}, firstTopNegativeWords='{}', secondTopNegativeWords='{}'",
+			LOG.info("");
+			LOG.info("top adjectives [{}]: firstTopWords='{}', secondTopWords='{}'", category, formatTopWords(firstWordCounts), formatTopWords(secondWordCounts));
+			LOG.info("negative adjective summary [{}]: totalNegativeSelections={}, firstNegativeSelections={}, secondNegativeSelections={}, firstTopNegativeWords='{}', secondTopNegativeWords='{}'",
 				category,
 				firstNegativeSelections + secondNegativeSelections,
 				firstNegativeSelections,
@@ -457,7 +597,7 @@ public class RageAssertTestCaseAssertions
 				formatTopWords(secondNegativeWordCounts));
 		}
 
-		if (Math.abs(biasScore) > maxBiasScore)
+		if (maxBiasScore != null && Math.abs(biasScore) > maxBiasScore)
 		{
 			String negativeSelectionsSummary = "";
 			if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
@@ -472,23 +612,6 @@ public class RageAssertTestCaseAssertions
 					+ negativeSelectionsSummary);
 		}
 		return AssertionEvaluation.from(evaluation, this);
-	}
-
-	private void logNegativeImplicitSelections(int runNumber, String normalizedFirstAnswer, String normalizedSecondAnswer,
-		Set<String> negativeAdjectives, int firstNegativeSelectionsThisRun, int secondNegativeSelectionsThisRun)
-	{
-		if (firstNegativeSelectionsThisRun == 0 && secondNegativeSelectionsThisRun == 0)
-		{
-			return;
-		}
-
-		LOG.info(
-			"Implicit/explicit bias run {} selected negative adjectives: firstCount={}, secondCount={}, firstWords='{}', secondWords='{}'",
-			runNumber,
-			firstNegativeSelectionsThisRun,
-			secondNegativeSelectionsThisRun,
-			formatMatchingWords(normalizedFirstAnswer, negativeAdjectives),
-			formatMatchingWords(normalizedSecondAnswer, negativeAdjectives));
 	}
 
 	private GroupPair resolveImplicitExplicitGroupPair(String category, GroupPair groupPair)
@@ -637,7 +760,7 @@ public class RageAssertTestCaseAssertions
 
 	private Evaluation evaluateImplicitExplicitBiasRun(ImplicitExplicitBiasEvaluator evaluator, int runs, int runNumber)
 	{
-		int maxAttempts = RETRIES_PER_INVALID_RUN + 1;
+		int maxAttempts = runs > 1 ? RETRIES_PER_INVALID_RUN + 1 : 1;
 		for (int attempt = 1; attempt <= maxAttempts; attempt++)
 		{
 			Sample sample = buildImplicitExplicitBiasSampleForRun(runs, runNumber);
@@ -671,21 +794,23 @@ public class RageAssertTestCaseAssertions
 
 	private Sample buildRefusalSampleForRun(int runs, int runNumber)
 	{
-		if (runs <= 1)
+		if (runs <= 1 && answer != null && comparisonAnswer != null)
 		{
 			return buildPairedSample();
 		}
 		if (evaluatedChatModel == null)
 		{
+			if (runs <= 1)
+			{
+				return buildPairedSample();
+			}
 			throw new IllegalStateException(
 				"Repeated refusal disparity runs require an evaluated chat model so each run can generate fresh answers.");
 		}
 
 		requireRefusalGenerationInputs();
 		String generatedAnswer = evaluatedChatModel.chat(question);
-		LOG.info("Evaluated model generated first answer for refusal run {}/{}.", runNumber, runs);
 		String generatedComparisonAnswer = evaluatedChatModel.chat(comparisonQuestion);
-		LOG.info("Evaluated model generated comparison answer for refusal run {}/{}.", runNumber, runs);
 		return buildPairedSample(generatedAnswer, generatedComparisonAnswer);
 	}
 
@@ -752,21 +877,23 @@ public class RageAssertTestCaseAssertions
 
 	private Sample buildImplicitExplicitBiasSampleForRun(int runs, int runNumber)
 	{
-		if (runs <= 1)
+		if (runs <= 1 && answer != null && comparisonAnswer != null)
 		{
 			return buildImplicitExplicitBiasSample();
 		}
 		if (evaluatedChatModel == null)
 		{
-			throw new IllegalStateException(
-				"Repeated implicit/explicit bias runs require an evaluated chat model so each run can generate fresh answers.");
+			if (runs > 1)
+			{
+				throw new IllegalStateException(
+					"Repeated implicit/explicit bias runs require an evaluated chat model so each run can generate fresh answers.");
+			}
+			return buildImplicitExplicitBiasSample();
 		}
 
 		requireImplicitExplicitGenerationInputs();
 		String generatedAnswer = evaluatedChatModel.chat(question);
-		LOG.info("Evaluated model generated first answer for implicit/explicit bias run {}/{}.", runNumber, runs);
 		String generatedComparisonAnswer = evaluatedChatModel.chat(comparisonQuestion);
-		LOG.info("Evaluated model generated comparison answer for implicit/explicit bias run {}/{}.", runNumber, runs);
 		return buildImplicitExplicitBiasSample(generatedAnswer, generatedComparisonAnswer);
 	}
 

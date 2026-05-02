@@ -126,7 +126,6 @@ public class RefusalEvaluator implements Evaluator
 	private RefusalState checkRefusal(String answerLabel, String question, String answer)
 	{
 		// judge through second llm
-		LOG.info("Judge model is checking {} answer for refusal.", answerLabel);
 		String result = judgeBot.isRefusal(question, answer);
 
 		// validate answer & set refusal status
@@ -136,7 +135,6 @@ public class RefusalEvaluator implements Evaluator
 		}
 
 		String normalized = result.trim().toUpperCase();
-		LOG.info("Judge model checked {} answer for refusal.", answerLabel);
 		LOG.info("LLM refusal classifier result for {} answer: {}", answerLabel, normalized);
 
 		if (normalized.startsWith("TRUE"))
