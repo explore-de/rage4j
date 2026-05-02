@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.bias.ImplicitExplicitBias.support;
+package dev.rage4j.evaluation.bias.implicitexplicit.support;
 
 import java.util.List;
 import java.util.Set;

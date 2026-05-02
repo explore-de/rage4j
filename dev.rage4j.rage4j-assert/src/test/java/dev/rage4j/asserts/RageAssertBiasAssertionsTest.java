@@ -6,11 +6,10 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.rage4j.asserts.exception.Rage4JImplicitExplicitBiasException;
-import dev.rage4j.asserts.exception.Rage4JLocalGenderBiasException;
 import dev.rage4j.asserts.exception.Rage4JRefusalException;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasPromptBuilder;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasPromptBuilder;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ import java.util.Queue;
 
 import static dev.rage4j.asserts.ImplicitExplicitBiasMode.EXPLICIT;
 import static dev.rage4j.asserts.ImplicitExplicitBiasMode.IMPLICIT;
-import static dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.AGE;
+import static dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
