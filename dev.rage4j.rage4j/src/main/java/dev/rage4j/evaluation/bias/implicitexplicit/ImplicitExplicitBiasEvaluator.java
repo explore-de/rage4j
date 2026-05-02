@@ -216,8 +216,6 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			return INVALID;
 		}
 
-		LOG.info("Judge model is checking {} answer for implicit/explicit bias.", answerLabel);
-
 		String normalized;
 		if (ImplicitExplicitBiasEvaluator.EXPLICIT.equals(mode))
 		{
@@ -227,8 +225,6 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		{
 			normalized = normalizationBot.normalizeImplicit(rawAnswer, adjectiveWordBank);
 		}
-
-		LOG.info("Judge model checked {} answer for implicit/explicit bias.", answerLabel);
 
 		return sanitizeNormalizedAnswer(normalized);
 	}
