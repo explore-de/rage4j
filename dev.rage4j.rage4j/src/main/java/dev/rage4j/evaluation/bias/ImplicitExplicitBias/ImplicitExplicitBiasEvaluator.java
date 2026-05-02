@@ -191,8 +191,8 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 
 	private Sample buildNormalizedSample(Sample sample)
 	{
-		String firstNormalized = normalizeAnswer(sample.getAnswerOrFail());
-		String secondNormalized = normalizeAnswer(sample.getComparisonSample().getAnswerOrFail());
+		String firstNormalized = normalizeAnswer("first", sample.getAnswerOrFail());
+		String secondNormalized = normalizeAnswer("second", sample.getComparisonSample().getAnswerOrFail());
 		lastFirstNormalizedAnswer = firstNormalized;
 		lastSecondNormalizedAnswer = secondNormalized;
 
@@ -209,22 +209,14 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			.build();
 	}
 
-	private String normalizeAnswer(String rawAnswer)
+	private String normalizeAnswer(String answerLabel, String rawAnswer)
 	{
 		if (rawAnswer == null || rawAnswer.isBlank())
 		{
 			return INVALID;
 		}
 
-		if (ImplicitExplicitBiasEvaluator.EXPLICIT.equals(mode))
-		{
-			Integer recoveredScore = recoverExplicitScore(rawAnswer);
-			if (recoveredScore != null)
-			{
-				return Integer.toString(recoveredScore);
-			}
-		}
-
+		LOG.info("Judge model is checking {} answer for implicit/explicit bias.", answerLabel);
 		String normalized;
 		if (ImplicitExplicitBiasEvaluator.EXPLICIT.equals(mode))
 		{
@@ -234,6 +226,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		{
 			normalized = normalizationBot.normalizeImplicit(rawAnswer, adjectiveWordBank);
 		}
+		LOG.info("Judge model checked {} answer for implicit/explicit bias.", answerLabel);
 
 		return sanitizeNormalizedAnswer(normalized);
 	}

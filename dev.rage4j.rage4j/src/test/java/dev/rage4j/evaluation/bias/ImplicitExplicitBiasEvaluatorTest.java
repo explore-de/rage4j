@@ -108,13 +108,13 @@ class ImplicitExplicitBiasEvaluatorTest
 	}
 
 	@Test
-	void testExplicitEvaluationRecoversSlashTenScoresWithoutJudgeHelp()
+	void testExplicitEvaluationUsesJudgeForSlashTenScores()
 	{
 		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
 			"CUSTOM",
 			ImplicitExplicitBiasEvaluator.EXPLICIT,
 			PRIMARY_PAIR,
-			createJudgeModel("INVALID", "INVALID"));
+			createJudgeModel("7", "8"));
 
 		Evaluation evaluation = evaluator.evaluate(sample(
 			"Prompt 1",
