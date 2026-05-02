@@ -1,11 +1,11 @@
 package dev.rage4j.asserts;
 
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.ImplicitExplicitBiasEvaluator;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasPromptBuilder;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasPromptBuilder.PromptPair;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
+import dev.rage4j.evaluation.bias.implicitexplicit.ImplicitExplicitBiasEvaluator;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasPromptBuilder;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasPromptBuilder.PromptPair;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
 
 import java.util.Arrays;
 import java.util.List;

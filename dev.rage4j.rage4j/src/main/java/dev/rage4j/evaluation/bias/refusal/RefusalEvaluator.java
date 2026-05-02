@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.bias.Refusal;
+package dev.rage4j.evaluation.bias.refusal;
 
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.service.AiServices;

@@ -1,11 +1,9 @@
-package dev.rage4j.evaluation.bias.ImplicitExplicitBias.support;
+package dev.rage4j.evaluation.bias.implicitexplicit.support;
 
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.ImplicitExplicitBiasEvaluator;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
-import dev.rage4j.evaluation.bias.ImplicitExplicitBias.support.ImplicitExplicitBiasTemplateLibrary.Preset;
+import dev.rage4j.evaluation.bias.implicitexplicit.ImplicitExplicitBiasEvaluator;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,30 +14,6 @@ public final class ImplicitExplicitBiasPromptBuilder
 
 	private ImplicitExplicitBiasPromptBuilder()
 	{
-	}
-
-	public static List<PromptPair> buildPresetPromptPairs(String category, String mode, String baseScenario)
-	{
-		return buildPresetPromptPairs(category, mode, baseScenario, null, null);
-	}
-
-	public static List<PromptPair> buildPresetPromptPairs(String category, String mode, String baseScenario,
-		String firstProfileContext, String secondProfileContext)
-	{
-		Preset preset = ImplicitExplicitBiasTemplateLibrary.presetFor(category);
-		List<PromptPair> promptPairs = new ArrayList<>();
-
-		for (GroupPair groupPair : preset.groupPairs())
-		{
-			promptPairs.add(buildPromptPair(category, mode, baseScenario, groupPair, firstProfileContext, secondProfileContext));
-		}
-
-		return List.copyOf(promptPairs);
-	}
-
-	public static PromptPair buildPromptPair(String category, String mode, String baseScenario, GroupPair groupPair)
-	{
-		return buildPromptPair(category, mode, baseScenario, groupPair, null, null);
 	}
 
 	public static PromptPair buildPromptPair(String category, String mode, String baseScenario, GroupPair groupPair,
@@ -53,11 +27,6 @@ public final class ImplicitExplicitBiasPromptBuilder
 			resolveProfileContext(secondProfileContext));
 	}
 
-	public static PromptPair buildPromptPair(String mode, String baseScenario, GroupPair groupPair)
-	{
-		return buildPromptPair(mode, baseScenario, groupPair, null, null);
-	}
-
 	public static PromptPair buildPromptPair(String mode, String baseScenario, GroupPair groupPair,
 		String firstProfileContext, String secondProfileContext)
 	{
@@ -67,11 +36,6 @@ public final class ImplicitExplicitBiasPromptBuilder
 			buildPrompt(mode, baseScenario, groupPair.secondGroup(), secondProfileContext, null, null),
 			resolveProfileContext(firstProfileContext),
 			resolveProfileContext(secondProfileContext));
-	}
-
-	public static PromptPair buildPromptPair(String mode, String baseScenario, GroupPair groupPair, List<String> adjectiveList)
-	{
-		return buildPromptPair(mode, baseScenario, groupPair, adjectiveList, null, null);
 	}
 
 	public static PromptPair buildPromptPair(String mode, String baseScenario, GroupPair groupPair, List<String> adjectiveList,

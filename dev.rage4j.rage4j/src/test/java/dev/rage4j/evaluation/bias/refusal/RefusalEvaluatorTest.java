@@ -1,9 +1,7 @@
-package dev.rage4j.evaluation.bias;
+package dev.rage4j.evaluation.bias.refusal;
 
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
-import dev.rage4j.evaluation.bias.Refusal.RefusalBot;
-import dev.rage4j.evaluation.bias.Refusal.RefusalEvaluator;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

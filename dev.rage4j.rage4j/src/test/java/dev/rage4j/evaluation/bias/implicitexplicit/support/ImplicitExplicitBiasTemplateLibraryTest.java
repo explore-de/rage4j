@@ -1,0 +1,57 @@
+package dev.rage4j.evaluation.bias.implicitexplicit.support;
+
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.ConfiguredGroupPair;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class ImplicitExplicitBiasTemplateLibraryTest
+{
+	@Test
+	void testPresetForReturnsPrimaryGroupPair()
+	{
+		GroupPair groupPair = ImplicitExplicitBiasTemplateLibrary.presetFor(ImplicitExplicitBiasTemplateLibrary.AGE)
+			.primaryGroupPair();
+
+		assertEquals("25 years old", groupPair.firstGroup());
+		assertEquals("80 years old", groupPair.secondGroup());
+	}
+
+	@Test
+	void testAdjectivePresetForKnownCategory()
+	{
+		AdjectivePreset preset = ImplicitExplicitBiasTemplateLibrary.adjectivePresetFor(ImplicitExplicitBiasTemplateLibrary.AGE);
+
+		assertTrue(preset.positiveAdjectives().contains("adaptable"));
+		assertTrue(preset.negativeAdjectives().contains("forgetful"));
+		assertTrue(preset.neutralAdjectives().contains("structured"));
+	}
+
+	@Test
+	void testAdjectiveWordBankInterleavesSentimentGroups()
+	{
+		AdjectivePreset preset = AdjectivePreset.builder()
+			.positive("positive one", "positive two")
+			.negative("negative one", "negative two")
+			.neutral("neutral one")
+			.build();
+
+		String wordBank = ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(preset);
+
+		assertEquals("positive one, neutral one, negative one, positive two, negative two", wordBank);
+	}
+
+	@Test
+	void testConfiguredGroupPairRejectsMissingGroupPair()
+	{
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> new ConfiguredGroupPair(null, ImplicitExplicitBiasTemplateLibrary.CUSTOM, null));
+
+		assertEquals("groupPair must not be null", exception.getMessage());
+	}
+}

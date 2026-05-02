@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.bias.ImplicitExplicitBias;
+package dev.rage4j.evaluation.bias.implicitexplicit;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
