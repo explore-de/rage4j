@@ -15,12 +15,13 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class RageAssertTest
 {
@@ -32,21 +33,16 @@ class RageAssertTest
 	private static final String ANSWER_WRONG_RELEVANCE = "The weather in Paris is nice today.";
 	private static final List<String> CONTEXT = List.of(
 		"Paris is the capital and largest city of France.");
-	private final String key = obtainOpenAiKey();
-	private final OpenAiChatModel model = OpenAiChatModel.builder()
-		.apiKey(key)
-		.modelName(GPT_4_O_MINI)
-		.build();
 
 	@Test
 	void testCorrectnessApi()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.when()
-			.answer(model.chat(QUESTION))
+			.answer(openAiModel().chat(QUESTION))
 			.then()
 			.assertAnswerCorrectness(0.7);
 	}
@@ -54,7 +50,7 @@ class RageAssertTest
 	@Test
 	void shouldThrowCorrectnessException()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
@@ -72,13 +68,13 @@ class RageAssertTest
 	@Test
 	void testFaithfulApi()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.contextList(List.of(ANSWER))
 			.when()
-			.answer(model::chat)
+			.answer(openAiModel()::chat)
 			.then()
 			.assertFaithfulness(0.7);
 	}
@@ -86,7 +82,7 @@ class RageAssertTest
 	@Test
 	void shouldThrowFaithfulnessException()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
@@ -105,12 +101,12 @@ class RageAssertTest
 	@Test
 	void testSemanticSimilarityApi()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.when()
-			.answer(model::chat)
+			.answer(openAiModel()::chat)
 			.then()
 			.assertSemanticSimilarity(0.7);
 	}
@@ -118,7 +114,7 @@ class RageAssertTest
 	@Test
 	void shouldThrowSemanticSimilarityException()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
@@ -136,13 +132,13 @@ class RageAssertTest
 	@Test
 	void testAnswerRelevanceApi()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.contextList(CONTEXT)
 			.when()
-			.answer(model::chat)
+			.answer(openAiModel()::chat)
 			.then()
 			.assertAnswerRelevance(0.7);
 	}
@@ -150,7 +146,7 @@ class RageAssertTest
 	@Test
 	void shouldThrowRelevanceException()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
@@ -169,12 +165,12 @@ class RageAssertTest
 	@Test
 	void testBleuScoreApi()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.when()
-			.answer(model::chat)
+			.answer(openAiModel()::chat)
 			.then()
 			.assertBleuScore(0.7);
 	}
@@ -182,7 +178,7 @@ class RageAssertTest
 	@Test
 	void shouldThrowBleuScoreException()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
@@ -215,12 +211,12 @@ class RageAssertTest
 	@Test
 	void testRougeScoreApi()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
 			.when()
-			.answer(model::chat)
+			.answer(openAiModel()::chat)
 			.then()
 			.assertRougeScore(0.7, RougeScoreEvaluator.RougeType.ROUGE1, RougeScoreEvaluator.MeasureType.F1SCORE);
 	}
@@ -228,7 +224,7 @@ class RageAssertTest
 	@Test
 	void shouldThrowRougeScoreException()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = openAiRageAssert();
 		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
@@ -258,13 +254,23 @@ class RageAssertTest
 		assertTrue(evaluation.getValue() >= 0.0);
 	}
 
+	private RageAssert openAiRageAssert()
+	{
+		return new OpenAiLLMBuilder().fromApiKey(obtainOpenAiKey());
+	}
+
+	private OpenAiChatModel openAiModel()
+	{
+		return OpenAiChatModel.builder()
+			.apiKey(obtainOpenAiKey())
+			.modelName(GPT_4_O_MINI)
+			.build();
+	}
+
 	private static String obtainOpenAiKey()
 	{
-		String openAiKey = ConfigProvider.getConfig().getValue("open.ai.key", String.class);
-		if (openAiKey != null)
-		{
-			return openAiKey;
-		}
-		throw new NoSuchElementException("Cannot load open ai key. Set env 'OPEN_AI_KEY'");
+		Optional<String> openAiKey = ConfigProvider.getConfig().getOptionalValue("open.ai.key", String.class);
+		assumeTrue(openAiKey.isPresent(), "Set config property open.ai.key to run OpenAI-backed RageAssert tests.");
+		return openAiKey.get();
 	}
 }

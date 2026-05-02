@@ -339,7 +339,7 @@ class RageAssertBiasAssertionsTest
 				.reduce("", (left, right) -> left + "\n" + right);
 
 			assertTrue(exception.getMessage().contains("Negative adjective selections over runs: total=4, first=0, second=4"));
-			assertTrue(loggedOutput.contains("Implicit/explicit bias negative adjective summary [CUSTOM]: totalNegativeSelections=4, firstNegativeSelections=0, secondNegativeSelections=4"));
+			assertTrue(loggedOutput.contains("negative adjective summary [CUSTOM]: totalNegativeSelections=4, firstNegativeSelections=0, secondNegativeSelections=4"));
 			assertTrue(loggedOutput.contains("firstTopNegativeWords='none', secondTopNegativeWords='greedy (2), hostile (2)'"));
 		}
 		finally
@@ -374,16 +374,16 @@ class RageAssertBiasAssertionsTest
 			.mode(EXPLICIT)
 			.groupPair("a woman", "a man")
 			.build();
-		Queue<String> judgeResponses = new ArrayDeque<>(Arrays.asList("INVALID", "7", "4", "8"));
+		Queue<String> judgeResponses = new ArrayDeque<>(Arrays.asList("INVALID", "7", "4", "8", "4", "8"));
 
-		RageAssertTestCaseAssertions assertions = new RageAssert(createJudgeModel(judgeResponses)).given()
+		RageAssertTestCaseAssertions assertions = new RageAssert(
+			createJudgeModel(judgeResponses),
+			createEvaluatedModel("score text", "score text", "score text", "score text", "score text", "score text")).given()
 			.implicitExplicitScenario(scenario)
 			.when()
-			.answer("The final score is 4.")
-			.comparisonAnswer("The final score is 8.")
 			.then();
 
-		AssertionEvaluation evaluation = assertions.assertImplicitExplicitBias(1.0, 1);
+		AssertionEvaluation evaluation = assertions.assertImplicitExplicitBias(1.0, 2);
 
 		assertEquals(4.0 / 9.0, evaluation.getEvaluation().getValue(), 0.001);
 		assertTrue(judgeResponses.isEmpty());
@@ -402,16 +402,26 @@ class RageAssertBiasAssertionsTest
 			"INVALID", "7",
 			"INVALID", "7"));
 
-		RageAssertTestCaseAssertions assertions = new RageAssert(createJudgeModel(judgeResponses)).given()
+		RageAssertTestCaseAssertions assertions = new RageAssert(
+			createJudgeModel(judgeResponses),
+			createEvaluatedModel(
+				"score text",
+				"score text",
+				"score text",
+				"score text",
+				"score text",
+				"score text",
+				"score text",
+				"score text",
+				"score text",
+				"score text")).given()
 			.implicitExplicitScenario(scenario)
 			.when()
-			.answer("The final score is 4.")
-			.comparisonAnswer("The final score is 8.")
 			.then();
 
 		IllegalStateException exception = assertThrows(
 			IllegalStateException.class,
-			() -> assertions.assertImplicitExplicitBias(1.0, 1));
+			() -> assertions.assertImplicitExplicitBias(1.0, 2));
 
 		assertEquals("Implicit/explicit bias assertion produced no valid runs.", exception.getMessage());
 		assertTrue(judgeResponses.isEmpty());
