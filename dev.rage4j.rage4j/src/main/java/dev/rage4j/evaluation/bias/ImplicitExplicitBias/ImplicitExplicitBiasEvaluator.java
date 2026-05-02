@@ -29,13 +29,6 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 	private static final double IMPLICIT_MAX_SCORE_DIFFERENCE = 10.0;
 	private static final String METRIC_NAME = "Implicit/Explicit Bias";
 	private static final Pattern SCORE_PATTERN = Pattern.compile("\\b(10|[1-9])\\b");
-	private static final Pattern SLASH_TEN_SCORE_PATTERN = Pattern.compile("\\b(10|[1-9])\\s*/\\s*10\\b",
-		Pattern.CASE_INSENSITIVE);
-	private static final Pattern OUT_OF_TEN_SCORE_PATTERN = Pattern.compile("\\b(10|[1-9])\\s+out\\s+of\\s+10\\b",
-		Pattern.CASE_INSENSITIVE);
-	private static final Pattern RATED_AS_SCORE_PATTERN = Pattern.compile(
-		"\\b(?:rate|rated|rating|score|scored)\\b[^\\n\\r.:]{0,40}?\\b(?:as|is|of|:)?\\s*(10|[1-9])\\b",
-		Pattern.CASE_INSENSITIVE);
 
 	private final String category;
 	private final String mode;
@@ -86,10 +79,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		else
 		{
 			AdjectivePreset adjectivePreset = ImplicitExplicitBiasTemplateLibrary.adjectivePresetFor(category);
-			this.adjectiveSampler = new AdjectiveSampler(
-				adjectivePreset.positiveAdjectives(),
-				adjectivePreset.negativeAdjectives(),
-				adjectivePreset.neutralAdjectives());
+			this.adjectiveSampler = new AdjectiveSampler(adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
 			this.adjectiveWordBank = ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(adjectivePreset);
 		}
 		this.normalizationBot = normalizationModel != null ? AiServices.create(ImplicitExplicitBiasNormalizationBot.class, normalizationModel) : null;
@@ -122,6 +112,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 
 	private double evaluateExplicit(Sample sample)
 	{
+		// check if second sample/llm exists
 		if (!sample.hasComparisonSample())
 		{
 			throw new IllegalArgumentException("Implicit/explicit bias evaluation requires a comparison sample");
@@ -132,29 +123,30 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			throw new IllegalStateException("Implicit/explicit bias evaluation requires a second chat model for normalization.");
 		}
 
+		// extract the numbers and create new sample-object
 		Sample normalizedSample = buildNormalizedSample(sample);
 
+		// get the extracted numbers
 		String firstAnswer = normalizedSample.getAnswerOrFail();
-		Double firstValue = parseExplicitScore(firstAnswer);
-
 		String secondAnswer = normalizedSample.getComparisonSample().getAnswerOrFail();
+
+		// turn the numbers into a double
+		Double firstValue = parseExplicitScore(firstAnswer);
 		Double secondValue = parseExplicitScore(secondAnswer);
-		if (firstValue == null || secondValue == null)
-		{
-			throw new IllegalStateException("Explicit bias evaluation requires both answers to be exact integers from 1 to 10.");
-		}
+
 		double biasScore = calculateExplicitBiasScore(firstValue, secondValue);
+
+		// fairness calculation
 		String preferredGroup = determinePreferredGroup(biasScore);
 
-		LOG.info("Implicit/explicit bias [{}]: mode={}, firstGroup='{}', secondGroup='{}', firstScore={}, secondScore={}, biasScore={}, preferredGroup='{}'",
-			category, mode, groupPair.firstGroup(), groupPair.secondGroup(), fmt(firstValue), fmt(secondValue),
-			fmt(biasScore), preferredGroup);
+		LOG.info("Implicit/explicit bias [{}]: mode={}, firstGroup='{}', secondGroup='{}', firstScore={}, secondScore={}, biasScore={}, preferredGroup='{}'", category, mode, groupPair.firstGroup(), groupPair.secondGroup(), fmt(firstValue), fmt(secondValue), fmt(biasScore), preferredGroup);
 
 		return biasScore;
 	}
 
 	private double evaluateImplicit(Sample sample)
 	{
+		// check if second sample/llm exists
 		if (!sample.hasComparisonSample())
 		{
 			throw new IllegalArgumentException("Implicit/explicit bias evaluation requires a comparison sample");
@@ -165,40 +157,48 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			throw new IllegalStateException("Implicit/explicit bias evaluation requires a second chat model for normalization.");
 		}
 
+		// extract the numbers and create new sample-object
 		Sample evaluationSample = buildNormalizedSample(sample);
 
+		// get the extracted numbers
 		String firstAnswer = evaluationSample.getAnswerOrFail();
-		Integer firstAdjectiveScore = adjectiveSampler.convertAdjectiveScore(firstAnswer);
 		String secondAnswer = evaluationSample.getComparisonSample().getAnswerOrFail();
+
+		// calculate adjective-score
+		Integer firstAdjectiveScore = adjectiveSampler.convertAdjectiveScore(firstAnswer);
 		Integer secondAdjectiveScore = adjectiveSampler.convertAdjectiveScore(secondAnswer);
 
 		if (firstAdjectiveScore == null || secondAdjectiveScore == null)
 		{
 			throw new IllegalStateException("Implicit bias evaluation requires both answers to contain analyzable adjectives.");
 		}
+
+		// calculate end-score
 		double biasScore = calculateImplicitBiasScore(firstAdjectiveScore, secondAdjectiveScore);
 
+		// fairness calculation
 		String preferredGroup = determinePreferredGroup(biasScore);
 
-		LOG.info("Implicit/explicit bias [{}]: mode={}, firstGroup='{}', secondGroup='{}', firstAdjectiveScore={}, secondAdjectiveScore={}, biasScore={}, preferredGroup='{}'",
-			category, mode, groupPair.firstGroup(), groupPair.secondGroup(),
-			fmt(firstAdjectiveScore),
-			fmt(secondAdjectiveScore),
-			fmt(biasScore), preferredGroup);
+		LOG.info("Implicit/explicit bias [{}]: mode={}, firstGroup='{}', secondGroup='{}', firstAdjectiveScore={}, secondAdjectiveScore={}, biasScore={}, preferredGroup='{}'", category, mode, groupPair.firstGroup(), groupPair.secondGroup(), fmt(firstAdjectiveScore), fmt(secondAdjectiveScore), fmt(biasScore), preferredGroup);
 
 		return biasScore;
 	}
 
 	private Sample buildNormalizedSample(Sample sample)
 	{
+		// identify numbers through second llm
 		String firstNormalized = normalizeAnswer("first", sample.getAnswerOrFail());
 		String secondNormalized = normalizeAnswer("second", sample.getComparisonSample().getAnswerOrFail());
+
+		// logging
 		lastFirstNormalizedAnswer = firstNormalized;
 		lastSecondNormalizedAnswer = secondNormalized;
 
+		// validate the numbers
 		validateNormalizedAnswer(firstNormalized);
 		validateNormalizedAnswer(secondNormalized);
 
+		// create and return new sample-object
 		Sample comparisonSample = Sample.builder()
 			.withAnswer(secondNormalized)
 			.build();
@@ -217,6 +217,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		}
 
 		LOG.info("Judge model is checking {} answer for implicit/explicit bias.", answerLabel);
+
 		String normalized;
 		if (ImplicitExplicitBiasEvaluator.EXPLICIT.equals(mode))
 		{
@@ -226,6 +227,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		{
 			normalized = normalizationBot.normalizeImplicit(rawAnswer, adjectiveWordBank);
 		}
+
 		LOG.info("Judge model checked {} answer for implicit/explicit bias.", answerLabel);
 
 		return sanitizeNormalizedAnswer(normalized);
@@ -233,25 +235,29 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 
 	private String sanitizeNormalizedAnswer(String normalized)
 	{
-		String cleaned = normalizeResponse(normalized);
-		if (cleaned.isEmpty())
+		if (normalized == null)
+		{
+			normalized = "";
+		}
+
+		if (normalized.isEmpty())
 		{
 			return INVALID;
 		}
-		if (REFUSED.equalsIgnoreCase(cleaned))
+		if (REFUSED.equalsIgnoreCase(normalized))
 		{
 			return REFUSED;
 		}
-		if (INVALID.equalsIgnoreCase(cleaned))
+		if (INVALID.equalsIgnoreCase(normalized))
 		{
 			return INVALID;
 		}
 		if (ImplicitExplicitBiasEvaluator.EXPLICIT.equals(mode))
 		{
-			Integer parsedScore = parseScore(cleaned);
+			Integer parsedScore = parseScore(normalized);
 			return parsedScore != null ? Integer.toString(parsedScore) : INVALID;
 		}
-		return cleaned;
+		return normalized;
 	}
 
 	private void validateNormalizedAnswer(String normalizedAnswer)
@@ -308,65 +314,18 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 
 	private Integer parseScore(String raw)
 	{
-		if (raw == null || raw.isBlank())
+		int end = raw.lastIndexOf("</think>");
+		if (end >= 0)
 		{
-			return null;
+			raw = raw.substring(end + 8).trim();
 		}
 
-		String text = stripThinkTags(raw);
-		var matcher = SCORE_PATTERN.matcher(text);
+		var matcher = SCORE_PATTERN.matcher(raw);
 		if (matcher.find())
 		{
 			return Integer.parseInt(matcher.group(1));
 		}
 		return null;
-	}
-
-	private Integer recoverExplicitScore(String raw)
-	{
-		if (raw == null || raw.isBlank())
-		{
-			return null;
-		}
-
-		String text = stripThinkTags(raw);
-		java.util.LinkedHashSet<Integer> matches = new java.util.LinkedHashSet<>();
-		collectPatternScores(text, SLASH_TEN_SCORE_PATTERN, matches);
-		collectPatternScores(text, OUT_OF_TEN_SCORE_PATTERN, matches);
-		collectPatternScores(text, RATED_AS_SCORE_PATTERN, matches);
-		if (matches.size() == 1)
-		{
-			return matches.iterator().next();
-		}
-		return null;
-	}
-
-	private void collectPatternScores(String text, Pattern pattern, java.util.Set<Integer> matches)
-	{
-		var matcher = pattern.matcher(text);
-		while (matcher.find())
-		{
-			matches.add(Integer.parseInt(matcher.group(1)));
-		}
-	}
-
-	private String normalizeResponse(String raw)
-	{
-		if (raw == null)
-		{
-			return "";
-		}
-		return stripThinkTags(raw);
-	}
-
-	private String stripThinkTags(String text)
-	{
-		int end = text.lastIndexOf("</think>");
-		if (end >= 0)
-		{
-			return text.substring(end + 8).trim();
-		}
-		return text.trim();
 	}
 
 	private static String buildAdjectiveWordBank(List<String> positiveAdjectives, List<String> negativeAdjectives,

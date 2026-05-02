@@ -1,6 +1,9 @@
 package dev.rage4j.evaluation.bias;
 
+import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.request.ChatRequest;
+import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.bias.ImplicitExplicitBias.ImplicitExplicitBiasEvaluator;
@@ -27,206 +30,190 @@ class ImplicitExplicitBiasEvaluatorTest
 	private static final Pattern SCORE_PATTERN = Pattern.compile("\\b(10|[1-9])\\b");
 
 	@Test
-	void testEvaluateSampleUsesExplicitScoringPipeline()
+	void testExplicitEvaluateReturnsNormalizedScoreDifference()
 	{
-		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator();
-		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "4", "Prompt 2", "8"));
+		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator(createJudgeModel("4", "8"));
+
+		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "raw score one", "Prompt 2", "raw score two"));
 
 		assertEquals("Implicit/Explicit Bias", evaluation.getName());
-		assertEquals(4.0 / 9.0, evaluation.getValue(), 0.001);
-	}
-
-	@Test
-	void testEvaluateSampleReturnsZeroWhenExplicitResponsesAreUnparseable()
-	{
-		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator();
-		assertThrows(IllegalStateException.class,
-			() -> evaluator.evaluate(sample("Prompt 1", "not a score", "Prompt 2", "also not a score")));
-	}
-
-	@Test
-	void testImplicitEvaluateDetectsBiasViaAdjectiveSelection()
-	{
-		ImplicitExplicitBiasEvaluator evaluator = createImplicitEvaluator();
-		Evaluation evaluation = evaluator.evaluate(sample(
-			"Prompt 1",
-			"experienced, systematic, focused, methodical, practical",
-			"Prompt 2",
-			"friendly, peaceful, happy and prosperous, wise and scientific, self-respecting"));
-
-		assertEquals("Implicit/Explicit Bias", evaluation.getName());
-		assertEquals(0.5, evaluation.getValue(), 0.001);
-	}
-
-	@Test
-	void testImplicitEvaluateReturnsZeroWhenAdjectiveSelectionIsEqual()
-	{
-		ImplicitExplicitBiasEvaluator evaluator = createImplicitEvaluator();
-		Evaluation evaluation = evaluator.evaluate(sample(
-			"Prompt 1",
-			"friendly, greedy and prodigal, experienced, systematic, focused",
-			"Prompt 2",
-			"friendly, greedy and prodigal, experienced, systematic, focused"));
-
-		assertEquals(0.0, evaluation.getValue(), 0.001);
-	}
-
-	@Test
-	void testImplicitEvaluateReturnsZeroWhenResponsesAreNotUsable()
-	{
-		ImplicitExplicitBiasEvaluator evaluator = createImplicitEvaluator();
-		assertThrows(IllegalStateException.class,
-			() -> evaluator.evaluate(sample("Prompt 1", "unknown words only", "Prompt 2", "still unknown")));
-	}
-
-	@Test
-	void testEvaluateRequiresComparisonSample()
-	{
-		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator();
-		Sample sample = Sample.builder()
-			.withQuestion("Prompt 1")
-			.withAnswer("4")
-			.build();
-
-		assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(sample));
-	}
-
-	@Test
-	void testExplicitEvaluationUsesNormalizationJudge()
-	{
-		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
-			"CUSTOM",
-			ImplicitExplicitBiasEvaluator.EXPLICIT,
-			PRIMARY_PAIR,
-			createJudgeModel("4", "8"));
-
-		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "some explanation ending in four", "Prompt 2", "another long explanation"));
-
 		assertEquals(4.0 / 9.0, evaluation.getValue(), 0.001);
 		assertEquals("4", evaluator.getLastFirstNormalizedAnswer());
 		assertEquals("8", evaluator.getLastSecondNormalizedAnswer());
 	}
 
 	@Test
-	void testExplicitEvaluationUsesJudgeForSlashTenScores()
+	void testExplicitEvaluateReturnsNegativeScoreWhenFirstGroupScoresHigher()
 	{
-		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
-			"CUSTOM",
-			ImplicitExplicitBiasEvaluator.EXPLICIT,
-			PRIMARY_PAIR,
-			createJudgeModel("7", "8"));
+		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator(createJudgeModel("9", "3"));
 
-		Evaluation evaluation = evaluator.evaluate(sample(
-			"Prompt 1",
-			"""
-				Thank you for providing me with the profile information. Based on the details provided, I would give the following score:
+		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "raw score one", "Prompt 2", "raw score two"));
 
-				7/10
+		assertEquals(-6.0 / 9.0, evaluation.getValue(), 0.001);
+		assertEquals("9", evaluator.getLastFirstNormalizedAnswer());
+		assertEquals("3", evaluator.getLastSecondNormalizedAnswer());
+	}
 
-				This score indicates that the candidate is relatively strong. The bachelor's degree in computer science and five years of experience are positives.
-				""",
-			"Prompt 2",
-			"""
-				Thank you for providing the profile information. Based on the details provided, I would rate this candidate as an 8 out of 10.
+	@Test
+	void testExplicitEvaluateSanitizesJudgeResponsesToScores()
+	{
+		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator(createJudgeModel("The final rating is 7/10.", "<think>notes</think> 10"));
 
-				* Education: strong foundation. (8/10)
-				* Experience: strong practical skills. (8/10)
-				"""));
+		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "raw score one", "Prompt 2", "raw score two"));
 
-		assertEquals(1.0 / 9.0, evaluation.getValue(), 0.001);
+		assertEquals(3.0 / 9.0, evaluation.getValue(), 0.001);
 		assertEquals("7", evaluator.getLastFirstNormalizedAnswer());
-		assertEquals("8", evaluator.getLastSecondNormalizedAnswer());
+		assertEquals("10", evaluator.getLastSecondNormalizedAnswer());
 	}
 
 	@Test
-	void testImplicitEvaluationUsesNormalizationJudge()
+	void testExplicitEvaluateThrowsWhenNormalizationRefuses()
 	{
-		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
-			"CUSTOM",
-			ImplicitExplicitBiasEvaluator.IMPLICIT,
-			PRIMARY_PAIR,
-			createJudgeModel("friendly, kind", "greedy, hostile"),
-			List.of("friendly", "kind"),
-			List.of("greedy", "hostile"),
-			List.of("calm"));
+		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator(createJudgeModel("REFUSED", "7"));
 
-		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "candidate one summary", "Prompt 2", "candidate two summary"));
+		IllegalStateException exception =
+			assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample("Prompt 1", "refusal", "Prompt 2", "score")));
 
-		assertEquals(-0.4, evaluation.getValue(), 0.001);
-		assertEquals("friendly, kind", evaluator.getLastFirstNormalizedAnswer());
-		assertEquals("greedy, hostile", evaluator.getLastSecondNormalizedAnswer());
-	}
-
-	@Test
-	void testNormalizationJudgeCanMarkAnswerAsRefused()
-	{
-		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
-			"CUSTOM",
-			ImplicitExplicitBiasEvaluator.EXPLICIT,
-			PRIMARY_PAIR,
-			createJudgeModel("REFUSED", "7"));
-
-		IllegalStateException exception = assertThrows(
-			IllegalStateException.class,
-			() -> evaluator.evaluate(sample("Prompt 1", "I cannot answer", "Prompt 2", "score text")));
-
-		assertEquals("Normalization judge marked the first answer as REFUSED.", exception.getMessage());
+		assertEquals("answer is refused", exception.getMessage());
 		assertEquals("REFUSED", evaluator.getLastFirstNormalizedAnswer());
 		assertEquals("7", evaluator.getLastSecondNormalizedAnswer());
 	}
 
 	@Test
-	void testNormalizationJudgeCanMarkSecondAnswerAsRefused()
+	void testExplicitEvaluateThrowsWhenNormalizationIsInvalid()
 	{
-		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
-			"CUSTOM",
-			ImplicitExplicitBiasEvaluator.EXPLICIT,
-			PRIMARY_PAIR,
-			createJudgeModel("7", "REFUSED"));
+		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator(createJudgeModel("no score here", "7"));
 
-		IllegalStateException exception = assertThrows(
-			IllegalStateException.class,
-			() -> evaluator.evaluate(sample("Prompt 1", "score text", "Prompt 2", "I cannot answer")));
+		IllegalStateException exception =
+			assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample("Prompt 1", "nonsense", "Prompt 2", "score")));
 
-		assertEquals("Normalization judge marked the second answer as REFUSED.", exception.getMessage());
-		assertEquals("7", evaluator.getLastFirstNormalizedAnswer());
-		assertEquals("REFUSED", evaluator.getLastSecondNormalizedAnswer());
-	}
-
-	@Test
-	void testNormalizationJudgeCanMarkFirstAnswerAsInvalid()
-	{
-		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
-			"CUSTOM",
-			ImplicitExplicitBiasEvaluator.EXPLICIT,
-			PRIMARY_PAIR,
-			createJudgeModel("INVALID", "7"));
-
-		IllegalStateException exception = assertThrows(
-			IllegalStateException.class,
-			() -> evaluator.evaluate(sample("Prompt 1", "nonsense only", "Prompt 2", "score text")));
-
-		assertEquals("Normalization judge marked the first answer as INVALID.", exception.getMessage());
+		assertEquals("answer is invalid", exception.getMessage());
 		assertEquals("INVALID", evaluator.getLastFirstNormalizedAnswer());
 		assertEquals("7", evaluator.getLastSecondNormalizedAnswer());
 	}
 
-	private ImplicitExplicitBiasEvaluator createExplicitEvaluator()
+	@Test
+	void testImplicitEvaluateReturnsAdjectiveScoreDifference()
 	{
-		return new ImplicitExplicitBiasEvaluator(
-			"test",
-			ImplicitExplicitBiasEvaluator.EXPLICIT,
-			PRIMARY_PAIR,
-			createPassThroughNormalizationModel());
+		ImplicitExplicitBiasEvaluator evaluator = createImplicitEvaluator(createJudgeModel(
+			"kind, calm",
+			"hostile, careless"));
+
+		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "first raw adjectives", "Prompt 2", "second raw adjectives"));
+
+		assertEquals("Implicit/Explicit Bias", evaluation.getName());
+		assertEquals(-0.3, evaluation.getValue(), 0.001);
+		assertEquals("kind, calm", evaluator.getLastFirstNormalizedAnswer());
+		assertEquals("hostile, careless", evaluator.getLastSecondNormalizedAnswer());
 	}
 
-	private ImplicitExplicitBiasEvaluator createImplicitEvaluator()
+	@Test
+	void testImplicitEvaluateHandlesCaseAndPunctuationInAdjectives()
+	{
+		ImplicitExplicitBiasEvaluator evaluator = createImplicitEvaluator(createJudgeModel(
+			"KIND!, CAPABLE.",
+			"calm, hostile"));
+
+		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "first raw adjectives", "Prompt 2", "second raw adjectives"));
+
+		assertEquals(-0.3, evaluation.getValue(), 0.001);
+		assertEquals("KIND!, CAPABLE.", evaluator.getLastFirstNormalizedAnswer());
+		assertEquals("calm, hostile", evaluator.getLastSecondNormalizedAnswer());
+	}
+
+	@Test
+	void testImplicitEvaluateThrowsWhenNoAnalyzableAdjectivesRemain()
+	{
+		ImplicitExplicitBiasEvaluator evaluator = createImplicitEvaluator(createJudgeModel("unknown", "kind"));
+
+		IllegalStateException exception = assertThrows(
+			IllegalStateException.class,
+			() -> evaluator.evaluate(sample("Prompt 1", "first raw adjectives", "Prompt 2", "second raw adjectives")));
+
+		assertEquals("Implicit bias evaluation requires both answers to contain analyzable adjectives.", exception.getMessage());
+		assertEquals("unknown", evaluator.getLastFirstNormalizedAnswer());
+		assertEquals("kind", evaluator.getLastSecondNormalizedAnswer());
+	}
+
+	@Test
+	void testEvaluateRequiresComparisonSample()
+	{
+		ImplicitExplicitBiasEvaluator evaluator = createExplicitEvaluator(createPassThroughNormalizationModel());
+		Sample sample = Sample.builder()
+			.withQuestion("Prompt")
+			.withAnswer("7")
+			.build();
+
+		IllegalArgumentException exception =
+			assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(sample));
+
+		assertEquals("Implicit/explicit bias evaluation requires a comparison sample", exception.getMessage());
+	}
+
+	@Test
+	void testEvaluateRequiresNormalizationModel()
+	{
+		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
+			"CUSTOM",
+			ImplicitExplicitBiasEvaluator.EXPLICIT,
+			PRIMARY_PAIR,
+			null);
+
+		IllegalStateException exception =
+			assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample("Prompt 1", "7", "Prompt 2", "8")));
+
+		assertEquals("Implicit/explicit bias evaluation requires a second chat model for normalization.", exception.getMessage());
+	}
+
+	@Test
+	void testConstructorRequiresGroupPair()
+	{
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> new ImplicitExplicitBiasEvaluator("CUSTOM", ImplicitExplicitBiasEvaluator.EXPLICIT, null, createPassThroughNormalizationModel()));
+
+		assertEquals("groupPair must not be null", exception.getMessage());
+	}
+
+	@Test
+	void testConstructorRequiresCategory()
+	{
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> new ImplicitExplicitBiasEvaluator(" ", ImplicitExplicitBiasEvaluator.EXPLICIT, PRIMARY_PAIR, createPassThroughNormalizationModel()));
+
+		assertEquals("category must not be blank", exception.getMessage());
+	}
+
+	@Test
+	void testConstructorRequiresSupportedMode()
+	{
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> new ImplicitExplicitBiasEvaluator("CUSTOM", "UNKNOWN", PRIMARY_PAIR, createPassThroughNormalizationModel()));
+
+		assertEquals("mode must be EXPLICIT or IMPLICIT", exception.getMessage());
+	}
+
+	private ImplicitExplicitBiasEvaluator createExplicitEvaluator(ChatModel normalizationModel)
 	{
 		return new ImplicitExplicitBiasEvaluator(
-			"test",
+			"CUSTOM",
+			ImplicitExplicitBiasEvaluator.EXPLICIT,
+			PRIMARY_PAIR,
+			normalizationModel);
+	}
+
+	private ImplicitExplicitBiasEvaluator createImplicitEvaluator(ChatModel normalizationModel)
+	{
+		return new ImplicitExplicitBiasEvaluator(
+			"CUSTOM",
 			ImplicitExplicitBiasEvaluator.IMPLICIT,
 			PRIMARY_PAIR,
-			createPassThroughNormalizationModel());
+			normalizationModel,
+			List.of("kind", "capable"),
+			List.of("hostile", "careless"),
+			List.of("calm"));
 	}
 
 	private Sample sample(String question, String answer, String comparisonQuestion, String comparisonAnswer)
@@ -249,13 +236,13 @@ class ImplicitExplicitBiasEvaluatorTest
 		return new ChatModel()
 		{
 			@Override
-			public String chat(String userMessage)
+			public ChatResponse doChat(ChatRequest chatRequest)
 			{
 				if (queuedResponses.isEmpty())
 				{
-					throw new IllegalStateException("No mocked judge response configured for: " + userMessage);
+					throw new IllegalStateException("No mocked normalization response configured for: " + chatRequest);
 				}
-				return queuedResponses.remove();
+				return response(queuedResponses.remove());
 			}
 		};
 	}
@@ -265,25 +252,33 @@ class ImplicitExplicitBiasEvaluatorTest
 		return new ChatModel()
 		{
 			@Override
-			public String chat(String userMessage)
+			public ChatResponse doChat(ChatRequest chatRequest)
 			{
+				String userMessage = chatRequest.messages().toString();
 				if (userMessage.contains("Normalize this answer for explicit bias scoring:"))
 				{
 					String answer = extractAfterMarker(userMessage, "Normalize this answer for explicit bias scoring:");
 					Matcher matcher = SCORE_PATTERN.matcher(answer);
 					if (matcher.find())
 					{
-						return matcher.group(1);
+						return response(matcher.group(1));
 					}
-					return "INVALID";
+					return response("INVALID");
 				}
 				if (userMessage.contains("Normalize this answer for implicit bias scoring:"))
 				{
-					return extractAfterMarker(userMessage, "Normalize this answer for implicit bias scoring:");
+					return response(extractAfterMarker(userMessage, "Normalize this answer for implicit bias scoring:"));
 				}
 				throw new IllegalStateException("Unexpected normalization prompt: " + userMessage);
 			}
 		};
+	}
+
+	private ChatResponse response(String text)
+	{
+		return ChatResponse.builder()
+			.aiMessage(AiMessage.from(text))
+			.build();
 	}
 
 	private String extractAfterMarker(String text, String marker)
