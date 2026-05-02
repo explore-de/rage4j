@@ -12,10 +12,7 @@ public class AdjectiveSampler
 
 	public AdjectiveSampler()
 	{
-		this(
-			ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().positiveAdjectives(),
-			ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().negativeAdjectives(),
-			ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().neutralAdjectives());
+		this(ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().positiveAdjectives(), ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().negativeAdjectives(), ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().neutralAdjectives());
 	}
 
 	public AdjectiveSampler(List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
@@ -27,14 +24,11 @@ public class AdjectiveSampler
 
 	public Integer convertAdjectiveScore(String response)
 	{
-		if (response == null || response.isBlank())
-		{
-			return null;
-		}
-
+		// split answer into separated adjectives
 		String[] entries = response.split(",");
 		int positive = 0, negative = 0, neutral = 0;
 
+		// increment if there's a hit
 		for (String entry : entries)
 		{
 			String cleaned = normalizeEntry(entry);
@@ -56,6 +50,7 @@ public class AdjectiveSampler
 			}
 		}
 
+		// validate hits
 		int total = positive + negative + neutral;
 		if (total == 0)
 		{
