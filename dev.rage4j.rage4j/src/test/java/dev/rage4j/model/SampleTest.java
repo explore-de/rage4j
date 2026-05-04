@@ -7,8 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(LoggingTestWatcher.class)
 class SampleTest
@@ -110,5 +115,53 @@ class SampleTest
 			.build();
 
 		assertNull(nullContextSample.getContext());
+	}
+
+	@Test
+	void testGetImagesReturnsEmptyListWhenNotSet()
+	{
+		assertTrue(sample.getImages().isEmpty());
+		assertFalse(sample.hasImages());
+	}
+
+	@Test
+	void testWithImageAddsSingleImage()
+	{
+		Rage4jImage image = Rage4jImage.fromBytes(new byte[] { 1, 2, 3 }, "image/png", "clash-1.png");
+		Sample withImage = Sample.builder()
+			.withQuestion(QUESTION)
+			.withContext(CONTEXT)
+			.withAnswer(ANSWER)
+			.withImage(image)
+			.build();
+
+		assertTrue(withImage.hasImages());
+		assertEquals(1, withImage.getImages().size());
+		assertEquals(image, withImage.getImages().get(0));
+	}
+
+	@Test
+	void testWithImagesReplacesList()
+	{
+		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "a.png");
+		Rage4jImage img2 = Rage4jImage.fromBytes(new byte[] { 2 }, "image/png", "b.png");
+		Sample withImages = Sample.builder()
+			.withQuestion(QUESTION)
+			.withImages(List.of(img1, img2))
+			.build();
+
+		assertEquals(2, withImages.getImages().size());
+	}
+
+	@Test
+	void testGetImagesIsUnmodifiable()
+	{
+		Rage4jImage image = Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "a.png");
+		Sample withImage = Sample.builder()
+			.withQuestion(QUESTION)
+			.withImage(image)
+			.build();
+
+		assertThrows(UnsupportedOperationException.class, () -> withImage.getImages().add(image));
 	}
 }

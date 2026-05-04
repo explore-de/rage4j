@@ -2,6 +2,9 @@ package dev.rage4j.model;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -22,6 +25,7 @@ public class Sample implements Serializable
 	protected String answer;
 	protected String groundTruth;
 	protected String context;
+	protected List<Rage4jImage> images;
 
 	/**
 	 * Private constructor to initialize a {@code Sample} object using a
@@ -37,6 +41,7 @@ public class Sample implements Serializable
 		this.answer = builder.answer;
 		this.groundTruth = builder.groundTruth;
 		this.context = builder.context;
+		this.images = builder.images == null ? null : List.copyOf(builder.images);
 	}
 
 	/**
@@ -111,6 +116,25 @@ public class Sample implements Serializable
 		return context != null;
 	}
 
+	/**
+	 * Returns the images attached to the sample. The list is unmodifiable and
+	 * never {@code null}.
+	 *
+	 * @return The (possibly empty) list of images.
+	 */
+	public List<Rage4jImage> getImages()
+	{
+		return images == null ? Collections.emptyList() : images;
+	}
+
+	/**
+	 * @return whether the sample has at least one image attached.
+	 */
+	public boolean hasImages()
+	{
+		return images != null && !images.isEmpty();
+	}
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -126,13 +150,14 @@ public class Sample implements Serializable
 		return Objects.equals(question, sample.question)
 			&& Objects.equals(answer, sample.answer)
 			&& Objects.equals(groundTruth, sample.groundTruth)
-			&& Objects.equals(context, sample.context);
+			&& Objects.equals(context, sample.context)
+			&& Objects.equals(images, sample.images);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(question, answer, groundTruth, context);
+		return Objects.hash(question, answer, groundTruth, context, images);
 	}
 
 	/**
@@ -157,6 +182,7 @@ public class Sample implements Serializable
 		private String answer;
 		private String groundTruth;
 		private String context;
+		private List<Rage4jImage> images;
 
 		/**
 		 * Sets the question for the {@code Sample}.
@@ -207,6 +233,40 @@ public class Sample implements Serializable
 		public SampleBuilder withContext(String context)
 		{
 			this.context = context;
+			return this;
+		}
+
+		/**
+		 * Adds a single image to the {@code Sample}. May be called multiple
+		 * times to attach several images. Images are passed to vision-capable
+		 * evaluators alongside the textual context.
+		 *
+		 * @param image
+		 *            The image to add.
+		 * @return The current instance of {@code SampleBuilder}.
+		 */
+		public SampleBuilder withImage(Rage4jImage image)
+		{
+			Objects.requireNonNull(image, "image");
+			if (this.images == null)
+			{
+				this.images = new ArrayList<>();
+			}
+			this.images.add(image);
+			return this;
+		}
+
+		/**
+		 * Replaces the image list of the {@code Sample}. Pass {@code null} or
+		 * an empty list to clear it.
+		 *
+		 * @param images
+		 *            The list of images.
+		 * @return The current instance of {@code SampleBuilder}.
+		 */
+		public SampleBuilder withImages(List<Rage4jImage> images)
+		{
+			this.images = images == null ? null : new ArrayList<>(images);
 			return this;
 		}
 
