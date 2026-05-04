@@ -1,15 +1,19 @@
 package dev.rage4j.evaluation.faithfulness;
 
+import dev.langchain4j.data.message.ImageContent;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
+import dev.rage4j.model.Rage4jImage;
 import dev.rage4j.model.Sample;
+import dev.rage4j.util.VisionModelGuard;
 import org.apache.commons.math3.analysis.function.Divide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * The {@code FaithfulnessEvaluator} class provides a mechanism to evaluate the
@@ -20,16 +24,25 @@ import java.util.Arrays;
  * <p>
  * The metric used is the fraction of claims that can be inferred from the
  * context, labeled as "Faithfulness."
+ * <p>
+ * If the {@link Sample} carries images and the evaluator was constructed
+ * against a vision-capable {@link ChatModel} (i.e. {@code supportsVision} is
+ * {@code true}), the images are forwarded to the bot together with the textual
+ * context. When images are present but the evaluator was not configured for
+ * vision, an {@link UnsupportedOperationException} is thrown.
  */
 public class FaithfulnessEvaluator implements Evaluator
 {
 	private static final String METRIC_NAME = "Faithfulness";
 	private static final Logger LOG = LoggerFactory.getLogger(FaithfulnessEvaluator.class);
 	private final FaithfulnessBot bot;
+	private final boolean supportsVision;
 
 	/**
-	 * Constructs a new {@code FaithfulnessEvaluator} that evaluates
-	 * faithfulness using a specified language model.
+	 * Constructs a new text-only {@code FaithfulnessEvaluator}. Samples that
+	 * carry images will cause an {@link UnsupportedOperationException} at
+	 * evaluation time. Use {@link #FaithfulnessEvaluator(ChatModel, boolean)}
+	 * to opt into vision.
 	 *
 	 * @param model
 	 *            The language model used to power the {@code FaithfulnessBot}
@@ -37,14 +50,33 @@ public class FaithfulnessEvaluator implements Evaluator
 	 */
 	public FaithfulnessEvaluator(ChatModel model)
 	{
-		bot = AiServices.create(FaithfulnessBot.class, model);
+		this(model, false);
 	}
 
 	/**
-	 * Constructs a new {@code FaithfulnessEvaluator} with a provided
-	 * {@code FaithfulnessBot}. This constructor is useful for testing purposes,
-	 * where the {@code FaithfulnessBot} can be mocked and directly injected,
-	 * bypassing the need to create it via {@code AiServices}.
+	 * Constructs a new {@code FaithfulnessEvaluator} that may optionally
+	 * forward images from the {@link Sample} to the underlying bot.
+	 *
+	 * @param model
+	 *            The language model used to power the {@code FaithfulnessBot}.
+	 *            Must be vision-capable when {@code supportsVision} is
+	 *            {@code true}.
+	 * @param supportsVision
+	 *            Whether the supplied {@code ChatModel} can handle multimodal
+	 *            input. When {@code false}, samples carrying images cause an
+	 *            {@link UnsupportedOperationException} at evaluation time.
+	 */
+	public FaithfulnessEvaluator(ChatModel model, boolean supportsVision)
+	{
+		this.bot = AiServices.create(FaithfulnessBot.class, model);
+		this.supportsVision = supportsVision;
+	}
+
+	/**
+	 * Constructs a new text-only {@code FaithfulnessEvaluator} with a provided
+	 * {@code FaithfulnessBot}. This constructor is useful for testing
+	 * purposes, where the bot can be mocked and directly injected, bypassing
+	 * the need to create it via {@code AiServices}.
 	 *
 	 * @param bot
 	 *            The {@code FaithfulnessBot} to be used for evaluating the
@@ -52,13 +84,30 @@ public class FaithfulnessEvaluator implements Evaluator
 	 */
 	public FaithfulnessEvaluator(FaithfulnessBot bot)
 	{
+		this(bot, false);
+	}
+
+	/**
+	 * Constructs a new {@code FaithfulnessEvaluator} with a provided
+	 * {@code FaithfulnessBot} and an explicit vision-support flag. Useful for
+	 * testing the multimodal code path with a mocked bot.
+	 *
+	 * @param bot
+	 *            The {@code FaithfulnessBot} to be used for evaluating the
+	 *            faithfulness of a sample.
+	 * @param supportsVision
+	 *            Whether the bot's underlying model is vision-capable.
+	 */
+	public FaithfulnessEvaluator(FaithfulnessBot bot, boolean supportsVision)
+	{
 		this.bot = bot;
+		this.supportsVision = supportsVision;
 	}
 
 	/**
 	 * Evaluates the faithfulness of a given answer by extracting claims from
 	 * the answer and checking if they can be inferred from the provided
-	 * context.
+	 * context (and, if available and supported, images).
 	 *
 	 * @param sample
 	 *            The sample containing the answer to evaluate and the context
@@ -67,6 +116,9 @@ public class FaithfulnessEvaluator implements Evaluator
 	 *         metric and its computed score.
 	 * @throws IllegalArgumentException
 	 *             if the sample does not contain a valid answer or context.
+	 * @throws UnsupportedOperationException
+	 *             if the sample carries images but the evaluator was not
+	 *             configured for vision.
 	 */
 	public Evaluation evaluate(Sample sample)
 	{
@@ -78,16 +130,22 @@ public class FaithfulnessEvaluator implements Evaluator
 		{
 			throw new IllegalArgumentException("Sample must have a context for Faithfulness evaluation");
 		}
+		VisionModelGuard.requireVisionSupportIfImagesPresent(sample, supportsVision, METRIC_NAME);
 
 		LOG.info("Evaluating new sample");
 		String answer = sample.getAnswer();
 		LOG.info("Answer: {}", answer);
 		String context = sample.getContext();
 		LOG.info("Context: {}", context);
+		List<ImageContent> images = mapImages(sample);
+		if (!images.isEmpty())
+		{
+			LOG.info("Forwarding {} image(s) to faithfulness bot", images.size());
+		}
 		String[] answerClaims = bot.extractClaims(answer).getItems();
 		LOG.info("Extracted claims: {}", (Object)answerClaims);
 
-		double inferredClaimsCount = getInferredClaimsCount(context, answerClaims);
+		double inferredClaimsCount = getInferredClaimsCount(context, answerClaims, images);
 		LOG.info("Inferred claims count: {}", inferredClaimsCount);
 		if (inferredClaimsCount == 0.0)
 		{
@@ -99,20 +157,25 @@ public class FaithfulnessEvaluator implements Evaluator
 		return new Evaluation(METRIC_NAME, inferredToAllFraction);
 	}
 
+	private static List<ImageContent> mapImages(Sample sample)
+	{
+		if (!sample.hasImages())
+		{
+			return List.of();
+		}
+		return sample.getImages().stream()
+			.map(Rage4jImage::toImageContent)
+			.toList();
+	}
+
 	/**
 	 * Counts the number of claims from the answer that can be inferred from the
-	 * given context.
-	 *
-	 * @param context
-	 *            The context text to evaluate against.
-	 * @param claims
-	 *            The claims extracted from the answer.
-	 * @return The number of claims that can be inferred from the context.
+	 * given context (and images, when present).
 	 */
-	private long getInferredClaimsCount(String context, String[] claims)
+	private long getInferredClaimsCount(String context, String[] claims, List<ImageContent> images)
 	{
 		return Arrays.stream(claims)
-			.filter(claim -> bot.canBeInferred(context, claim))
+			.filter(claim -> bot.canBeInferred(images, claim, context))
 			.count();
 	}
 }
