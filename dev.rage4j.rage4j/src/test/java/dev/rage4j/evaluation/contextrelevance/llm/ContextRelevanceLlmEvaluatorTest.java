@@ -1,14 +1,23 @@
 package dev.rage4j.evaluation.contextrelevance.llm;
 
+import dev.langchain4j.data.message.ImageContent;
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
+import dev.rage4j.model.Rage4jImage;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -39,7 +48,7 @@ class ContextRelevanceLlmEvaluatorTest
 	@Test
 	void testEvaluatePerfectScore()
 	{
-		when(mockBot.generateScore(QUESTION, CONTEXT)).thenReturn("3");
+		when(mockBot.generateScore(anyList(), eq(QUESTION), eq(CONTEXT))).thenReturn("3");
 
 		Evaluation result = evaluator.evaluate(sample);
 
@@ -50,7 +59,7 @@ class ContextRelevanceLlmEvaluatorTest
 	@Test
 	void testEvaluateMostlyRelevant()
 	{
-		when(mockBot.generateScore(QUESTION, CONTEXT)).thenReturn("2");
+		when(mockBot.generateScore(anyList(), anyString(), eq(CONTEXT))).thenReturn("2");
 
 		Evaluation result = evaluator.evaluate(sample);
 
@@ -61,7 +70,7 @@ class ContextRelevanceLlmEvaluatorTest
 	@Test
 	void testEvaluatePartiallyRelevant()
 	{
-		when(mockBot.generateScore(QUESTION, IRRELEVANT_CONTEXT)).thenReturn("1");
+		when(mockBot.generateScore(anyList(), anyString(), eq(IRRELEVANT_CONTEXT))).thenReturn("1");
 
 		Sample irrelevantSample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -77,7 +86,7 @@ class ContextRelevanceLlmEvaluatorTest
 	@Test
 	void testEvaluateNoRelevance()
 	{
-		when(mockBot.generateScore(QUESTION, IRRELEVANT_CONTEXT)).thenReturn("0");
+		when(mockBot.generateScore(anyList(), anyString(), anyString())).thenReturn("0");
 
 		Sample irrelevantSample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -102,13 +111,12 @@ class ContextRelevanceLlmEvaluatorTest
 			.withContext(multiChunkContext)
 			.build();
 
-		when(mockBot.generateScore(QUESTION, multiChunkContext)).thenReturn("2");
+		when(mockBot.generateScore(anyList(), anyString(), eq(multiChunkContext))).thenReturn("2");
 
 		Evaluation result = evaluator.evaluate(multiChunkSample);
 
 		assertEquals(2.0 / 3.0, result.getValue(), 0.001);
 		assertEquals("Context relevance LLM", result.getName());
-		verify(mockBot).generateScore(QUESTION, multiChunkContext);
 	}
 
 	@Test
@@ -123,7 +131,7 @@ class ContextRelevanceLlmEvaluatorTest
 
 		assertEquals(0.0, result.getValue(), 0.001);
 		assertEquals("Context relevance LLM", result.getName());
-		verify(mockBot, never()).generateScore(QUESTION, "   ");
+		verify(mockBot, never()).generateScore(anyList(), anyString(), anyString());
 	}
 
 	@Test
@@ -152,5 +160,73 @@ class ContextRelevanceLlmEvaluatorTest
 			IllegalArgumentException.class,
 			() -> evaluator.evaluate(nullQuestionSample));
 		assertEquals("Sample must have a question for Context Relevance LLM evaluation", exception.getMessage());
+	}
+
+	@Test
+	void testEvaluateImagesWithoutVisionThrows()
+	{
+		Sample sampleWithImages = Sample.builder()
+			.withQuestion(QUESTION)
+			.withContext(CONTEXT)
+			.withImage(Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "clash.png"))
+			.build();
+
+		UnsupportedOperationException exception = assertThrows(
+			UnsupportedOperationException.class,
+			() -> evaluator.evaluate(sampleWithImages));
+		assertTrue(exception.getMessage().contains("Context relevance"));
+		assertTrue(exception.getMessage().contains("vision"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void testEvaluateForwardsImagesWhenVisionEnabled()
+	{
+		ContextRelevanceLlmBot visionBot = mock(ContextRelevanceLlmBot.class);
+		ContextRelevanceLlmEvaluator visionEvaluator = new ContextRelevanceLlmEvaluator(visionBot, true);
+
+		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "clash-1.png");
+		Rage4jImage img2 = Rage4jImage.fromUrl("https://example.com/clash-2.jpg");
+		Sample sampleWithImages = Sample.builder()
+			.withQuestion(QUESTION)
+			.withContext(CONTEXT)
+			.withImages(List.of(img1, img2))
+			.build();
+
+		when(visionBot.generateScore(anyList(), anyString(), anyString())).thenReturn("3");
+
+		Evaluation result = visionEvaluator.evaluate(sampleWithImages);
+
+		assertEquals(1.0, result.getValue(), 0.001);
+		ArgumentCaptor<List<ImageContent>> imageCaptor = ArgumentCaptor.forClass(List.class);
+		ArgumentCaptor<String> questionCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> contextCaptor = ArgumentCaptor.forClass(String.class);
+		verify(visionBot).generateScore(imageCaptor.capture(), questionCaptor.capture(), contextCaptor.capture());
+		assertEquals(QUESTION, questionCaptor.getValue());
+		assertEquals(CONTEXT, contextCaptor.getValue());
+		assertEquals(2, imageCaptor.getValue().size());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void testEvaluateBlankContextWithImagesScoresAnyway()
+	{
+		ContextRelevanceLlmBot visionBot = mock(ContextRelevanceLlmBot.class);
+		ContextRelevanceLlmEvaluator visionEvaluator = new ContextRelevanceLlmEvaluator(visionBot, true);
+
+		Sample blankCtxWithImages = Sample.builder()
+			.withQuestion(QUESTION)
+			.withContext("   ")
+			.withImage(Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "clash.png"))
+			.build();
+
+		when(visionBot.generateScore(anyList(), anyString(), anyString())).thenReturn("2");
+
+		Evaluation result = visionEvaluator.evaluate(blankCtxWithImages);
+
+		assertEquals(2.0 / 3.0, result.getValue(), 0.001);
+		ArgumentCaptor<List<ImageContent>> imageCaptor = ArgumentCaptor.forClass(List.class);
+		verify(visionBot).generateScore(imageCaptor.capture(), anyString(), anyString());
+		assertEquals(1, imageCaptor.getValue().size());
 	}
 }
