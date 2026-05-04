@@ -1,25 +1,29 @@
 package dev.rage4j.asserts;
 
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.rage4j.model.Rage4jImage;
 
 public class RageAssertTestCaseGiven
 {
 	private final String question;
 	private final String groundTruth;
 	private final String context;
+	private final List<Rage4jImage> images;
 	private String answer;
 	private final ChatModel chatLanguageModel;
 	private final EmbeddingModel embeddingModel;
 	private final boolean evaluationMode;
 
-	public RageAssertTestCaseGiven(String question, String groundTruth, String context, ChatModel chatLanguageModel, EmbeddingModel embeddingModel, boolean evaluationMode)
+	public RageAssertTestCaseGiven(String question, String groundTruth, String context, List<Rage4jImage> images, ChatModel chatLanguageModel, EmbeddingModel embeddingModel, boolean evaluationMode)
 	{
 		this.question = question;
 		this.groundTruth = groundTruth;
 		this.context = context;
+		this.images = images;
 		this.chatLanguageModel = chatLanguageModel;
 		this.embeddingModel = embeddingModel;
 		this.evaluationMode = evaluationMode;
@@ -39,6 +43,6 @@ public class RageAssertTestCaseGiven
 
 	public RageAssertTestCaseAssertions then()
 	{
-		return new RageAssertTestCaseAssertions(answer, groundTruth, question, context, chatLanguageModel, embeddingModel, evaluationMode);
+		return new RageAssertTestCaseAssertions(answer, groundTruth, question, context, images, chatLanguageModel, embeddingModel, evaluationMode);
 	}
 }

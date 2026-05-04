@@ -29,3 +29,16 @@ FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatModel);
 Evaluation result = evaluator.evaluate(sample);
 double faithfulnessScore = result.getValue();
 ```
+
+## With images in the context
+
+If the sample carries images (`sample.hasImages() == true`), construct the
+evaluator with a vision-capable `ChatModel` and the explicit
+`supportsVision=true` flag. The bot then receives both text context and
+images when checking each claim. See [Image support](../image_support) for
+details.
+
+```java
+FaithfulnessEvaluator visionEvaluator =
+    new FaithfulnessEvaluator(gpt4oModel, /*supportsVision=*/ true);
+```
