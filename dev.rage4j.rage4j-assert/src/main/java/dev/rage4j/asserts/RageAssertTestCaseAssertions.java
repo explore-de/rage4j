@@ -1,5 +1,6 @@
 package dev.rage4j.asserts;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import dev.rage4j.evaluation.bleuscore.BleuScoreEvaluator;
 import dev.rage4j.evaluation.faithfulness.FaithfulnessEvaluator;
 import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
 import dev.rage4j.model.EvaluationAggregation;
+import dev.rage4j.model.Rage4jImage;
 import dev.rage4j.model.Sample;
 
 public class RageAssertTestCaseAssertions
@@ -32,6 +34,7 @@ public class RageAssertTestCaseAssertions
 	private final String question;
 	private final String groundTruth;
 	private final String context;
+	private final List<Rage4jImage> images;
 	private final String answer;
 	private final boolean evaluationMode;
 	private EvaluationAggregation pendingAggregation;
@@ -40,13 +43,24 @@ public class RageAssertTestCaseAssertions
 
 	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, String context, ChatModel chatModel, EmbeddingModel embeddingModel, boolean evaluationMode)
 	{
+		this(answer, groundTruth, question, context, null, chatModel, embeddingModel, evaluationMode);
+	}
+
+	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, String context, List<Rage4jImage> images, ChatModel chatModel, EmbeddingModel embeddingModel, boolean evaluationMode)
+	{
 		this.answer = answer;
 		this.groundTruth = groundTruth;
 		this.question = question;
 		this.context = context;
+		this.images = images;
 		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
 		this.evaluationMode = evaluationMode;
+	}
+
+	private boolean hasImages()
+	{
+		return images != null && !images.isEmpty();
 	}
 
 	/**
@@ -95,13 +109,17 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertFaithfulness(double minValue)
 	{
-		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatModel);
-		Sample sample = Sample.builder()
+		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatModel, hasImages());
+		Sample.SampleBuilder sampleBuilder = Sample.builder()
 			.withAnswer(answer)
 			.withGroundTruth(groundTruth)
 			.withQuestion(question)
-			.withContext(context)
-			.build();
+			.withContext(context);
+		if (hasImages())
+		{
+			sampleBuilder.withImages(images);
+		}
+		Sample sample = sampleBuilder.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
