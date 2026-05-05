@@ -16,11 +16,11 @@ import java.util.List;
 import static dev.rage4j.util.ScoreParser.parseScore;
 
 /**
- * Evaluates how well the context of a {@link Sample} addresses its question.
- * If the sample carries images and the evaluator was constructed against a
+ * Evaluates how well the context of a {@link Sample} addresses its question. If
+ * the sample carries images and the evaluator was constructed against a
  * vision-capable {@link ChatModel} (i.e. {@code supportsVision} is
- * {@code true}), the images are forwarded to the bot together with the
- * textual context. When images are present but vision was not enabled, an
+ * {@code true}), the images are forwarded to the bot together with the textual
+ * context. When images are present but vision was not enabled, an
  * {@link UnsupportedOperationException} is thrown.
  */
 public class ContextRelevanceLlmEvaluator implements Evaluator

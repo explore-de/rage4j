@@ -25,9 +25,9 @@ class Rage4jImageTest
 	@Test
 	void testFromBytesPopulatesAllFields()
 	{
-		Rage4jImage image = Rage4jImage.fromBytes(TEST_BYTES, "image/png", "clash-1.png");
+		Rage4jImage image = Rage4jImage.fromBytes(TEST_BYTES, "image/png", "eiffel-tower.png");
 
-		assertEquals("clash-1.png", image.getName());
+		assertEquals("eiffel-tower.png", image.getName());
 		assertEquals("image/png", image.getMimeType());
 		assertNull(image.getUrl());
 		assertTrue(image.hasInlineData());
@@ -47,9 +47,9 @@ class Rage4jImageTest
 	@Test
 	void testFromUrlDerivesNameFromLastSegment()
 	{
-		Rage4jImage image = Rage4jImage.fromUrl("https://example.com/path/clash.jpg");
+		Rage4jImage image = Rage4jImage.fromUrl("https://example.com/path/landmark.jpg");
 
-		assertEquals("clash.jpg", image.getName());
+		assertEquals("landmark.jpg", image.getName());
 		assertEquals("image/jpeg", image.getMimeType());
 		assertNotNull(image.getUrl());
 		assertFalse(image.hasInlineData());
@@ -65,12 +65,12 @@ class Rage4jImageTest
 	@Test
 	void testFromPathReadsBytesAndDerivesNameAndMime(@TempDir Path tmp) throws IOException
 	{
-		Path file = tmp.resolve("clash-2.JPEG");
+		Path file = tmp.resolve("notre-dame.JPEG");
 		Files.write(file, TEST_BYTES);
 
 		Rage4jImage image = Rage4jImage.fromPath(file);
 
-		assertEquals("clash-2.JPEG", image.getName());
+		assertEquals("notre-dame.JPEG", image.getName());
 		assertEquals("image/jpeg", image.getMimeType());
 		assertArrayEquals(TEST_BYTES, image.getData());
 	}

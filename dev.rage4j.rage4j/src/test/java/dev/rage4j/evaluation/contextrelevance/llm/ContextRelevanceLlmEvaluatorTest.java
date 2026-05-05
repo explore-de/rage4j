@@ -168,7 +168,7 @@ class ContextRelevanceLlmEvaluatorTest
 		Sample sampleWithImages = Sample.builder()
 			.withQuestion(QUESTION)
 			.withContext(CONTEXT)
-			.withImage(Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "clash.png"))
+			.withImage(Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "landmark.png"))
 			.build();
 
 		UnsupportedOperationException exception = assertThrows(
@@ -185,8 +185,8 @@ class ContextRelevanceLlmEvaluatorTest
 		ContextRelevanceLlmBot visionBot = mock(ContextRelevanceLlmBot.class);
 		ContextRelevanceLlmEvaluator visionEvaluator = new ContextRelevanceLlmEvaluator(visionBot, true);
 
-		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "clash-1.png");
-		Rage4jImage img2 = Rage4jImage.fromUrl("https://example.com/clash-2.jpg");
+		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "eiffel-tower.png");
+		Rage4jImage img2 = Rage4jImage.fromUrl("https://example.com/louvre.jpg");
 		Sample sampleWithImages = Sample.builder()
 			.withQuestion(QUESTION)
 			.withContext(CONTEXT)
@@ -217,7 +217,7 @@ class ContextRelevanceLlmEvaluatorTest
 		Sample blankCtxWithImages = Sample.builder()
 			.withQuestion(QUESTION)
 			.withContext("   ")
-			.withImage(Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "clash.png"))
+			.withImage(Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "landmark.png"))
 			.build();
 
 		when(visionBot.generateScore(anyList(), anyString(), anyString())).thenReturn("2");

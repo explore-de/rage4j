@@ -105,12 +105,14 @@ public class AnswerRelevanceEmbeddingEvaluator implements Evaluator
 	}
 
 	/**
-	 * Computes the mean cosine similarity between the original question and an array of generated questions. The similarities are calculated using a string similarity computer.
+	 * Computes the mean cosine similarity between the original question and an
+	 * array of generated questions. The similarities are calculated using a
+	 * string similarity computer.
 	 *
 	 * @param originalQuestion
-	 * 	The original question in the sample.
+	 *            The original question in the sample.
 	 * @param generatedQuestions
-	 * 	The questions generated from the answer.
+	 *            The questions generated from the answer.
 	 * @return The mean cosine similarity score.
 	 */
 	private double getMeanCosineSimilarity(String originalQuestion, String[] generatedQuestions)

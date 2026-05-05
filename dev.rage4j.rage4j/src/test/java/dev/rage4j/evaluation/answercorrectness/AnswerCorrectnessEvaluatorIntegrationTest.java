@@ -25,11 +25,11 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	private static final String ANSWER_WITH_FALSE_NEGATIVE = "Paris is the capital.";
 
 	// Tests where more than one claim is extracted:
-	// Question could be here: "Which city is the capital of France and which is the largest city in France?"
+	// Question could be here: "Which city is the capital of France and which is
+	// the largest city in France?"
 	private static final String GROUND_TRUTH_ENHANCED = "Paris is the capital and the largest city in France.";
 	private static final String ANSWER_WITH_FALSE_POSITIVE_ENHANCED = "Paris is the capital of Germany and France and the largest city in France.";
 	private static final String ANSWER_WITH_FALSE_NEGATIVE_ENHANCED = "Paris is the capital of France.";
-
 
 	private static final String QUESTION = "What is the capital of France?";
 
@@ -76,8 +76,10 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer correctness", result.getName());
-		// Expect a score of 0.0 because the answer contradicts the ground truth,
-		// leading to no true positives (and both a false positive and a false negative).
+		// Expect a score of 0.0 because the answer contradicts the ground
+		// truth,
+		// leading to no true positives (and both a false positive and a false
+		// negative).
 		assertEquals(0.0, result.getValue(), 0.1);
 	}
 
@@ -86,15 +88,16 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	void testEvaluateWithFalsePositiveEnhanced()
 	{
 		Sample sample = Sample.builder()
-				.withGroundTruth(GROUND_TRUTH_ENHANCED)
-				.withAnswer(ANSWER_WITH_FALSE_POSITIVE_ENHANCED)
-				.build();
+			.withGroundTruth(GROUND_TRUTH_ENHANCED)
+			.withAnswer(ANSWER_WITH_FALSE_POSITIVE_ENHANCED)
+			.build();
 
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer correctness", result.getName());
 		// Expect a value less than 1.0 due to
-		// - 2 TP: "Paris is the capital of France" and "Paris is the largest City in France"
+		// - 2 TP: "Paris is the capital of France" and "Paris is the largest
+		// City in France"
 		// - 1 FP: "Paris is the capital of Germany"
 		assertEquals(0.7, result.getValue(), 0.1);
 	}
@@ -112,11 +115,14 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 
 		assertEquals("Answer correctness", result.getName());
 		// Expect a value of 0.0 due to:
-		// - No TP: because Answer and/or GT is too short see testEvaluateWithFalseNegativeEnhanced() -> could be 1 TP or 0 TP
+		// - No TP: because Answer and/or GT is too short see
+		// testEvaluateWithFalseNegativeEnhanced() -> could be 1 TP or 0 TP
 		// - FN: "...of France"
-		var success =
-				result.getValue() >= 0 && result.getValue() <= 0.1 || // no TP extracted
-				result.getValue() >= 0.6 && result.getValue() <= 0.7; // TP extracted
+		var success = result.getValue() >= 0 && result.getValue() <= 0.1 || // no
+																			// TP
+																			// extracted
+			result.getValue() >= 0.6 && result.getValue() <= 0.7; // TP
+																	// extracted
 		assertTrue(success);
 	}
 
@@ -125,9 +131,9 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 	void testEvaluateWithFalseNegativeEnhanced()
 	{
 		Sample sample = Sample.builder()
-				.withGroundTruth(GROUND_TRUTH_ENHANCED)
-				.withAnswer(ANSWER_WITH_FALSE_NEGATIVE_ENHANCED)
-				.build();
+			.withGroundTruth(GROUND_TRUTH_ENHANCED)
+			.withAnswer(ANSWER_WITH_FALSE_NEGATIVE_ENHANCED)
+			.build();
 
 		Evaluation result = evaluator.evaluate(sample);
 
@@ -136,7 +142,7 @@ class AnswerCorrectnessEvaluatorIntegrationTest
 		// - TP: "Paris is the Capital of France"
 		// - FN: "...of France"
 		//
-        LOG.info("Result: {}", result.getValue());
+		LOG.info("Result: {}", result.getValue());
 		assertEquals(0.66, result.getValue(), 0.1);
 	}
 

@@ -127,7 +127,7 @@ class SampleTest
 	@Test
 	void testWithImageAddsSingleImage()
 	{
-		Rage4jImage image = Rage4jImage.fromBytes(new byte[] { 1, 2, 3 }, "image/png", "clash-1.png");
+		Rage4jImage image = Rage4jImage.fromBytes(new byte[] { 1, 2, 3 }, "image/png", "eiffel-tower.png");
 		Sample withImage = Sample.builder()
 			.withQuestion(QUESTION)
 			.withContext(CONTEXT)

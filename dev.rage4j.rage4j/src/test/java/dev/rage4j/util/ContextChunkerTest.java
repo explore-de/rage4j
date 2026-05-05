@@ -106,4 +106,3 @@ class ContextChunkerTest
 		assertEquals(chunks.get(0).substring(850), chunks.get(1).substring(0, 150));
 	}
 }
-

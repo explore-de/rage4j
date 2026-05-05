@@ -136,7 +136,7 @@ class FaithfulnessEvaluatorTest
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
 			.withContext(CONTEXT)
-			.withImage(Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "clash.png"))
+			.withImage(Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "landmark.png"))
 			.build();
 
 		UnsupportedOperationException exception = assertThrows(
@@ -155,8 +155,8 @@ class FaithfulnessEvaluatorTest
 		FaithfulnessBot visionBot = mock(FaithfulnessBot.class);
 		FaithfulnessEvaluator visionEvaluator = new FaithfulnessEvaluator(visionBot, true);
 
-		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "clash-1.png");
-		Rage4jImage img2 = Rage4jImage.fromUrl("https://example.com/clash-2.jpg");
+		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1 }, "image/png", "eiffel-tower.png");
+		Rage4jImage img2 = Rage4jImage.fromUrl("https://example.com/louvre.jpg");
 		Sample sampleWithImages = Sample.builder()
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)

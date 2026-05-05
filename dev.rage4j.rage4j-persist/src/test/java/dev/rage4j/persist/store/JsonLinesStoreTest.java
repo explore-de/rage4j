@@ -200,11 +200,11 @@ class JsonLinesStoreTest
 	@Test
 	void testImagesPersistedAsNameList() throws IOException
 	{
-		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1, 2, 3 }, "image/png", "clash-1.png");
-		Rage4jImage img2 = Rage4jImage.fromUrl("https://example.com/path/clash-2.jpg");
+		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1, 2, 3 }, "image/png", "eiffel-tower.png");
+		Rage4jImage img2 = Rage4jImage.fromUrl("https://example.com/path/louvre.jpg");
 		Sample sample = Sample.builder()
-			.withQuestion("Is this a real clash?")
-			.withContext("Position X-Y")
+			.withQuestion("What landmarks are mentioned in the document?")
+			.withContext("Paris is the capital of France and home to many landmarks.")
 			.withImages(List.of(img1, img2))
 			.build();
 
@@ -220,8 +220,8 @@ class JsonLinesStoreTest
 
 		assertTrue(images.isArray());
 		assertEquals(2, images.size());
-		assertEquals("clash-1.png", images.get(0).asText());
-		assertEquals("clash-2.jpg", images.get(1).asText());
+		assertEquals("eiffel-tower.png", images.get(0).asText());
+		assertEquals("louvre.jpg", images.get(1).asText());
 		// Bytes must NOT leak into the JSONL output
 		assertTrue(!lines.getFirst().contains("data") || !lines.getFirst().contains("AQID"));
 	}
