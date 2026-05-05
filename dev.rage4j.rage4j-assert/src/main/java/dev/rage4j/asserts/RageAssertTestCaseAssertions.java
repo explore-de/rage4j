@@ -1,6 +1,5 @@
 package dev.rage4j.asserts;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
@@ -22,45 +21,26 @@ import dev.rage4j.evaluation.bleuscore.BleuScoreEvaluator;
 import dev.rage4j.evaluation.faithfulness.FaithfulnessEvaluator;
 import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
 import dev.rage4j.model.EvaluationAggregation;
-import dev.rage4j.model.Rage4jImage;
 import dev.rage4j.model.Sample;
 
 public class RageAssertTestCaseAssertions
 {
 	private static final Logger LOG = LoggerFactory.getLogger(RageAssertTestCaseAssertions.class);
 
+	private final Sample sample;
 	private final ChatModel chatModel;
 	private final EmbeddingModel embeddingModel;
-	private final String question;
-	private final String groundTruth;
-	private final String context;
-	private final List<Rage4jImage> images;
-	private final String answer;
 	private final boolean evaluationMode;
 	private EvaluationAggregation pendingAggregation;
 
 	private static final String MINVALUE = "Answer did not reach required min value! Evaluated value: ";
 
-	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, String context, ChatModel chatModel, EmbeddingModel embeddingModel, boolean evaluationMode)
+	public RageAssertTestCaseAssertions(Sample sample, ChatModel chatModel, EmbeddingModel embeddingModel, boolean evaluationMode)
 	{
-		this(answer, groundTruth, question, context, null, chatModel, embeddingModel, evaluationMode);
-	}
-
-	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, String context, List<Rage4jImage> images, ChatModel chatModel, EmbeddingModel embeddingModel, boolean evaluationMode)
-	{
-		this.answer = answer;
-		this.groundTruth = groundTruth;
-		this.question = question;
-		this.context = context;
-		this.images = images;
+		this.sample = sample;
 		this.chatModel = chatModel;
 		this.embeddingModel = embeddingModel;
 		this.evaluationMode = evaluationMode;
-	}
-
-	private boolean hasImages()
-	{
-		return images != null && !images.isEmpty();
 	}
 
 	/**
@@ -86,7 +66,7 @@ public class RageAssertTestCaseAssertions
 		}
 	}
 
-	private void collectEvaluation(Sample sample, Evaluation evaluation)
+	private void collectEvaluation(Evaluation evaluation)
 	{
 		if (pendingAggregation == null)
 		{
@@ -109,25 +89,15 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertFaithfulness(double minValue)
 	{
-		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatModel, hasImages());
-		Sample.SampleBuilder sampleBuilder = Sample.builder()
-			.withAnswer(answer)
-			.withGroundTruth(groundTruth)
-			.withQuestion(question)
-			.withContext(context);
-		if (hasImages())
-		{
-			sampleBuilder.withImages(images);
-		}
-		Sample sample = sampleBuilder.build();
+		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(chatModel, sample.hasImages());
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		collectEvaluation(sample, evaluation);
+		collectEvaluation(evaluation);
 
 		if (!passed)
 		{
-			String message = MINVALUE + evaluation.getValue() + " answer: " + answer;
+			String message = MINVALUE + evaluation.getValue() + " answer: " + sample.getAnswer();
 			handleAssertionFailure(message, "Faithfulness", () -> new Rage4JFaithfulnessException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
@@ -136,19 +106,14 @@ public class RageAssertTestCaseAssertions
 	public AssertionEvaluation assertAnswerCorrectness(double minValue)
 	{
 		AnswerCorrectnessEvaluator evaluator = new AnswerCorrectnessEvaluator(chatModel);
-		Sample sample = Sample.builder()
-			.withAnswer(answer)
-			.withGroundTruth(groundTruth)
-			.withQuestion(question)
-			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		collectEvaluation(sample, evaluation);
+		collectEvaluation(evaluation);
 
 		if (!passed)
 		{
-			String message = MINVALUE + evaluation.getValue() + " answer: " + answer;
+			String message = MINVALUE + evaluation.getValue() + " answer: " + sample.getAnswer();
 			handleAssertionFailure(message, "Answer Correctness", () -> new Rage4JCorrectnessException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
@@ -157,19 +122,14 @@ public class RageAssertTestCaseAssertions
 	public AssertionEvaluation assertAnswerRelevance(double minValue)
 	{
 		AnswerRelevanceEmbeddingEvaluator evaluator = new AnswerRelevanceEmbeddingEvaluator(chatModel, embeddingModel);
-		Sample sample = Sample.builder()
-			.withAnswer(answer)
-			.withQuestion(question)
-			.withContext(context)
-			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		collectEvaluation(sample, evaluation);
+		collectEvaluation(evaluation);
 
 		if (!passed)
 		{
-			String message = assertionFailureMessage(evaluation.getValue(), minValue, answer);
+			String message = assertionFailureMessage(evaluation.getValue(), minValue, sample.getAnswer());
 			handleAssertionFailure(message, "Answer Relevance", () -> new Rage4JRelevanceException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
@@ -183,18 +143,14 @@ public class RageAssertTestCaseAssertions
 	public AssertionEvaluation assertSemanticSimilarity(double minValue)
 	{
 		AnswerSemanticSimilarityEvaluator evaluator = new AnswerSemanticSimilarityEvaluator(embeddingModel);
-		Sample sample = Sample.builder()
-			.withAnswer(answer)
-			.withGroundTruth(groundTruth)
-			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		collectEvaluation(sample, evaluation);
+		collectEvaluation(evaluation);
 
 		if (!passed)
 		{
-			String message = assertionFailureMessage(evaluation.getValue(), minValue, answer);
+			String message = assertionFailureMessage(evaluation.getValue(), minValue, sample.getAnswer());
 			handleAssertionFailure(message, "Semantic Similarity", () -> new Rage4JSimilarityException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
@@ -203,18 +159,14 @@ public class RageAssertTestCaseAssertions
 	public AssertionEvaluation assertBleuScore(double minValue)
 	{
 		BleuScoreEvaluator evaluator = new BleuScoreEvaluator();
-		Sample sample = Sample.builder()
-			.withAnswer(answer)
-			.withGroundTruth(groundTruth)
-			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		collectEvaluation(sample, evaluation);
+		collectEvaluation(evaluation);
 
 		if (!passed)
 		{
-			String message = assertionFailureMessage(evaluation.getValue(), minValue, answer);
+			String message = assertionFailureMessage(evaluation.getValue(), minValue, sample.getAnswer());
 			handleAssertionFailure(message, "BLEU Score", () -> new Rage4JBleuScoreException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
@@ -223,18 +175,14 @@ public class RageAssertTestCaseAssertions
 	public AssertionEvaluation assertRougeScore(double minValue, RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)
 	{
 		RougeScoreEvaluator evaluator = new RougeScoreEvaluator(rougeType, measureType);
-		Sample sample = Sample.builder()
-			.withAnswer(answer)
-			.withGroundTruth(groundTruth)
-			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
 		boolean passed = minValue <= evaluation.getValue();
-		collectEvaluation(sample, evaluation);
+		collectEvaluation(evaluation);
 
 		if (!passed)
 		{
-			String message = assertionFailureMessage(evaluation.getValue(), minValue, answer);
+			String message = assertionFailureMessage(evaluation.getValue(), minValue, sample.getAnswer());
 			handleAssertionFailure(message, "ROUGE Score", () -> new Rage4JRougeScoreException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
