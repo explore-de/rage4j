@@ -6,6 +6,7 @@ import java.util.function.UnaryOperator;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.rage4j.model.Rage4jImage;
+import dev.rage4j.model.Sample;
 
 public class RageAssertTestCaseGiven
 {
@@ -43,6 +44,13 @@ public class RageAssertTestCaseGiven
 
 	public RageAssertTestCaseAssertions then()
 	{
-		return new RageAssertTestCaseAssertions(answer, groundTruth, question, context, images, chatLanguageModel, embeddingModel, evaluationMode);
+		Sample sample = Sample.builder()
+			.withAnswer(answer)
+			.withGroundTruth(groundTruth)
+			.withQuestion(question)
+			.withContext(context)
+			.withImages(images)
+			.build();
+		return new RageAssertTestCaseAssertions(sample, chatLanguageModel, embeddingModel, evaluationMode);
 	}
 }
