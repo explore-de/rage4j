@@ -25,10 +25,15 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 	}
 
 	/**
-	 * Constructs a new {@code AnswerRelevanceLlmEvaluator} with a provided {@code AnswerRelevanceLlmBot}. This constructor is useful for testing purposes, where the {@code AnswerRelevanceLlmBot} can be mocked and directly injected, bypassing the need to create it via {@code AiServices}.
+	 * Constructs a new {@code AnswerRelevanceLlmEvaluator} with a provided
+	 * {@code AnswerRelevanceLlmBot}. This constructor is useful for testing
+	 * purposes, where the {@code AnswerRelevanceLlmBot} can be mocked and
+	 * directly injected, bypassing the need to create it via
+	 * {@code AiServices}.
 	 *
 	 * @param bot
-	 * 	The {@code AnswerRelevanceLlmBot} to be used for generating the relevance score.
+	 *            The {@code AnswerRelevanceLlmBot} to be used for generating
+	 *            the relevance score.
 	 */
 	public AnswerRelevanceLlmEvaluator(AnswerRelevanceLlmBot bot)
 	{
@@ -36,13 +41,16 @@ public class AnswerRelevanceLlmEvaluator implements Evaluator
 	}
 
 	/**
-	 * Evaluates the given sample according to a specific metric and returns the result as an {@code Evaluation}.
+	 * Evaluates the given sample according to a specific metric and returns the
+	 * result as an {@code Evaluation}.
 	 *
 	 * @param sample
-	 * 	The sample containing data (such as context and answer) to be evaluated.
-	 * @return An {@code Evaluation} object representing the metric name and its calculated value.
+	 *            The sample containing data (such as context and answer) to be
+	 *            evaluated.
+	 * @return An {@code Evaluation} object representing the metric name and its
+	 *         calculated value.
 	 * @throws IllegalArgumentException
-	 * 	if the sample is invalid or cannot be evaluated.
+	 *             if the sample is invalid or cannot be evaluated.
 	 */
 	@Override
 	public Evaluation evaluate(Sample sample)

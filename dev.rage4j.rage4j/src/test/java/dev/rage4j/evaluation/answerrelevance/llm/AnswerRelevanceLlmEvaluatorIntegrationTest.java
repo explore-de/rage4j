@@ -52,7 +52,7 @@ class AnswerRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer relevance llm", result.getName());
-		assertEquals(1.0, result.getValue(),0.01, "Expected normalized score = 1.0 for a relevant answer");
+		assertEquals(1.0, result.getValue(), 0.01, "Expected normalized score = 1.0 for a relevant answer");
 	}
 
 	@Tag("integration")
@@ -82,7 +82,7 @@ class AnswerRelevanceLlmEvaluatorIntegrationTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals("Answer relevance llm", result.getName());
-		assertEquals(1.0 / 3.0, result.getValue(),0.1, "Expected normalized score 1/3 for a partially relevant answer");
+		assertEquals(1.0 / 3.0, result.getValue(), 0.1, "Expected normalized score 1/3 for a partially relevant answer");
 	}
 
 	@Tag("integration")

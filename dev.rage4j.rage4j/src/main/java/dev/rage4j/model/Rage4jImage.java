@@ -15,10 +15,10 @@ import java.util.Objects;
  * Represents an image attached to a {@link Sample} that should be passed
  * alongside the textual context to vision-capable evaluation LLMs.
  * <p>
- * An instance always has a {@code name} (used for logging and persistence)
- * and either inline data ({@code data} + {@code mimeType}) <em>or</em> a
- * remote {@code url}. The image bytes are never serialised to disk by the
- * persist module – only the metadata is.
+ * An instance always has a {@code name} (used for logging and persistence) and
+ * either inline data ({@code data} + {@code mimeType}) <em>or</em> a remote
+ * {@code url}. The image bytes are never serialised to disk by the persist
+ * module – only the metadata is.
  */
 public final class Rage4jImage implements Serializable
 {
@@ -41,8 +41,8 @@ public final class Rage4jImage implements Serializable
 	}
 
 	/**
-	 * Loads an image from a local file. Name and MIME type are derived from
-	 * the file path.
+	 * Loads an image from a local file. Name and MIME type are derived from the
+	 * file path.
 	 */
 	public static Rage4jImage fromPath(Path path)
 	{

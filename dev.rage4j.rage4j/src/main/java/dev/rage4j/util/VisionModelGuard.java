@@ -10,8 +10,8 @@ import dev.rage4j.model.Sample;
  * LangChain4j 1.0.x does not expose a {@code Capability.VISION} flag on
  * {@code ChatModel}, so vision support cannot be detected from the model
  * itself. The caller is therefore expected to declare it explicitly when
- * constructing the evaluator. If a sample carries images but the evaluator
- * was not opted into vision, this guard fails fast with an
+ * constructing the evaluator. If a sample carries images but the evaluator was
+ * not opted into vision, this guard fails fast with an
  * {@link UnsupportedOperationException} that names the offending evaluator.
  */
 public final class VisionModelGuard
@@ -27,8 +27,8 @@ public final class VisionModelGuard
 	 * @param sample
 	 *            The sample about to be evaluated.
 	 * @param supportsVision
-	 *            Whether the evaluator was constructed against a
-	 *            vision-capable {@code ChatModel}.
+	 *            Whether the evaluator was constructed against a vision-capable
+	 *            {@code ChatModel}.
 	 * @param evaluatorName
 	 *            Short name of the evaluator (e.g. {@code "Faithfulness"}),
 	 *            used to produce a helpful error message.

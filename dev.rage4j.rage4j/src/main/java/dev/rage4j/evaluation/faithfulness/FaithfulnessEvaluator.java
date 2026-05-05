@@ -74,9 +74,9 @@ public class FaithfulnessEvaluator implements Evaluator
 
 	/**
 	 * Constructs a new text-only {@code FaithfulnessEvaluator} with a provided
-	 * {@code FaithfulnessBot}. This constructor is useful for testing
-	 * purposes, where the bot can be mocked and directly injected, bypassing
-	 * the need to create it via {@code AiServices}.
+	 * {@code FaithfulnessBot}. This constructor is useful for testing purposes,
+	 * where the bot can be mocked and directly injected, bypassing the need to
+	 * create it via {@code AiServices}.
 	 *
 	 * @param bot
 	 *            The {@code FaithfulnessBot} to be used for evaluating the
@@ -106,8 +106,8 @@ public class FaithfulnessEvaluator implements Evaluator
 
 	/**
 	 * Evaluates the faithfulness of a given answer by extracting claims from
-	 * the answer and checking if they can be inferred from the provided
-	 * context (and, if available and supported, images).
+	 * the answer and checking if they can be inferred from the provided context
+	 * (and, if available and supported, images).
 	 *
 	 * @param sample
 	 *            The sample containing the answer to evaluate and the context

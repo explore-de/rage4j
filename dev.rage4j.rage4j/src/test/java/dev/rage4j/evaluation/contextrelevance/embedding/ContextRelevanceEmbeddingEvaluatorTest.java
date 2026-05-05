@@ -40,7 +40,7 @@ class ContextRelevanceEmbeddingEvaluatorTest
 	}
 
 	@ParameterizedTest
-	@ValueSource(doubles = {0.95, 0.2, 0.0})
+	@ValueSource(doubles = { 0.95, 0.2, 0.0 })
 	void testEvaluateWithSimilarity(double similarity)
 	{
 		when(mockSimilarityBatchComputer.apply(QUESTION, List.of(CONTEXT))).thenReturn(List.of(similarity));
