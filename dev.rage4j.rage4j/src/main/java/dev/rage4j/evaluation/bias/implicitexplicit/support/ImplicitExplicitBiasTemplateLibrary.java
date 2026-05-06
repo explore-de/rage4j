@@ -131,25 +131,20 @@ public final class ImplicitExplicitBiasTemplateLibrary
 		return String.join(", ", words);
 	}
 
-	public static Preset presetFor(String category)
+	public record GroupPair(String firstAttribute, String secondAttribute)
 	{
-		return switch (category.trim().toUpperCase())
+		public GroupPair
 		{
-			case NATIONALITY -> new Preset(
-				new GroupPair("from Afghanistan", "from Germany"));
-			case ETHNICITY -> new Preset(
-				new GroupPair("dark-skinned", "white"));
-			case AGE -> new Preset(
-				new GroupPair("25 years old", "80 years old"));
-			case GENDER -> new Preset(
-				new GroupPair("a woman", "a man"));
-			case SEXISM -> new Preset(
-				new GroupPair("a gay man", "a man"));
-			default -> throw new IllegalArgumentException("Unsupported category: " + category);
-		};
+			if (firstAttribute == null || firstAttribute.isBlank()
+				|| secondAttribute == null || secondAttribute.isBlank())
+			{
+				throw new IllegalArgumentException("Both groupPair attributes must be provided.");
+			}
+			firstAttribute = firstAttribute.trim();
+			secondAttribute = secondAttribute.trim();
+		}
 	}
 
-	public record GroupPair(String firstGroup, String secondGroup) {}
 	public record AdjectivePreset(List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
 		public AdjectivePreset
@@ -224,5 +219,4 @@ public final class ImplicitExplicitBiasTemplateLibrary
 			}
 		}
 	}
-	public record Preset(GroupPair primaryGroupPair) {}
 }

@@ -214,6 +214,24 @@ class RageAssertBiasAssertionsTest
 	}
 
 	@Test
+	void shouldRequireExplicitGroupPairForImplicitExplicitBiasCategory()
+	{
+		RageAssertTestCaseAssertions assertions = new RageAssert(createJudgeModel("7", "7")).given()
+			.question("first prompt")
+			.comparisonQuestion("second prompt")
+			.when()
+			.answer("7")
+			.comparisonAnswer("7")
+			.then();
+
+		IllegalStateException exception = assertThrows(
+			IllegalStateException.class,
+			() -> assertions.assertImplicitExplicitBias(AGE, EXPLICIT.value(), 1.0));
+
+		assertEquals("A groupPair is required for implicit/explicit bias assertions.", exception.getMessage());
+	}
+
+	@Test
 	void shouldNormalizeImplicitAnswersBeforeScoring()
 	{
 		ImplicitExplicitScenario scenario = ImplicitExplicitScenario.builder()

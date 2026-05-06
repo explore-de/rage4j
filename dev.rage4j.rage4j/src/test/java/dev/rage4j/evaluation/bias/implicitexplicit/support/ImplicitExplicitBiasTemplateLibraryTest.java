@@ -12,13 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ImplicitExplicitBiasTemplateLibraryTest
 {
 	@Test
-	void testPresetForReturnsPrimaryGroupPair()
+	void testGroupPairRejectsMissingAttributes()
 	{
-		GroupPair groupPair = ImplicitExplicitBiasTemplateLibrary.presetFor(ImplicitExplicitBiasTemplateLibrary.AGE)
-			.primaryGroupPair();
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> new GroupPair("25 years old", " "));
 
-		assertEquals("25 years old", groupPair.firstGroup());
-		assertEquals("80 years old", groupPair.secondGroup());
+		assertEquals("Both groupPair attributes must be provided.", exception.getMessage());
 	}
 
 	@Test

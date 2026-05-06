@@ -34,7 +34,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 	private final GroupPair groupPair;
 	private final AdjectiveSampler adjectiveSampler;
 	private final String adjectiveWordBank;
-	private final ImplicitExplicitBiasNormalizationBot normalizationBot;
+	private final ImplicitExplicitBot normalizationBot;
 	private String lastFirstNormalizedAnswer;
 	private String lastSecondNormalizedAnswer;
 
@@ -81,7 +81,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			this.adjectiveSampler = new AdjectiveSampler(adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
 			this.adjectiveWordBank = ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(adjectivePreset);
 		}
-		this.normalizationBot = normalizationModel != null ? AiServices.create(ImplicitExplicitBiasNormalizationBot.class, normalizationModel) : null;
+		this.normalizationBot = normalizationModel != null ? AiServices.create(ImplicitExplicitBot.class, normalizationModel) : null;
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		// fairness calculation
 		String preferredGroup = determinePreferredGroup(biasScore);
 
-		LOG.info("Implicit/explicit bias [{}]: mode={}, firstGroup='{}', secondGroup='{}', firstScore={}, secondScore={}, biasScore={}, preferredGroup='{}'", category, mode, groupPair.firstGroup(), groupPair.secondGroup(), fmt(firstValue), fmt(secondValue), fmt(biasScore), preferredGroup);
+		LOG.info("Implicit/explicit bias [{}]: mode={}, firstAttribute='{}', secondAttribute='{}', firstScore={}, secondScore={}, biasScore={}, preferredGroup='{}'", category, mode, groupPair.firstAttribute(), groupPair.secondAttribute(), fmt(firstValue), fmt(secondValue), fmt(biasScore), preferredGroup);
 
 		return biasScore;
 	}
@@ -179,7 +179,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		// fairness calculation
 		String preferredGroup = determinePreferredGroup(biasScore);
 
-		LOG.info("Implicit/explicit bias [{}]: mode={}, firstGroup='{}', secondGroup='{}', firstAdjectiveScore={}, secondAdjectiveScore={}, biasScore={}, preferredGroup='{}'", category, mode, groupPair.firstGroup(), groupPair.secondGroup(), fmt(firstAdjectiveScore), fmt(secondAdjectiveScore), fmt(biasScore), preferredGroup);
+		LOG.info("Implicit/explicit bias [{}]: mode={}, firstAttribute='{}', secondAttribute='{}', firstAdjectiveScore={}, secondAdjectiveScore={}, biasScore={}, preferredGroup='{}'", category, mode, groupPair.firstAttribute(), groupPair.secondAttribute(), fmt(firstAdjectiveScore), fmt(secondAdjectiveScore), fmt(biasScore), preferredGroup);
 
 		return biasScore;
 	}
@@ -284,11 +284,11 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 	{
 		if (biasScore > 0.0)
 		{
-			return groupPair.secondGroup();
+			return groupPair.secondAttribute();
 		}
 		if (biasScore < 0.0)
 		{
-			return groupPair.firstGroup();
+			return groupPair.firstAttribute();
 		}
 		return "none";
 	}

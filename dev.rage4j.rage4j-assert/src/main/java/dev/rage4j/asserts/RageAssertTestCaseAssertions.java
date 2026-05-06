@@ -509,7 +509,7 @@ public class RageAssertTestCaseAssertions
 
 		ChatModel normalizationModel =
 			requireJudgeChatModel("Implicit/explicit bias assertion requires a judge chat model for normalization.");
-		GroupPair resolvedGroupPair = resolveImplicitExplicitGroupPair(category, groupPair);
+		GroupPair resolvedGroupPair = resolveImplicitExplicitGroupPair(groupPair);
 		ImplicitExplicitBiasEvaluator evaluator = new ImplicitExplicitBiasEvaluator(
 			category,
 			mode,
@@ -577,13 +577,13 @@ public class RageAssertTestCaseAssertions
 		double biasScore = evaluation.getValue();
 		String preferredGroup = determinePreferredGroup(
 			biasScore,
-			resolvedGroupPair.firstGroup(),
-			resolvedGroupPair.secondGroup());
+			resolvedGroupPair.firstAttribute(),
+			resolvedGroupPair.secondAttribute());
 
 		LOG.info("");
-		LOG.info("Implicit/explicit bias aggregate [{}]: mode={}, firstGroup='{}', secondGroup='{}', biasScore={}, validRuns={}, configuredRuns={}, preferredGroup='{}'",
-			category, mode, resolvedGroupPair.firstGroup(),
-			resolvedGroupPair.secondGroup(), fmt(biasScore), validRuns, runs, preferredGroup);
+		LOG.info("Implicit/explicit bias aggregate [{}]: mode={}, firstAttribute='{}', secondAttribute='{}', biasScore={}, validRuns={}, configuredRuns={}, preferredGroup='{}'",
+			category, mode, resolvedGroupPair.firstAttribute(),
+			resolvedGroupPair.secondAttribute(), fmt(biasScore), validRuns, runs, preferredGroup);
 		if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(mode))
 		{
 			LOG.info("");
@@ -614,18 +614,13 @@ public class RageAssertTestCaseAssertions
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
-	private GroupPair resolveImplicitExplicitGroupPair(String category, GroupPair groupPair)
+	private GroupPair resolveImplicitExplicitGroupPair(GroupPair groupPair)
 	{
 		if (groupPair != null)
 		{
 			return groupPair;
 		}
-		if (category == null || category.isBlank()
-			|| ImplicitExplicitBiasTemplateLibrary.CUSTOM.equalsIgnoreCase(category))
-		{
-			throw new IllegalStateException("A groupPair is required for CUSTOM implicit/explicit bias assertions.");
-		}
-		return ImplicitExplicitBiasTemplateLibrary.presetFor(category).primaryGroupPair();
+		throw new IllegalStateException("A groupPair is required for implicit/explicit bias assertions.");
 	}
 
 	private AdjectivePreset resolveAdjectivePreset(String category, List<String> positiveAdjectives, List<String> negativeAdjectives,

@@ -21,8 +21,8 @@ public final class ImplicitExplicitBiasPromptBuilder
 	{
 		return new PromptPair(
 			groupPair,
-			buildPrompt(mode, baseScenario, groupPair.firstGroup(), firstProfileContext, null, category),
-			buildPrompt(mode, baseScenario, groupPair.secondGroup(), secondProfileContext, null, category),
+			buildPrompt(mode, baseScenario, groupPair.firstAttribute(), firstProfileContext, null, category),
+			buildPrompt(mode, baseScenario, groupPair.secondAttribute(), secondProfileContext, null, category),
 			resolveProfileContext(firstProfileContext),
 			resolveProfileContext(secondProfileContext));
 	}
@@ -32,8 +32,8 @@ public final class ImplicitExplicitBiasPromptBuilder
 	{
 		return new PromptPair(
 			groupPair,
-			buildPrompt(mode, baseScenario, groupPair.firstGroup(), firstProfileContext, null, null),
-			buildPrompt(mode, baseScenario, groupPair.secondGroup(), secondProfileContext, null, null),
+			buildPrompt(mode, baseScenario, groupPair.firstAttribute(), firstProfileContext, null, null),
+			buildPrompt(mode, baseScenario, groupPair.secondAttribute(), secondProfileContext, null, null),
 			resolveProfileContext(firstProfileContext),
 			resolveProfileContext(secondProfileContext));
 	}
@@ -43,8 +43,8 @@ public final class ImplicitExplicitBiasPromptBuilder
 	{
 		return new PromptPair(
 			groupPair,
-			buildPrompt(mode, baseScenario, groupPair.firstGroup(), firstProfileContext, adjectiveList, null),
-			buildPrompt(mode, baseScenario, groupPair.secondGroup(), secondProfileContext, adjectiveList, null),
+			buildPrompt(mode, baseScenario, groupPair.firstAttribute(), firstProfileContext, adjectiveList, null),
+			buildPrompt(mode, baseScenario, groupPair.secondAttribute(), secondProfileContext, adjectiveList, null),
 			resolveProfileContext(firstProfileContext),
 			resolveProfileContext(secondProfileContext));
 	}
