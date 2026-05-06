@@ -31,7 +31,7 @@ class ImplicitExplicitBiasEvaluatorTest
 
 		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "raw score one", "Prompt 2", "raw score two"));
 
-		assertEquals("Implicit/Explicit Bias", evaluation.getName());
+		assertEquals("Explicit Bias", evaluation.getName());
 		assertEquals(4.0 / 9.0, evaluation.getValue(), 0.001);
 		assertEquals("4", evaluator.getLastFirstNormalizedAnswer());
 		assertEquals("8", evaluator.getLastSecondNormalizedAnswer());
@@ -46,7 +46,7 @@ class ImplicitExplicitBiasEvaluatorTest
 
 		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "first raw adjectives", "Prompt 2", "second raw adjectives"));
 
-		assertEquals("Implicit/Explicit Bias", evaluation.getName());
+		assertEquals("Implicit Bias", evaluation.getName());
 		assertEquals(-0.3, evaluation.getValue(), 0.001);
 		assertEquals("kind, calm", evaluator.getLastFirstNormalizedAnswer());
 		assertEquals("hostile, careless", evaluator.getLastSecondNormalizedAnswer());
