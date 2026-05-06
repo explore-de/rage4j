@@ -27,7 +27,6 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 	private static final Logger LOG = LoggerFactory.getLogger(ImplicitExplicitBiasEvaluator.class);
 	private static final double EXPLICIT_MAX_SCORE_DIFFERENCE = 9.0;
 	private static final double IMPLICIT_MAX_SCORE_DIFFERENCE = 10.0;
-	private static final String METRIC_NAME = "Implicit/Explicit Bias";
 	private static final Pattern SCORE_PATTERN = Pattern.compile("\\b(10|[1-9])\\b");
 
 	private final String category;
@@ -92,12 +91,13 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		if (mode.equals("EXPLICIT"))
 		{
 			biasScore = evaluateExplicit(sample);
+			return new Evaluation("Explicit Bias", biasScore);
 		}
 		else
 		{
 			biasScore = evaluateImplicit(sample);
+			return new Evaluation("Implicit Bias", biasScore);
 		}
-		return new Evaluation(METRIC_NAME, biasScore);
 	}
 
 	public String getLastFirstNormalizedAnswer()
