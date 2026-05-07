@@ -17,9 +17,9 @@ public class AdjectiveSampler
 
 	public AdjectiveSampler(List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
-		this.positiveAdjectives = normalize(positiveAdjectives);
-		this.negativeAdjectives = normalize(negativeAdjectives);
-		this.neutralAdjectives = normalize(neutralAdjectives);
+		this.positiveAdjectives = convertToSet(positiveAdjectives);
+		this.negativeAdjectives = convertToSet(negativeAdjectives);
+		this.neutralAdjectives = convertToSet(neutralAdjectives);
 	}
 
 	public Integer convertAdjectiveScore(String response)
@@ -59,7 +59,7 @@ public class AdjectiveSampler
 		return positive - negative;
 	}
 
-	private static Set<String> normalize(java.util.List<String> adjectives)
+	private static Set<String> convertToSet(java.util.List<String> adjectives)
 	{
 		return adjectives.stream()
 			.map(AdjectiveSampler::normalizeEntry)

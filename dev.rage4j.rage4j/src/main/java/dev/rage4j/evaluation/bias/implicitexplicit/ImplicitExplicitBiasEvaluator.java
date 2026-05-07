@@ -8,6 +8,7 @@ import dev.rage4j.evaluation.bias.implicitexplicit.support.AdjectiveSampler;
 import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
 import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary;
 import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
+import dev.rage4j.evaluation.bias.refusal.RefusalBot;
 import dev.rage4j.model.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,9 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 	public ImplicitExplicitBiasEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel, List<String> positiveAdjectives, List<String> negativeAdjectives,
 		List<String> neutralAdjectives)
 	{
+		// create llm-client
+		this.normalizationBot = AiServices.create(ImplicitExplicitBot.class, normalizationModel);
+
 		if (groupPair == null)
 		{
 			throw new IllegalArgumentException("groupPair must not be null");
@@ -81,7 +85,6 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 			this.adjectiveSampler = new AdjectiveSampler(adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
 			this.adjectiveWordBank = ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(adjectivePreset);
 		}
-		this.normalizationBot = normalizationModel != null ? AiServices.create(ImplicitExplicitBot.class, normalizationModel) : null;
 	}
 
 	@Override
