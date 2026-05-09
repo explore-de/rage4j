@@ -5,8 +5,6 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.rage4j.asserts.exception.Rage4JBleuScoreException;
 import dev.rage4j.asserts.exception.Rage4JCorrectnessException;
 import dev.rage4j.asserts.exception.Rage4JFaithfulnessException;
-import dev.rage4j.asserts.exception.Rage4JImplicitExplicitException;
-import dev.rage4j.asserts.exception.Rage4JRefusalException;
 import dev.rage4j.asserts.exception.Rage4JRelevanceException;
 import dev.rage4j.asserts.exception.Rage4JRougeScoreException;
 import dev.rage4j.asserts.exception.Rage4JSimilarityException;
@@ -166,25 +164,10 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertRefusalDisparity()
 	{
-		return assertRefusalDisparity(null, 1);
-	}
-
-	public AssertionEvaluation assertRefusalDisparity(double minValue)
-	{
-		return assertRefusalDisparity(minValue, 1);
+		return assertRefusalDisparity(1);
 	}
 
 	public AssertionEvaluation assertRefusalDisparity(int runs)
-	{
-		return assertRefusalDisparity(null, runs);
-	}
-
-	public AssertionEvaluation assertRefusalDisparity(double minValue, int runs)
-	{
-		return assertRefusalDisparity(Double.valueOf(minValue), runs);
-	}
-
-	private AssertionEvaluation assertRefusalDisparity(Double minValue, int runs)
 	{
 		if (runs <= 0)
 		{
@@ -237,34 +220,15 @@ public class RageAssertTestCaseAssertions
 		LOG.info("");
 		LOG.info("Refusal disparity aggregate: firstRefusals={}, secondRefusals={}, configuredRuns={}, successfullRuns={}, unfairRuns={}, averageScore={}", firstRefusals, secondRefusals, runs, successfullRuns, unfairRuns, averageScore);
 
-		if (minValue != null && minValue > evaluation.getValue())
-		{
-			throw new Rage4JRefusalException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer);
-		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit()
 	{
-		return assertImplicitExplicit(null, 1);
-	}
-
-	public AssertionEvaluation assertImplicitExplicit(double minValue)
-	{
-		return assertImplicitExplicit(Double.valueOf(minValue), 1);
+		return assertImplicitExplicit(1);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(int runs)
-	{
-		return assertImplicitExplicit(null, runs);
-	}
-
-	public AssertionEvaluation assertImplicitExplicit(double minValue, int runs)
-	{
-		return assertImplicitExplicit(Double.valueOf(minValue), runs);
-	}
-
-	private AssertionEvaluation assertImplicitExplicit(Double minValue, int runs)
 	{
 		if (implicitExplicitScenario == null)
 		{
@@ -275,75 +239,44 @@ public class RageAssertTestCaseAssertions
 		AdjectivePreset adjectivePreset = implicitExplicitScenario.adjectivePreset();
 		if (adjectivePreset != null)
 		{
-			return assertImplicitExplicitInternal(implicitExplicitScenario.effectiveCategory(), implicitExplicitScenario.mode().value(), minValue, runs, implicitExplicitScenario.groupPair(), adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
+			return assertImplicitExplicitInternal(implicitExplicitScenario.effectiveCategory(), implicitExplicitScenario.mode().value(), runs, implicitExplicitScenario.groupPair(), adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
 		}
-		return assertImplicitExplicitInternal(implicitExplicitScenario.effectiveCategory(), implicitExplicitScenario.mode().value(), minValue, runs, implicitExplicitScenario.groupPair(), null, null, null);
-	}
-
-	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, double minValue)
-	{
-		return assertImplicitExplicit("CUSTOM", mode, minValue, 1, groupPair);
+		return assertImplicitExplicitInternal(implicitExplicitScenario.effectiveCategory(), implicitExplicitScenario.mode().value(), runs, implicitExplicitScenario.groupPair(), null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode)
 	{
-		return assertImplicitExplicitInternal("CUSTOM", mode, null, 1, groupPair, null, null, null);
-	}
-
-	public AssertionEvaluation assertImplicitExplicit(String category, String mode, double minValue, GroupPair groupPair)
-	{
-		return assertImplicitExplicitInternal(category, mode, minValue, 1, groupPair, null, null, null);
+		return assertImplicitExplicitInternal("CUSTOM", mode, 1, groupPair, null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(String category, String mode, GroupPair groupPair)
 	{
-		return assertImplicitExplicitInternal(category, mode, null, 1, groupPair, null, null, null);
-	}
-
-	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, double minValue, int runs)
-	{
-		return assertImplicitExplicit("CUSTOM", mode, minValue, runs, groupPair);
+		return assertImplicitExplicitInternal(category, mode, 1, groupPair, null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, int runs)
 	{
-		return assertImplicitExplicitInternal("CUSTOM", mode, null, runs, groupPair, null, null, null);
+		return assertImplicitExplicitInternal("CUSTOM", mode, runs, groupPair, null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
-		return assertImplicitExplicitInternal("CUSTOM", mode, null,
+		return assertImplicitExplicitInternal("CUSTOM", mode,
 			1, groupPair, positiveAdjectives, negativeAdjectives, neutralAdjectives);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, int runs, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
-		return assertImplicitExplicitInternal("CUSTOM", mode, null, runs,
+		return assertImplicitExplicitInternal("CUSTOM", mode, runs,
 			groupPair, positiveAdjectives, negativeAdjectives, neutralAdjectives);
-	}
-
-	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, double minValue, int runs, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
-	{
-		return assertImplicitExplicit("CUSTOM", mode, minValue, runs, groupPair,
-			positiveAdjectives, negativeAdjectives, neutralAdjectives);
-	}
-
-	public AssertionEvaluation assertImplicitExplicit(String category, String mode, double minValue, int runs, GroupPair groupPair)
-	{
-		return assertImplicitExplicit(category, mode, minValue, runs, groupPair, null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(String category, String mode, int runs, GroupPair groupPair)
 	{
-		return assertImplicitExplicitInternal(category, mode, null, runs, groupPair, null, null, null);
+		return assertImplicitExplicitInternal(category, mode, runs, groupPair, null, null, null);
 	}
 
-	public AssertionEvaluation assertImplicitExplicit(String category, String mode, double minValue, int runs, GroupPair groupPair, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
-	{
-		return assertImplicitExplicitInternal(category, mode, minValue, runs, groupPair, positiveAdjectives, negativeAdjectives, neutralAdjectives);
-	}
-
-	private AssertionEvaluation assertImplicitExplicitInternal(String category, String mode, Double minValue, int runs, GroupPair groupPair, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
+	private AssertionEvaluation assertImplicitExplicitInternal(String category, String mode, int runs, GroupPair groupPair, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
 		if (runs <= 0)
 		{
@@ -424,14 +357,9 @@ public class RageAssertTestCaseAssertions
 		LOG.info("Implicit/Explicit aggregate: biasScore={}, configuredRuns={}, validRuns={}, preferredGroup='{}'", fmt(biasScore), runs, validRuns, preferredGroup);
 		if (ImplicitExplicitEvaluator.IMPLICIT.equals(mode))
 		{
-			LOG.info("");
 			LOG.info("top adjectives: topWords='{}'", formatTopWords(wordCounts));
 		}
 
-		if (minValue != null && minValue > Math.abs(biasScore))
-		{
-			throw new Rage4JImplicitExplicitException(MINVALUE + evaluation.getValue() + ", Required: " + minValue + ", Answer: " + answer + ", Preferred group: " + preferredGroup);
-		}
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
