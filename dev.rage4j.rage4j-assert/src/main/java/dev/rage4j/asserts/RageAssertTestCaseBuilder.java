@@ -18,7 +18,7 @@ public class RageAssertTestCaseBuilder
 
 	public RageAssertTestCaseBuilder(ChatModel judgeChatModel, EmbeddingModel embeddingModel)
 	{
-		this(judgeChatModel, null, embeddingModel);
+		this(judgeChatModel, judgeChatModel, embeddingModel);
 	}
 
 	public RageAssertTestCaseBuilder(ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel)

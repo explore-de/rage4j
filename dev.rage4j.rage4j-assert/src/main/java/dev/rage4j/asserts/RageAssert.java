@@ -11,7 +11,7 @@ public class RageAssert
 
 	public RageAssert(ChatModel judgeChatModel, EmbeddingModel embeddingModel)
 	{
-		this(judgeChatModel, null, embeddingModel);
+		this(judgeChatModel, judgeChatModel, embeddingModel);
 	}
 
 	public RageAssert(ChatModel judgeChatModel, ChatModel evaluatedChatModel)
