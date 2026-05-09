@@ -1,6 +1,6 @@
 package dev.rage4j.asserts;
 
-public enum ImplicitExplicitBiasMode
+public enum ImplicitExplicitMode
 {
 	IMPLICIT,
 	EXPLICIT;

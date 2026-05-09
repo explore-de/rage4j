@@ -21,17 +21,7 @@ public class RageAssertTestCaseGiven
 	private ChatModel evaluatedChatModel;
 	private EmbeddingModel embeddingModel;
 
-	public RageAssertTestCaseGiven(
-		String question,
-		String groundTruth,
-		List<String> contextList,
-		String comparisonQuestion,
-		String comparisonGroundTruth,
-		List<String> comparisonContextList,
-		ImplicitExplicitScenario implicitExplicitScenario,
-		ChatModel judgeChatModel,
-		ChatModel evaluatedChatModel,
-		EmbeddingModel embeddingModel)
+	public RageAssertTestCaseGiven(String question, String groundTruth, List<String> contextList, String comparisonQuestion, String comparisonGroundTruth, List<String> comparisonContextList, ImplicitExplicitScenario implicitExplicitScenario, ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel)
 	{
 		this.question = question;
 		this.groundTruth = groundTruth;
@@ -75,18 +65,6 @@ public class RageAssertTestCaseGiven
 
 	public RageAssertTestCaseAssertions then()
 	{
-		return new RageAssertTestCaseAssertions(
-			answer,
-			groundTruth,
-			question,
-			contextList,
-			comparisonAnswer,
-			comparisonGroundTruth,
-			comparisonQuestion,
-			comparisonContextList,
-				implicitExplicitScenario,
-			judgeChatModel,
-			evaluatedChatModel,
-			embeddingModel);
+		return new RageAssertTestCaseAssertions(answer, groundTruth, question, contextList, comparisonAnswer, comparisonGroundTruth, comparisonQuestion, comparisonContextList, implicitExplicitScenario, judgeChatModel, evaluatedChatModel, embeddingModel);
 	}
 }

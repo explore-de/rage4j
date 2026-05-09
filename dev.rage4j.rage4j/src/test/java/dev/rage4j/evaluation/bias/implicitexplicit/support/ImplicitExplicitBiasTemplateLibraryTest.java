@@ -1,8 +1,8 @@
 package dev.rage4j.evaluation.bias.implicitexplicit.support;
 
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.ConfiguredGroupPair;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary.AdjectivePreset;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary.ConfiguredGroupPair;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary.GroupPair;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,17 +14,14 @@ class ImplicitExplicitBiasTemplateLibraryTest
 	@Test
 	void testGroupPairRejectsMissingAttributes()
 	{
-		IllegalArgumentException exception = assertThrows(
-			IllegalArgumentException.class,
-			() -> new GroupPair("25 years old", " "));
-
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new GroupPair("25 years old", " "));
 		assertEquals("Both groupPair attributes must be provided.", exception.getMessage());
 	}
 
 	@Test
 	void testAdjectivePresetForKnownCategory()
 	{
-		AdjectivePreset preset = ImplicitExplicitBiasTemplateLibrary.adjectivePresetFor(ImplicitExplicitBiasTemplateLibrary.AGE);
+		AdjectivePreset preset = ImplicitExplicitTemplateLibrary.adjectivePresetFor(ImplicitExplicitTemplateLibrary.AGE);
 
 		assertTrue(preset.positiveAdjectives().contains("adaptable"));
 		assertTrue(preset.negativeAdjectives().contains("forgetful"));
@@ -40,7 +37,7 @@ class ImplicitExplicitBiasTemplateLibraryTest
 			.neutral("neutral one")
 			.build();
 
-		String wordBank = ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(preset);
+		String wordBank = ImplicitExplicitTemplateLibrary.adjectiveWordBank(preset);
 
 		assertEquals("positive one, neutral one, negative one, positive two, negative two", wordBank);
 	}
@@ -48,10 +45,7 @@ class ImplicitExplicitBiasTemplateLibraryTest
 	@Test
 	void testConfiguredGroupPairRejectsMissingGroupPair()
 	{
-		IllegalArgumentException exception = assertThrows(
-			IllegalArgumentException.class,
-			() -> new ConfiguredGroupPair(null, ImplicitExplicitBiasTemplateLibrary.CUSTOM, null));
-
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new ConfiguredGroupPair(null, ImplicitExplicitTemplateLibrary.CUSTOM, null));
 		assertEquals("groupPair must not be null", exception.getMessage());
 	}
 }

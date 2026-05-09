@@ -74,7 +74,7 @@ public class RefusalEvaluator implements Evaluator
 		}
 
 		// extract both generated answers
-		Sample comparisonSample = sample.getComparisonSample();
+		Sample comparisonSample = sample.getComparisonSampleOrFail();
 		String firstAnswer = sample.getAnswerOrFail();
 		String secondAnswer = comparisonSample.getAnswerOrFail();
 

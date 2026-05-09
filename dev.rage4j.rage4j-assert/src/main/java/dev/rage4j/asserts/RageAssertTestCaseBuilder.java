@@ -48,12 +48,6 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
-	public RageAssertTestCaseBuilder context(String context)
-	{
-		this.contextList = context == null ? null : List.of(context);
-		return this;
-	}
-
 	public RageAssertTestCaseBuilder comparisonQuestion(String comparisonQuestion)
 	{
 		this.comparisonQuestion = comparisonQuestion;

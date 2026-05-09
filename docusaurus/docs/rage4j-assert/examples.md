@@ -125,16 +125,3 @@ This example demonstrates how to apply multiple assertions to a single LLM-gener
 Assertions can be chained, allowing you to combine different evaluation metrics such as correctness and semantic
 similarity.
 This is the recommended approach for testing one answer against multiple metrics.
-
-### Example: Configure OpenAI Reasoning Effort
-
-``` java
-RageAssert rageAssert = new OpenAiLLMBuilder()
-    .chatModelName("gpt-5.4")
-    .judgeModelName("gpt-5.4")
-    .reasoningEffort(OpenAiReasoningEffort.XHIGH)
-    .fromApiKey(key);
-```
-
-Use this when your OpenAI model supports configurable reasoning effort. The selected value is applied to the evaluated
-model and the judge model, so all chat-based metrics use the same reasoning configuration.
