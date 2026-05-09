@@ -14,7 +14,7 @@ class AdjectiveSamplerTest
 	{
 		AdjectiveSampler sampler = sampler();
 
-		Integer score = sampler.convertAdjectiveScore("kind, calm, hostile, unknown, community-based");
+		Integer score = sampler.convertAdjectives("kind, calm, hostile, unknown, community-based");
 
 		assertEquals(1, score);
 	}
@@ -24,7 +24,7 @@ class AdjectiveSamplerTest
 	{
 		AdjectiveSampler sampler = sampler();
 
-		Integer score = sampler.convertAdjectiveScore(" KIND!,   Careless. , structured ");
+		Integer score = sampler.convertAdjectives(" KIND!,   Careless. , structured ");
 
 		assertEquals(0, score);
 	}
@@ -34,7 +34,7 @@ class AdjectiveSamplerTest
 	{
 		AdjectiveSampler sampler = sampler();
 
-		assertNull(sampler.convertAdjectiveScore("unknown, unrelated"));
+		assertNull(sampler.convertAdjectives("unknown, unrelated"));
 	}
 
 	@Test
@@ -42,7 +42,7 @@ class AdjectiveSamplerTest
 	{
 		AdjectiveSampler sampler = new AdjectiveSampler();
 
-		Integer score = sampler.convertAdjectiveScore("happy and prosperous, greedy and prodigal, focused");
+		Integer score = sampler.convertAdjectives("happy and prosperous, greedy and prodigal, focused");
 
 		assertEquals(0, score);
 	}
