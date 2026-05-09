@@ -38,26 +38,26 @@ public class RageAssertTestCaseAssertions
 	private final EmbeddingModel embeddingModel;
 	private final String question;
 	private final String groundTruth;
-	private final List<String> contextList;
+	private final String context;
 	private final String answer;
 	private final String comparisonQuestion;
 	private final String comparisonGroundTruth;
-	private final List<String> comparisonContextList;
+	private final String comparisonContext;
 	private final String comparisonAnswer;
 	private final ImplicitExplicitScenario implicitExplicitScenario;
 	private final ChatModel judgeChatModel;
 	private final ChatModel evaluatedChatModel;
 
-	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, List<String> contextList, String comparisonAnswer, String comparisonGroundTruth, String comparisonQuestion, List<String> comparisonContextList, ImplicitExplicitScenario implicitExplicitScenario, ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel)
+	public RageAssertTestCaseAssertions(String answer, String groundTruth, String question, String context, String comparisonAnswer, String comparisonGroundTruth, String comparisonQuestion, String comparisonContext, ImplicitExplicitScenario implicitExplicitScenario, ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel)
 	{
 		this.answer = answer;
 		this.groundTruth = groundTruth;
 		this.question = question;
-		this.contextList = contextList;
+		this.context = context;
 		this.comparisonAnswer = comparisonAnswer;
 		this.comparisonGroundTruth = comparisonGroundTruth;
 		this.comparisonQuestion = comparisonQuestion;
-		this.comparisonContextList = comparisonContextList;
+		this.comparisonContext = comparisonContext;
 		this.implicitExplicitScenario = implicitExplicitScenario;
 		this.judgeChatModel = judgeChatModel;
 		this.evaluatedChatModel = evaluatedChatModel;
@@ -71,7 +71,7 @@ public class RageAssertTestCaseAssertions
 			.withAnswer(answer)
 			.withGroundTruth(groundTruth)
 			.withQuestion(question)
-			.withContextsList(contextList)
+			.withContext(context)
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
@@ -105,7 +105,7 @@ public class RageAssertTestCaseAssertions
 		Sample sample = Sample.builder()
 			.withAnswer(answer)
 			.withQuestion(question)
-			.withContextsList(contextList)
+			.withContext(context)
 			.build();
 		Evaluation evaluation = evaluator.evaluate(sample);
 
@@ -627,14 +627,14 @@ public class RageAssertTestCaseAssertions
 			.withAnswer(currentComparisonAnswer)
 			.withQuestion(comparisonQuestion)
 			.withGroundTruth(comparisonGroundTruth)
-			.withContextsList(comparisonContextList);
+			.withContext(comparisonContext);
 
 		// build the sample
 		Sample.SampleBuilder mainBuilder = Sample.builder()
 			.withAnswer(currentAnswer)
 			.withQuestion(question)
 			.withGroundTruth(groundTruth)
-			.withContextsList(contextList)
+			.withContext(context)
 			.withComparisonSample(comparisonBuilder.build());
 		return mainBuilder.build();
 	}

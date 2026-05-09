@@ -11,7 +11,7 @@ Measures how well the answer's claims are supported by the provided context.
 
 ## Required Sample fields
 - `answer` - Required for claim extraction
-- `contextsList` - Required for verifying claims
+- `context` - Required for verifying claims
 
 ## How it works
 1. Extracts individual claims from the answer

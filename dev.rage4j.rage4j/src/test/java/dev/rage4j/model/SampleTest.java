@@ -5,8 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -16,7 +14,7 @@ class SampleTest
 	private static final String QUESTION = "What is the capital of France?";
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "Paris";
-	private static final List<String> CONTEXTS = List.of("Paris is the capital of France.");
+	private static final String CONTEXT = "Paris is the capital of France.";
 
 	private Sample sample;
 
@@ -27,7 +25,7 @@ class SampleTest
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 	}
 
@@ -43,7 +41,7 @@ class SampleTest
 		Sample nullQuestionSample = Sample.builder()
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		assertThrows(IllegalStateException.class, nullQuestionSample::getQuestionOrFail);
@@ -61,7 +59,7 @@ class SampleTest
 		Sample nullAnswerSample = Sample.builder()
 			.withQuestion(QUESTION)
 			.withGroundTruth(GROUND_TRUTH)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		assertThrows(IllegalStateException.class, nullAnswerSample::getAnswerOrFail);
@@ -79,27 +77,27 @@ class SampleTest
 		Sample nullGroundTruthSample = Sample.builder()
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
-			.withContextsList(CONTEXTS)
+			.withContext(CONTEXT)
 			.build();
 
 		assertThrows(IllegalStateException.class, nullGroundTruthSample::getGroundTruthOrFail);
 	}
 
 	@Test
-	void testGetContextsListOrFail()
+	void testGetContextOrFail()
 	{
-		assertEquals(CONTEXTS, sample.getContextsListOrFail());
+		assertEquals(CONTEXT, sample.getContextOrFail());
 	}
 
 	@Test
-	void testGetContextsListOrFailNullContextsList()
+	void testGetContextOrFailNullContext()
 	{
-		Sample nullContextsSample = Sample.builder()
+		Sample nullContextSample = Sample.builder()
 			.withQuestion(QUESTION)
 			.withAnswer(ANSWER)
 			.withGroundTruth(GROUND_TRUTH)
 			.build();
 
-		assertThrows(IllegalStateException.class, nullContextsSample::getContextsListOrFail);
+		assertThrows(IllegalStateException.class, nullContextSample::getContextOrFail);
 	}
 }

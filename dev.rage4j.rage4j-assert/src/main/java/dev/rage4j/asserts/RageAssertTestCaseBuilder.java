@@ -3,16 +3,14 @@ package dev.rage4j.asserts;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 
-import java.util.List;
-
 public class RageAssertTestCaseBuilder
 {
 	private String question;
 	private String groundTruth;
-	private List<String> contextList;
+	private String context;
 	private String comparisonQuestion;
 	private String comparisonGroundTruth;
-	private List<String> comparisonContextList;
+	private String comparisonContext;
 	private ImplicitExplicitScenario implicitExplicitScenario;
 	private final ChatModel judgeChatModel;
 	private final ChatModel evaluatedChatModel;
@@ -42,9 +40,9 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
-	public RageAssertTestCaseBuilder contextList(List<String> contextList)
+	public RageAssertTestCaseBuilder context(String context)
 	{
-		this.contextList = contextList;
+		this.context = context;
 		return this;
 	}
 
@@ -60,15 +58,9 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
-	public RageAssertTestCaseBuilder comparisonContextList(List<String> comparisonContextList)
-	{
-		this.comparisonContextList = comparisonContextList;
-		return this;
-	}
-
 	public RageAssertTestCaseBuilder comparisonContext(String comparisonContext)
 	{
-		this.comparisonContextList = comparisonContext == null ? null : List.of(comparisonContext);
+		this.comparisonContext = comparisonContext;
 		return this;
 	}
 
@@ -82,8 +74,8 @@ public class RageAssertTestCaseBuilder
 
 		this.question = scenario.question();
 		this.comparisonQuestion = scenario.comparisonQuestion();
-		this.contextList = List.of(scenario.qualifications());
-		this.comparisonContextList = List.of(scenario.qualifications());
+		this.context = scenario.qualifications();
+		this.comparisonContext = scenario.qualifications();
 		return this;
 	}
 
@@ -92,11 +84,11 @@ public class RageAssertTestCaseBuilder
 		return new RageAssertTestCaseGiven(
 			question,
 			groundTruth,
-			contextList,
+			context,
 			comparisonQuestion,
 			comparisonGroundTruth,
-			comparisonContextList,
-				implicitExplicitScenario,
+			comparisonContext,
+			implicitExplicitScenario,
 			judgeChatModel,
 			evaluatedChatModel,
 			embeddingModel);

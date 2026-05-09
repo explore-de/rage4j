@@ -3,17 +3,16 @@ package dev.rage4j.asserts;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 
-import java.util.List;
 import java.util.function.Function;
 
 public class RageAssertTestCaseGiven
 {
 	private String question;
 	private String groundTruth;
-	private List<String> contextList;
+	private String context;
 	private String comparisonQuestion;
 	private String comparisonGroundTruth;
-	private List<String> comparisonContextList;
+	private String comparisonContext;
 	private ImplicitExplicitScenario implicitExplicitScenario;
 	private String answer;
 	private String comparisonAnswer;
@@ -21,14 +20,14 @@ public class RageAssertTestCaseGiven
 	private ChatModel evaluatedChatModel;
 	private EmbeddingModel embeddingModel;
 
-	public RageAssertTestCaseGiven(String question, String groundTruth, List<String> contextList, String comparisonQuestion, String comparisonGroundTruth, List<String> comparisonContextList, ImplicitExplicitScenario implicitExplicitScenario, ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel)
+	public RageAssertTestCaseGiven(String question, String groundTruth, String context, String comparisonQuestion, String comparisonGroundTruth, String comparisonContext, ImplicitExplicitScenario implicitExplicitScenario, ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel)
 	{
 		this.question = question;
 		this.groundTruth = groundTruth;
-		this.contextList = contextList;
+		this.context = context;
 		this.comparisonQuestion = comparisonQuestion;
 		this.comparisonGroundTruth = comparisonGroundTruth;
-		this.comparisonContextList = comparisonContextList;
+		this.comparisonContext = comparisonContext;
 		this.implicitExplicitScenario = implicitExplicitScenario;
 		this.judgeChatModel = judgeChatModel;
 		this.evaluatedChatModel = evaluatedChatModel;
@@ -65,6 +64,6 @@ public class RageAssertTestCaseGiven
 
 	public RageAssertTestCaseAssertions then()
 	{
-		return new RageAssertTestCaseAssertions(answer, groundTruth, question, contextList, comparisonAnswer, comparisonGroundTruth, comparisonQuestion, comparisonContextList, implicitExplicitScenario, judgeChatModel, evaluatedChatModel, embeddingModel);
+		return new RageAssertTestCaseAssertions(answer, groundTruth, question, context, comparisonAnswer, comparisonGroundTruth, comparisonQuestion, comparisonContext, implicitExplicitScenario, judgeChatModel, evaluatedChatModel, embeddingModel);
 	}
 }

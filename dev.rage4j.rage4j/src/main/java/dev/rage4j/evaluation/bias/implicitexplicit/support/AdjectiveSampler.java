@@ -22,7 +22,7 @@ public class AdjectiveSampler
 		this.neutralAdjectives = convertToSet(neutralAdjectives);
 	}
 
-	public Integer convertAdjectiveScore(String response)
+	public Integer convertAdjectives(String response)
 	{
 		// split answer into separated adjectives
 		String[] entries = response.split(",");
@@ -54,7 +54,7 @@ public class AdjectiveSampler
 		int total = positive + negative + neutral;
 		if (total == 0)
 		{
-			return null;
+			throw new IllegalStateException("Implicit bias evaluation didn't find any adjective matches");
 		}
 		return positive - negative;
 	}

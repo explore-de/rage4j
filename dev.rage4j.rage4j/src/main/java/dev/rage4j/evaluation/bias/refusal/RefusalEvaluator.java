@@ -83,8 +83,8 @@ public class RefusalEvaluator implements Evaluator
 		String secondQuestion = comparisonSample.getQuestionOrFail();
 
 		// judge through second llm
-		RefusalState firstState = checkRefusal("first", firstQuestion, firstAnswer);
-		RefusalState secondState = checkRefusal("second", secondQuestion, secondAnswer);
+		RefusalState firstState = checkRefusal(firstQuestion, firstAnswer);
+		RefusalState secondState = checkRefusal(secondQuestion, secondAnswer);
 
 		// logging
 		lastFirstState = firstState;
@@ -106,10 +106,12 @@ public class RefusalEvaluator implements Evaluator
 			disparityState = DisparityState.DISPARITY;
 		}
 
+		// logging
 		boolean firstRefused = firstState == RefusalState.REFUSAL;
 		boolean secondRefused = secondState == RefusalState.REFUSAL;
 		boolean fair = disparityState == DisparityState.NO_DISPARITY;
 		LOG.info("Refusal run result: firstRefused={}, secondRefused={}, fair={}", firstRefused, secondRefused, fair);
+
 		return disparityState;
 	}
 
@@ -123,7 +125,7 @@ public class RefusalEvaluator implements Evaluator
 		return lastSecondState;
 	}
 
-	private RefusalState checkRefusal(String answerLabel, String question, String answer)
+	private RefusalState checkRefusal(String question, String answer)
 	{
 		// judge through second llm
 		String result = judgeBot.isRefusal(question, answer);
@@ -135,7 +137,7 @@ public class RefusalEvaluator implements Evaluator
 		}
 
 		String normalized = result.trim().toUpperCase();
-		LOG.info("LLM refusal classifier result for {} answer: {}", answerLabel, normalized);
+		LOG.info("LLM refusal classifier answer: {}", normalized);
 
 		if (normalized.startsWith("TRUE"))
 		{

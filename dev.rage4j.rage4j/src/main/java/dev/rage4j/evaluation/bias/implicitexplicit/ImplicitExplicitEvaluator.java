@@ -32,7 +32,7 @@ public class ImplicitExplicitEvaluator implements Evaluator
 	private final String category;
 	private final String mode;
 	private final GroupPair groupPair;
-	private final AdjectiveSampler adjectiveSampler;
+	private final AdjectiveSampler sampler;
 	private final String adjectiveWordBank;
 	private final ImplicitExplicitBot normalizationBot;
 	private String lastFirstNormalizedAnswer;
@@ -82,13 +82,13 @@ public class ImplicitExplicitEvaluator implements Evaluator
 
 		if (positiveAdjectives != null && negativeAdjectives != null && neutralAdjectives != null)
 		{
-			this.adjectiveSampler = new AdjectiveSampler(positiveAdjectives, negativeAdjectives, neutralAdjectives);
+			this.sampler = new AdjectiveSampler(positiveAdjectives, negativeAdjectives, neutralAdjectives);
 			this.adjectiveWordBank = buildAdjectiveWordBank(positiveAdjectives, negativeAdjectives, neutralAdjectives);
 		}
 		else
 		{
 			AdjectivePreset adjectivePreset = ImplicitExplicitTemplateLibrary.adjectivePresetFor(category);
-			this.adjectiveSampler = new AdjectiveSampler(adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
+			this.sampler = new AdjectiveSampler(adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
 			this.adjectiveWordBank = ImplicitExplicitTemplateLibrary.adjectiveWordBank(adjectivePreset);
 		}
 	}
@@ -140,15 +140,15 @@ public class ImplicitExplicitEvaluator implements Evaluator
 		String secondAnswer = normalizedSample.getComparisonSampleOrFail().getAnswerOrFail();
 
 		// turn the numbers into a double
-		Double firstValue = parseExplicitScore(firstAnswer);
-		Double secondValue = parseExplicitScore(secondAnswer);
+		Double firstScore = parseExplicitScore(firstAnswer);
+		Double secondScore = parseExplicitScore(secondAnswer);
 
-		double biasScore = calculateExplicitBiasScore(firstValue, secondValue);
+		double biasScore = calculateExplicitBiasScore(firstScore, secondScore);
 
 		// fairness calculation
 		String preferredGroup = determinePreferredGroup(biasScore);
 
-		LOG.info("Explicit bias: firstScore={}, secondScore={}, biasScore={}, preferredGroup='{}'", fmt(firstValue), fmt(secondValue), fmt(biasScore), preferredGroup);
+		LOG.info("Explicit bias: firstScore={}, secondScore={}, biasScore={}, preferredGroup='{}'", fmt(firstScore), fmt(secondScore), fmt(biasScore), preferredGroup);
 
 		return biasScore;
 	}
@@ -174,13 +174,8 @@ public class ImplicitExplicitEvaluator implements Evaluator
 		String secondAnswer = evaluationSample.getComparisonSampleOrFail().getAnswerOrFail();
 
 		// calculate adjective-score
-		Integer firstAdjectiveScore = adjectiveSampler.convertAdjectiveScore(firstAnswer);
-		Integer secondAdjectiveScore = adjectiveSampler.convertAdjectiveScore(secondAnswer);
-
-		if (firstAdjectiveScore == null || secondAdjectiveScore == null)
-		{
-			throw new IllegalStateException("Implicit bias evaluation requires both answers to contain analyzable adjectives.");
-		}
+		Integer firstAdjectiveScore = sampler.convertAdjectives(firstAnswer);
+		Integer secondAdjectiveScore = sampler.convertAdjectives(secondAnswer);
 
 		// calculate end-score
 		double biasScore = calculateImplicitBiasScore(firstAdjectiveScore, secondAdjectiveScore);
@@ -196,8 +191,8 @@ public class ImplicitExplicitEvaluator implements Evaluator
 	private Sample buildNormalizedSample(Sample sample)
 	{
 		// identify numbers through second llm
-		String firstNormalized = normalizeAnswer("first", sample.getAnswerOrFail());
-		String secondNormalized = normalizeAnswer("second", sample.getComparisonSampleOrFail().getAnswerOrFail());
+		String firstNormalized = normalizeAnswer(sample.getAnswerOrFail());
+		String secondNormalized = normalizeAnswer(sample.getComparisonSampleOrFail().getAnswerOrFail());
 
 		// logging
 		lastFirstNormalizedAnswer = firstNormalized;
@@ -218,7 +213,7 @@ public class ImplicitExplicitEvaluator implements Evaluator
 			.build();
 	}
 
-	private String normalizeAnswer(String answerLabel, String rawAnswer)
+	private String normalizeAnswer(String rawAnswer)
 	{
 		if (rawAnswer == null || rawAnswer.isBlank())
 		{

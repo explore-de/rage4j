@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * The {@code FaithfulnessEvaluator} class provides a mechanism to evaluate the
@@ -69,13 +68,13 @@ public class FaithfulnessEvaluator implements Evaluator
 	 * @throws IllegalArgumentException
 	 *             if the sample does not contain a valid answer or context.
 	 */
+	@Override
 	public Evaluation evaluate(Sample sample)
 	{
 		LOG.info("Evaluating new sample");
 		String answer = sample.getAnswerOrFail();
 		LOG.info("Answer: {}", answer);
-		List<String> contextsList = sample.getContextsListOrFail();
-		String context = String.join(System.lineSeparator(), contextsList);
+		String context = sample.getContextOrFail();
 		LOG.info("Context: {}", context);
 		String[] answerClaims = bot.extractClaims(answer).getItems();
 		LOG.info("Extracted claims: {}", (Object)answerClaims);

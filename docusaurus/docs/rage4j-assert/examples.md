@@ -27,7 +27,7 @@ RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
 rageAssert.given()
     .question(QUESTION)
     .groundTruth(GROUND_TRUTH)
-    .contextList(List.of(ANSWER))
+    .context(ANSWER)
     .when()
     .answer(model::generate)
     .then()

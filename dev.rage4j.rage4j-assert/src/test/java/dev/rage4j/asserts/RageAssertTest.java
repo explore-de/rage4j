@@ -12,7 +12,6 @@ import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
@@ -27,8 +26,7 @@ class RageAssertTest
 	private static final String ANSWER = "The capital of France is Paris.";
 	private static final String ANSWER_WRONG = "The capital of France is Berlin.";
 	private static final String ANSWER_WRONG_RELEVANCE = "The weather in Paris is nice today.";
-	private static final List<String> CONTEXT = List.of(
-		"Paris is the capital and largest city of France.");
+	private static final String CONTEXT = "Paris is the capital and largest city of France.";
 	private final String key = obtainOpenAiKey();
 	private final OpenAiChatModel model = OpenAiChatModel.builder()
 		.apiKey(key)
@@ -73,7 +71,7 @@ class RageAssertTest
 		rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
-			.contextList(List.of(ANSWER))
+			.context(ANSWER)
 			.when()
 			.answer(model::chat)
 			.then()
@@ -87,7 +85,7 @@ class RageAssertTest
 		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
-			.contextList(List.of(ANSWER))
+			.context(ANSWER)
 			.when()
 			.answer(a -> ANSWER_WRONG)
 			.then();
@@ -137,7 +135,7 @@ class RageAssertTest
 		rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
-			.contextList(CONTEXT)
+			.context(CONTEXT)
 			.when()
 			.answer(model::chat)
 			.then()
@@ -151,7 +149,7 @@ class RageAssertTest
 		RageAssertTestCaseAssertions testCaseAssertions = rageAssert.given()
 			.question(QUESTION)
 			.groundTruth(GROUND_TRUTH)
-			.contextList(CONTEXT)
+			.context(CONTEXT)
 			.when()
 			.answer(a -> ANSWER_WRONG_RELEVANCE)
 			.then();

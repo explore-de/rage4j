@@ -1,12 +1,11 @@
 package dev.rage4j.model;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
  * The {@code Sample} class represents a sample of data consisting of a
- * question, an answer, ground truth, and a list of contexts. This class is used
- * as an input for evaluation, encapsulating the necessary data for evaluating a
+ * question, an answer, ground truth, and context. This class is used as an
+ * input for evaluation, encapsulating the necessary data for evaluating a
  * language model's response against the ground truth and context.
  * <p>
  * Instances of {@code Sample} are created using the {@code SampleBuilder} class
@@ -17,7 +16,7 @@ public class Sample
 	private final String question;
 	private final String answer;
 	private final String groundTruth;
-	private final List<String> contextsList;
+	private final String context;
 	private final Sample comparisonSample;
 
 	/**
@@ -33,7 +32,7 @@ public class Sample
 		this.question = builder.question;
 		this.answer = builder.answer;
 		this.groundTruth = builder.groundTruth;
-		this.contextsList = builder.contextsList;
+		this.context = builder.context;
 		this.comparisonSample = builder.comparisonSample;
 	}
 
@@ -113,28 +112,28 @@ public class Sample
 	}
 
 	/**
-	 * Returns the list of contexts for the sample. If the contexts list is not
-	 * set, throws an exception.
+	 * Returns the context of the sample. If the context is not set, throws an
+	 * exception.
 	 *
-	 * @return The list of contexts for the sample.
+	 * @return The context of the sample.
 	 * @throws IllegalStateException
-	 *             if the contexts list is not set.
+	 *             if the context is not set.
 	 */
-	public List<String> getContextsListOrFail()
+	public String getContextOrFail()
 	{
-		if (Objects.isNull(contextsList))
+		if (Objects.isNull(context))
 		{
-			throwAttributeNotFound("contextsList");
+			throwAttributeNotFound("context");
 		}
-		return contextsList;
+		return context;
 	}
 
 	/**
-	 * @return whether the contextsList has a question field.
+	 * @return whether the sample has a context field.
 	 */
-	public boolean hasContextsList()
+	public boolean hasContext()
 	{
-		return contextsList != null;
+		return context != null;
 	}
 
 	/**
@@ -187,14 +186,14 @@ public class Sample
 	/**
 	 * The {@code SampleBuilder} class provides a builder pattern to construct a
 	 * {@code Sample} object. It allows for incremental construction of a sample
-	 * by setting the question, answer, ground truth, and contexts list.
+	 * by setting the question, answer, ground truth, and context.
 	 */
 	public static class SampleBuilder
 	{
 		private String question;
 		private String answer;
 		private String groundTruth;
-		private List<String> contextsList;
+		private String context;
 		private Sample comparisonSample;
 
 		/**
@@ -237,16 +236,15 @@ public class Sample
 		}
 
 		/**
-		 * Sets the list of contexts for the {@code Sample}.
+		 * Sets the context for the {@code Sample}.
 		 *
-		 * @param contextsList
-		 *            The list of context strings related to the question and
-		 *            answer.
+		 * @param context
+		 *            The context string related to the question and answer.
 		 * @return The current instance of {@code SampleBuilder}.
 		 */
-		public SampleBuilder withContextsList(List<String> contextsList)
+		public SampleBuilder withContext(String context)
 		{
-			this.contextsList = contextsList;
+			this.context = context;
 			return this;
 		}
 
@@ -265,7 +263,7 @@ public class Sample
 
 		/**
 		 * Builds and returns a {@code Sample} object with the provided
-		 * question, answer, ground truth, and contexts list.
+		 * question, answer, ground truth, and context.
 		 *
 		 * @return A new {@code Sample} object.
 		 */
