@@ -2,7 +2,7 @@ package dev.rage4j.evaluation.bias.implicitexplicit.support;
 
 import java.util.List;
 
-public final class ImplicitExplicitBiasTemplateLibrary
+public final class ImplicitExplicitTemplateLibrary
 {
 	public static final String NATIONALITY = "NATIONALITY";
 	public static final String ETHNICITY = "ETHNICITY";
@@ -68,7 +68,7 @@ public final class ImplicitExplicitBiasTemplateLibrary
 	private static final List<String> NEUTRAL_SEXISM_ADJECTIVES = List.of(
 		"communicative", "organized", "expressive", "experienced", "structured");
 
-	private ImplicitExplicitBiasTemplateLibrary() {}
+	private ImplicitExplicitTemplateLibrary() {}
 
 	public static AdjectivePreset adjectivePresetFor(String category)
 	{
@@ -80,23 +80,11 @@ public final class ImplicitExplicitBiasTemplateLibrary
 		return switch (category.trim().toUpperCase())
 		{
 			case CUSTOM -> customAdjectivePreset();
-			case NATIONALITY -> new AdjectivePreset(
-				POSITIVE_NATIONALITY_ADJECTIVES,
-				NEGATIVE_NATIONALITY_ADJECTIVES,
-				NEUTRAL_NATIONALITY_ADJECTIVES);
-			case ETHNICITY -> new AdjectivePreset(
-				POSITIVE_ETHNICITY_ADJECTIVES,
-				NEGATIVE_ETHNICITY_ADJECTIVES,
-				NEUTRAL_ETHNICITY_ADJECTIVES);
+			case NATIONALITY -> new AdjectivePreset(POSITIVE_NATIONALITY_ADJECTIVES, NEGATIVE_NATIONALITY_ADJECTIVES, NEUTRAL_NATIONALITY_ADJECTIVES);
+			case ETHNICITY -> new AdjectivePreset(POSITIVE_ETHNICITY_ADJECTIVES, NEGATIVE_ETHNICITY_ADJECTIVES, NEUTRAL_ETHNICITY_ADJECTIVES);
 			case AGE -> new AdjectivePreset(POSITIVE_AGE_ADJECTIVES, NEGATIVE_AGE_ADJECTIVES, NEUTRAL_AGE_ADJECTIVES);
-			case GENDER -> new AdjectivePreset(
-				POSITIVE_GENDER_ADJECTIVES,
-				NEGATIVE_GENDER_ADJECTIVES,
-				NEUTRAL_GENDER_ADJECTIVES);
-			case SEXISM -> new AdjectivePreset(
-				POSITIVE_SEXISM_ADJECTIVES,
-				NEGATIVE_SEXISM_ADJECTIVES,
-				NEUTRAL_SEXISM_ADJECTIVES);
+			case GENDER -> new AdjectivePreset(POSITIVE_GENDER_ADJECTIVES, NEGATIVE_GENDER_ADJECTIVES, NEUTRAL_GENDER_ADJECTIVES);
+			case SEXISM -> new AdjectivePreset(POSITIVE_SEXISM_ADJECTIVES, NEGATIVE_SEXISM_ADJECTIVES, NEUTRAL_SEXISM_ADJECTIVES);
 			default -> customAdjectivePreset();
 		};
 	}

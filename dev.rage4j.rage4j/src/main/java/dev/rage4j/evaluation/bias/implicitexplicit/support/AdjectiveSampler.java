@@ -12,7 +12,7 @@ public class AdjectiveSampler
 
 	public AdjectiveSampler()
 	{
-		this(ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().positiveAdjectives(), ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().negativeAdjectives(), ImplicitExplicitBiasTemplateLibrary.customAdjectivePreset().neutralAdjectives());
+		this(ImplicitExplicitTemplateLibrary.customAdjectivePreset().positiveAdjectives(), ImplicitExplicitTemplateLibrary.customAdjectivePreset().negativeAdjectives(), ImplicitExplicitTemplateLibrary.customAdjectivePreset().neutralAdjectives());
 	}
 
 	public AdjectiveSampler(List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)

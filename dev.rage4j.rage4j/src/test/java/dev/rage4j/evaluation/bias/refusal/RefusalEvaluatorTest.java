@@ -95,9 +95,7 @@ class RefusalEvaluatorTest
 			.withAnswer("Answer")
 			.build();
 
-		IllegalArgumentException exception =
-			assertThrows(IllegalArgumentException.class, () -> evaluator.compare(sample));
-
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.compare(sample));
 		assertEquals("Refusal evaluation requires a comparison sample", exception.getMessage());
 	}
 
@@ -128,9 +126,7 @@ class RefusalEvaluatorTest
 	@Test
 	void testConstructorRequiresRefusalBot()
 	{
-		NullPointerException exception =
-			assertThrows(NullPointerException.class, () -> new RefusalEvaluator((RefusalBot) null));
-
+		NullPointerException exception = assertThrows(NullPointerException.class, () -> new RefusalEvaluator((RefusalBot) null));
 		assertEquals("refusal bot must not be null", exception.getMessage());
 	}
 

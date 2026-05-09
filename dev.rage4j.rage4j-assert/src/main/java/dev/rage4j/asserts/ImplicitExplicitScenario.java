@@ -1,18 +1,18 @@
 package dev.rage4j.asserts;
 
-import dev.rage4j.evaluation.bias.implicitexplicit.ImplicitExplicitBiasEvaluator;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasPromptBuilder;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasPromptBuilder.PromptPair;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
+import dev.rage4j.evaluation.bias.implicitexplicit.ImplicitExplicitEvaluator;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitPromptBuilder;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitPromptBuilder.PromptPair;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary.AdjectivePreset;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary.GroupPair;
 
 import java.util.Arrays;
 import java.util.List;
 
 public final class ImplicitExplicitScenario
 {
-	private final ImplicitExplicitBiasMode mode;
+	private final ImplicitExplicitMode mode;
 	private final String category;
 	private final GroupPair groupPair;
 	private final String qualifications;
@@ -38,7 +38,7 @@ public final class ImplicitExplicitScenario
 		return new Builder();
 	}
 
-	public ImplicitExplicitBiasMode mode()
+	public ImplicitExplicitMode mode()
 	{
 		return mode;
 	}
@@ -75,41 +75,23 @@ public final class ImplicitExplicitScenario
 
 	public String effectiveCategory()
 	{
-		return category != null ? category : ImplicitExplicitBiasTemplateLibrary.CUSTOM;
+		return category != null ? category : ImplicitExplicitTemplateLibrary.CUSTOM;
 	}
 
 	private PromptPair buildPromptPair()
 	{
 		String modeValue = mode.value();
-		if (ImplicitExplicitBiasEvaluator.IMPLICIT.equals(modeValue))
+		if (ImplicitExplicitEvaluator.IMPLICIT.equals(modeValue))
 		{
 			if (adjectivePreset != null)
 			{
-				List<String> adjectiveWordBankEntries = Arrays.asList(
-					ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(adjectivePreset).split(", "));
-				return ImplicitExplicitBiasPromptBuilder.buildPromptPair(
-					modeValue,
-					"",
-					groupPair,
-					adjectiveWordBankEntries,
-					qualifications,
-					qualifications);
+				List<String> adjectiveWordBankEntries = Arrays.asList(ImplicitExplicitTemplateLibrary.adjectiveWordBank(adjectivePreset).split(", "));
+				return ImplicitExplicitPromptBuilder.buildPromptPair(modeValue, "", groupPair, adjectiveWordBankEntries, qualifications, qualifications);
 			}
-			return ImplicitExplicitBiasPromptBuilder.buildPromptPair(
-				effectiveCategory(),
-				modeValue,
-				"",
-				groupPair,
-				qualifications,
-				qualifications);
+			return ImplicitExplicitPromptBuilder.buildPromptPair(effectiveCategory(), modeValue, "", groupPair, qualifications, qualifications);
 		}
 
-		return ImplicitExplicitBiasPromptBuilder.buildPromptPair(
-			modeValue,
-			"",
-			groupPair,
-			qualifications,
-			qualifications);
+		return ImplicitExplicitPromptBuilder.buildPromptPair(modeValue, "", groupPair, qualifications, qualifications);
 	}
 
 	private static String normalizeCategory(String category)
@@ -125,14 +107,14 @@ public final class ImplicitExplicitScenario
 	{
 		if (qualifications == null || qualifications.isBlank())
 		{
-			return ImplicitExplicitBiasPromptBuilder.DEFAULT_PROFILE_CONTEXT;
+			return ImplicitExplicitPromptBuilder.DEFAULT_PROFILE_CONTEXT;
 		}
 		return qualifications.trim();
 	}
 
 	public static final class Builder
 	{
-		private ImplicitExplicitBiasMode mode;
+		private ImplicitExplicitMode mode;
 		private String category;
 		private String firstGroup;
 		private String secondGroup;
@@ -143,7 +125,7 @@ public final class ImplicitExplicitScenario
 		{
 		}
 
-		public Builder mode(ImplicitExplicitBiasMode mode)
+		public Builder mode(ImplicitExplicitMode mode)
 		{
 			this.mode = mode;
 			return this;
@@ -152,6 +134,12 @@ public final class ImplicitExplicitScenario
 		public Builder category(String category)
 		{
 			this.category = category;
+			return this;
+		}
+
+		public Builder category(ImplicitExplicitCategory category)
+		{
+			this.category = category == null ? null : category.value();
 			return this;
 		}
 
@@ -184,7 +172,7 @@ public final class ImplicitExplicitScenario
 			{
 				throw new IllegalStateException("ImplicitExplicitBiasScenario requires both groupPair values.");
 			}
-			if (mode == ImplicitExplicitBiasMode.IMPLICIT && adjectivePreset == null
+			if (mode == ImplicitExplicitMode.IMPLICIT && adjectivePreset == null
 				&& (category == null || category.isBlank()))
 			{
 				throw new IllegalStateException("Implicit bias scenarios require either a category or an adjective preset.");

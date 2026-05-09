@@ -5,9 +5,9 @@ import dev.langchain4j.service.AiServices;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.evaluation.bias.implicitexplicit.support.AdjectiveSampler;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.AdjectivePreset;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary;
-import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitBiasTemplateLibrary.GroupPair;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary.AdjectivePreset;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary;
+import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTemplateLibrary.GroupPair;
 import dev.rage4j.model.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +17,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class ImplicitExplicitBiasEvaluator implements Evaluator
+public class ImplicitExplicitEvaluator implements Evaluator
 {
 	public static final String EXPLICIT = "EXPLICIT";
 	public static final String IMPLICIT = "IMPLICIT";
 	public static final String REFUSED = "REFUSED";
 	public static final String INVALID = "INVALID";
 
-	private static final Logger LOG = LoggerFactory.getLogger(ImplicitExplicitBiasEvaluator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ImplicitExplicitEvaluator.class);
 	private static final double EXPLICIT_MAX_SCORE_DIFFERENCE = 9.0;
 	private static final double IMPLICIT_MAX_SCORE_DIFFERENCE = 10.0;
 	private static final Pattern SCORE_PATTERN = Pattern.compile("\\b(10|[1-9])\\b");
@@ -38,18 +38,18 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 	private String lastFirstNormalizedAnswer;
 	private String lastSecondNormalizedAnswer;
 
-	public ImplicitExplicitBiasEvaluator(String category, String mode, ChatModel normalizationModel)
+	public ImplicitExplicitEvaluator(String category, String mode, ChatModel normalizationModel)
 	{
 		this(category, mode, null, normalizationModel, null, null, null);
 	}
 
-	public ImplicitExplicitBiasEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel)
+	public ImplicitExplicitEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel)
 	{
 		this(category, mode, groupPair, normalizationModel, null, null, null);
 	}
 
-	public ImplicitExplicitBiasEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel, List<String> positiveAdjectives, List<String> negativeAdjectives,
-		List<String> neutralAdjectives)
+	public ImplicitExplicitEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel, List<String> positiveAdjectives, List<String> negativeAdjectives,
+	                                 List<String> neutralAdjectives)
 	{
 		if (groupPair == null)
 		{
@@ -87,9 +87,9 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		}
 		else
 		{
-			AdjectivePreset adjectivePreset = ImplicitExplicitBiasTemplateLibrary.adjectivePresetFor(category);
+			AdjectivePreset adjectivePreset = ImplicitExplicitTemplateLibrary.adjectivePresetFor(category);
 			this.adjectiveSampler = new AdjectiveSampler(adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
-			this.adjectiveWordBank = ImplicitExplicitBiasTemplateLibrary.adjectiveWordBank(adjectivePreset);
+			this.adjectiveWordBank = ImplicitExplicitTemplateLibrary.adjectiveWordBank(adjectivePreset);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 
 		// get the extracted numbers
 		String firstAnswer = normalizedSample.getAnswerOrFail();
-		String secondAnswer = normalizedSample.getComparisonSample().getAnswerOrFail();
+		String secondAnswer = normalizedSample.getComparisonSampleOrFail().getAnswerOrFail();
 
 		// turn the numbers into a double
 		Double firstValue = parseExplicitScore(firstAnswer);
@@ -148,7 +148,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		// fairness calculation
 		String preferredGroup = determinePreferredGroup(biasScore);
 
-		LOG.info("Implicit/explicit bias [{}]: mode={}, firstAttribute='{}', secondAttribute='{}', firstScore={}, secondScore={}, biasScore={}, preferredGroup='{}'", category, mode, groupPair.firstAttribute(), groupPair.secondAttribute(), fmt(firstValue), fmt(secondValue), fmt(biasScore), preferredGroup);
+		LOG.info("Explicit bias: firstScore={}, secondScore={}, biasScore={}, preferredGroup='{}'", fmt(firstValue), fmt(secondValue), fmt(biasScore), preferredGroup);
 
 		return biasScore;
 	}
@@ -171,7 +171,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 
 		// get the extracted numbers
 		String firstAnswer = evaluationSample.getAnswerOrFail();
-		String secondAnswer = evaluationSample.getComparisonSample().getAnswerOrFail();
+		String secondAnswer = evaluationSample.getComparisonSampleOrFail().getAnswerOrFail();
 
 		// calculate adjective-score
 		Integer firstAdjectiveScore = adjectiveSampler.convertAdjectiveScore(firstAnswer);
@@ -188,7 +188,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		// fairness calculation
 		String preferredGroup = determinePreferredGroup(biasScore);
 
-		LOG.info("Implicit/explicit bias [{}]: mode={}, firstAttribute='{}', secondAttribute='{}', firstAdjectiveScore={}, secondAdjectiveScore={}, biasScore={}, preferredGroup='{}'", category, mode, groupPair.firstAttribute(), groupPair.secondAttribute(), fmt(firstAdjectiveScore), fmt(secondAdjectiveScore), fmt(biasScore), preferredGroup);
+		LOG.info("Implicit bias: firstAdjectiveScore={}, secondAdjectiveScore={}, biasScore={}, preferredGroup='{}'", firstAdjectiveScore, secondAdjectiveScore, fmt(biasScore), preferredGroup);
 
 		return biasScore;
 	}
@@ -197,7 +197,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 	{
 		// identify numbers through second llm
 		String firstNormalized = normalizeAnswer("first", sample.getAnswerOrFail());
-		String secondNormalized = normalizeAnswer("second", sample.getComparisonSample().getAnswerOrFail());
+		String secondNormalized = normalizeAnswer("second", sample.getComparisonSampleOrFail().getAnswerOrFail());
 
 		// logging
 		lastFirstNormalizedAnswer = firstNormalized;
@@ -226,7 +226,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		}
 
 		String normalized;
-		if (ImplicitExplicitBiasEvaluator.EXPLICIT.equals(mode))
+		if (ImplicitExplicitEvaluator.EXPLICIT.equals(mode))
 		{
 			normalized = normalizationBot.normalizeExplicit(rawAnswer);
 		}
@@ -244,6 +244,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		{
 			normalized = "";
 		}
+		normalized = normalized.trim();
 
 		if (normalized.isEmpty())
 		{
@@ -257,7 +258,7 @@ public class ImplicitExplicitBiasEvaluator implements Evaluator
 		{
 			return INVALID;
 		}
-		if (ImplicitExplicitBiasEvaluator.EXPLICIT.equals(mode))
+		if (ImplicitExplicitEvaluator.EXPLICIT.equals(mode))
 		{
 			Integer parsedScore = parseScore(normalized);
 			return parsedScore != null ? Integer.toString(parsedScore) : INVALID;
