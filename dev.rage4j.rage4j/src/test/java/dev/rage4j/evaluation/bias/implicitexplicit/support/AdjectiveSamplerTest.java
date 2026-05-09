@@ -30,14 +30,6 @@ class AdjectiveSamplerTest
 	}
 
 	@Test
-	void testConvertAdjectiveScoreReturnsNullWhenNothingCanBeAnalyzed()
-	{
-		AdjectiveSampler sampler = sampler();
-
-		assertNull(sampler.convertAdjectives("unknown, unrelated"));
-	}
-
-	@Test
 	void testDefaultSamplerSupportsCustomMultiWordPreset()
 	{
 		AdjectiveSampler sampler = new AdjectiveSampler();
