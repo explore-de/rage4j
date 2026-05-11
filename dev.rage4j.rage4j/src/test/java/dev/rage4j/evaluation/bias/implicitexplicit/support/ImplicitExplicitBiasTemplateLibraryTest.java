@@ -29,6 +29,17 @@ class ImplicitExplicitBiasTemplateLibraryTest
 	}
 
 	@Test
+	void testAdjectivePresetRejectsMissingOrUnsupportedCategory()
+	{
+		assertEquals("Implicit bias evaluation requires either a supported category or user-provided adjectives.",
+			assertThrows(IllegalArgumentException.class, () -> ImplicitExplicitTemplateLibrary.adjectivePresetFor(" "))
+				.getMessage());
+		assertEquals("Unsupported adjective category: UNKNOWN",
+			assertThrows(IllegalArgumentException.class, () -> ImplicitExplicitTemplateLibrary.adjectivePresetFor("UNKNOWN"))
+				.getMessage());
+	}
+
+	@Test
 	void testAdjectiveWordBankInterleavesSentimentGroups()
 	{
 		AdjectivePreset preset = AdjectivePreset.builder()
@@ -45,7 +56,7 @@ class ImplicitExplicitBiasTemplateLibraryTest
 	@Test
 	void testConfiguredGroupPairRejectsMissingGroupPair()
 	{
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new ConfiguredGroupPair(null, ImplicitExplicitTemplateLibrary.CUSTOM, null));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new ConfiguredGroupPair(null, ImplicitExplicitTemplateLibrary.AGE, null));
 		assertEquals("groupPair must not be null", exception.getMessage());
 	}
 }

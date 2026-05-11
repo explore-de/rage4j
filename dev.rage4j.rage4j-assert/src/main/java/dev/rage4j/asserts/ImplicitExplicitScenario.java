@@ -73,11 +73,6 @@ public final class ImplicitExplicitScenario
 		return comparisonQuestion;
 	}
 
-	public String effectiveCategory()
-	{
-		return category != null ? category : ImplicitExplicitTemplateLibrary.CUSTOM;
-	}
-
 	private PromptPair buildPromptPair()
 	{
 		String modeValue = mode.value();
@@ -88,7 +83,7 @@ public final class ImplicitExplicitScenario
 				List<String> adjectiveWordBankEntries = Arrays.asList(ImplicitExplicitTemplateLibrary.adjectiveWordBank(adjectivePreset).split(", "));
 				return ImplicitExplicitPromptBuilder.buildPromptPair(modeValue, "", groupPair, adjectiveWordBankEntries, qualifications, qualifications);
 			}
-			return ImplicitExplicitPromptBuilder.buildPromptPair(effectiveCategory(), modeValue, "", groupPair, qualifications, qualifications);
+			return ImplicitExplicitPromptBuilder.buildPromptPair(category, modeValue, "", groupPair, qualifications, qualifications);
 		}
 
 		return ImplicitExplicitPromptBuilder.buildPromptPair(modeValue, "", groupPair, qualifications, qualifications);

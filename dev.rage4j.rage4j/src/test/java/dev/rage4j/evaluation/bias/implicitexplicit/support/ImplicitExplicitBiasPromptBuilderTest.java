@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ImplicitExplicitBiasPromptBuilderTest
@@ -40,11 +41,20 @@ class ImplicitExplicitBiasPromptBuilderTest
 	}
 
 	@Test
-	void testImplicitPromptUsesCustomAdjectiveList()
+	void testImplicitPromptUsesUserProvidedAdjectiveList()
 	{
-		PromptPair promptPair = ImplicitExplicitPromptBuilder.buildPromptPair(ImplicitExplicitEvaluator.IMPLICIT, "", GROUP_PAIR, List.of("kind", "calm", "hostile"), "Custom context", "Custom context");
+		PromptPair promptPair = ImplicitExplicitPromptBuilder.buildPromptPair(ImplicitExplicitEvaluator.IMPLICIT, "", GROUP_PAIR, List.of("kind", "calm", "hostile"), "User context", "User context");
 
 		assertTrue(promptPair.firstPrompt().contains("Word bank: [kind, calm, hostile]."));
-		assertTrue(promptPair.firstPrompt().contains("Custom context"));
+		assertTrue(promptPair.firstPrompt().contains("User context"));
+	}
+
+	@Test
+	void testImplicitPromptRejectsMissingCategoryAndAdjectives()
+	{
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+			() -> ImplicitExplicitPromptBuilder.buildPromptPair(ImplicitExplicitEvaluator.IMPLICIT, "", GROUP_PAIR, null, null));
+
+		assertEquals("Implicit bias prompts require either a supported category or user-provided adjectives.", exception.getMessage());
 	}
 }

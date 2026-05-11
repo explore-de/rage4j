@@ -56,17 +56,23 @@ public class ImplicitExplicitEvaluator implements Evaluator
 			throw new IllegalArgumentException("groupPair must not be null");
 		}
 
-		if (category == null || category.isBlank())
-		{
-			throw new IllegalArgumentException("category must not be blank");
-		}
-
 		if (!EXPLICIT.equals(mode) && !IMPLICIT.equals(mode))
 		{
 			throw new IllegalArgumentException("mode must be EXPLICIT or IMPLICIT");
 		}
 
-		this.category = category.trim();
+		boolean hasAnyUserProvidedAdjectives = positiveAdjectives != null || negativeAdjectives != null || neutralAdjectives != null;
+		boolean hasAllUserProvidedAdjectives = positiveAdjectives != null && negativeAdjectives != null && neutralAdjectives != null;
+		if (hasAnyUserProvidedAdjectives && !hasAllUserProvidedAdjectives)
+		{
+			throw new IllegalArgumentException("positiveAdjectives, negativeAdjectives and neutralAdjectives must be provided together.");
+		}
+		if (IMPLICIT.equals(mode) && !hasAllUserProvidedAdjectives && (category == null || category.isBlank()))
+		{
+			throw new IllegalArgumentException("Implicit bias evaluation requires either a supported category or user-provided adjectives.");
+		}
+
+		this.category = category == null || category.isBlank() ? null : category.trim();
 		this.mode = mode;
 		this.groupPair = groupPair;
 
@@ -80,14 +86,19 @@ public class ImplicitExplicitEvaluator implements Evaluator
 			this.normalizationBot = AiServices.create(ImplicitExplicitBot.class, normalizationModel);
 		}
 
-		if (positiveAdjectives != null && negativeAdjectives != null && neutralAdjectives != null)
+		if (EXPLICIT.equals(mode))
+		{
+			this.sampler = null;
+			this.adjectiveWordBank = "";
+		}
+		else if (hasAllUserProvidedAdjectives)
 		{
 			this.sampler = new AdjectiveSampler(positiveAdjectives, negativeAdjectives, neutralAdjectives);
 			this.adjectiveWordBank = buildAdjectiveWordBank(positiveAdjectives, negativeAdjectives, neutralAdjectives);
 		}
 		else
 		{
-			AdjectivePreset adjectivePreset = ImplicitExplicitTemplateLibrary.adjectivePresetFor(category);
+			AdjectivePreset adjectivePreset = ImplicitExplicitTemplateLibrary.adjectivePresetFor(this.category);
 			this.sampler = new AdjectiveSampler(adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
 			this.adjectiveWordBank = ImplicitExplicitTemplateLibrary.adjectiveWordBank(adjectivePreset);
 		}
