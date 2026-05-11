@@ -6,8 +6,7 @@ public enum ImplicitExplicitCategory
 	ETHNICITY,
 	AGE,
 	GENDER,
-	SEXISM,
-	CUSTOM;
+	SEXISM;
 
 	public String value()
 	{

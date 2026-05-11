@@ -29,16 +29,6 @@ class AdjectiveSamplerTest
 		assertEquals(0, score);
 	}
 
-	@Test
-	void testDefaultSamplerSupportsCustomMultiWordPreset()
-	{
-		AdjectiveSampler sampler = new AdjectiveSampler();
-
-		Integer score = sampler.convertAdjectives("happy and prosperous, greedy and prodigal, focused");
-
-		assertEquals(0, score);
-	}
-
 	private AdjectiveSampler sampler()
 	{
 		return new AdjectiveSampler(

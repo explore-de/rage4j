@@ -86,7 +86,7 @@ class ImplicitExplicitBiasEvaluatorTest
 	@Test
 	void testEvaluateRequiresNormalizationModel()
 	{
-		ImplicitExplicitEvaluator evaluator = new ImplicitExplicitEvaluator("CUSTOM", ImplicitExplicitEvaluator.EXPLICIT, GROUP_PAIR, null);
+		ImplicitExplicitEvaluator evaluator = new ImplicitExplicitEvaluator(null, ImplicitExplicitEvaluator.EXPLICIT, GROUP_PAIR, null);
 
 		IllegalStateException exception = assertThrows(IllegalStateException.class, () -> evaluator.evaluate(sample("Prompt 1", "7", "Prompt 2", "8")));
 		assertEquals("Implicit/explicit bias evaluation requires a second chat model for normalization.", exception.getMessage());
@@ -97,22 +97,45 @@ class ImplicitExplicitBiasEvaluatorTest
 	{
 		ChatModel model = createJudgeModel("7", "8");
 
-		assertEquals("groupPair must not be null", assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator("CUSTOM", ImplicitExplicitEvaluator.EXPLICIT, null, model))
+		assertEquals("groupPair must not be null", assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator(null, ImplicitExplicitEvaluator.EXPLICIT, null, model))
 			.getMessage());
-		assertEquals("category must not be blank", assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator(" ", ImplicitExplicitEvaluator.EXPLICIT, GROUP_PAIR, model))
+		assertEquals("mode must be EXPLICIT or IMPLICIT", assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator(null, "UNKNOWN", GROUP_PAIR, model))
 			.getMessage());
-		assertEquals("mode must be EXPLICIT or IMPLICIT", assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator("CUSTOM", "UNKNOWN", GROUP_PAIR, model))
-			.getMessage());
+	}
+
+	@Test
+	void testImplicitConstructorRejectsMissingCategoryAndAdjectives()
+	{
+		ChatModel model = createJudgeModel("kind", "hostile");
+
+		assertEquals("Implicit bias evaluation requires either a supported category or user-provided adjectives.",
+			assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator(" ", ImplicitExplicitEvaluator.IMPLICIT, GROUP_PAIR, model))
+				.getMessage());
+		assertEquals("Unsupported adjective category: UNKNOWN",
+			assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator("UNKNOWN", ImplicitExplicitEvaluator.IMPLICIT, GROUP_PAIR, model))
+				.getMessage());
+	}
+
+	@Test
+	void testImplicitConstructorAllowsUserProvidedAdjectivesWithoutCategory()
+	{
+		ImplicitExplicitEvaluator evaluator = new ImplicitExplicitEvaluator(null, ImplicitExplicitEvaluator.IMPLICIT, GROUP_PAIR,
+			createJudgeModel("kind, calm", "hostile"), List.of("kind"), List.of("hostile"), List.of("calm"));
+
+		Evaluation evaluation = evaluator.evaluate(sample("Prompt 1", "first raw adjectives", "Prompt 2", "second raw adjectives"));
+
+		assertEquals("Implicit Bias", evaluation.getName());
+		assertEquals(-0.2, evaluation.getValue(), 0.001);
 	}
 
 	private ImplicitExplicitEvaluator createExplicitEvaluator(ChatModel normalizationModel)
 	{
-		return new ImplicitExplicitEvaluator("CUSTOM", ImplicitExplicitEvaluator.EXPLICIT, GROUP_PAIR, normalizationModel);
+		return new ImplicitExplicitEvaluator(null, ImplicitExplicitEvaluator.EXPLICIT, GROUP_PAIR, normalizationModel);
 	}
 
 	private ImplicitExplicitEvaluator createImplicitEvaluator(ChatModel normalizationModel)
 	{
-		return new ImplicitExplicitEvaluator("CUSTOM", ImplicitExplicitEvaluator.IMPLICIT, GROUP_PAIR, normalizationModel, List.of("kind", "capable"), List.of("hostile", "careless"), List.of("calm"));
+		return new ImplicitExplicitEvaluator(null, ImplicitExplicitEvaluator.IMPLICIT, GROUP_PAIR, normalizationModel, List.of("kind", "capable"), List.of("hostile", "careless"), List.of("calm"));
 	}
 
 	private Sample sample(String question, String answer, String comparisonQuestion, String comparisonAnswer)

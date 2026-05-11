@@ -235,18 +235,18 @@ public class RageAssertTestCaseAssertions
 			throw new IllegalStateException("An implicitExplicitScenario must be set before assertImplicitExplicitBias is used.");
 		}
 
-		// are there custom adjectives along the scenario object?
+		// are there user-provided adjectives along the scenario object?
 		AdjectivePreset adjectivePreset = implicitExplicitScenario.adjectivePreset();
 		if (adjectivePreset != null)
 		{
-			return assertImplicitExplicitInternal(implicitExplicitScenario.effectiveCategory(), implicitExplicitScenario.mode().value(), runs, implicitExplicitScenario.groupPair(), adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
+			return assertImplicitExplicitInternal(implicitExplicitScenario.category(), implicitExplicitScenario.mode().value(), runs, implicitExplicitScenario.groupPair(), adjectivePreset.positiveAdjectives(), adjectivePreset.negativeAdjectives(), adjectivePreset.neutralAdjectives());
 		}
-		return assertImplicitExplicitInternal(implicitExplicitScenario.effectiveCategory(), implicitExplicitScenario.mode().value(), runs, implicitExplicitScenario.groupPair(), null, null, null);
+		return assertImplicitExplicitInternal(implicitExplicitScenario.category(), implicitExplicitScenario.mode().value(), runs, implicitExplicitScenario.groupPair(), null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode)
 	{
-		return assertImplicitExplicitInternal("CUSTOM", mode, 1, groupPair, null, null, null);
+		return assertImplicitExplicitInternal(null, mode, 1, groupPair, null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(String category, String mode, GroupPair groupPair)
@@ -256,18 +256,18 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, int runs)
 	{
-		return assertImplicitExplicitInternal("CUSTOM", mode, runs, groupPair, null, null, null);
+		return assertImplicitExplicitInternal(null, mode, runs, groupPair, null, null, null);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
-		return assertImplicitExplicitInternal("CUSTOM", mode,
+		return assertImplicitExplicitInternal(null, mode,
 			1, groupPair, positiveAdjectives, negativeAdjectives, neutralAdjectives);
 	}
 
 	public AssertionEvaluation assertImplicitExplicit(GroupPair groupPair, String mode, int runs, List<String> positiveAdjectives, List<String> negativeAdjectives, List<String> neutralAdjectives)
 	{
-		return assertImplicitExplicitInternal("CUSTOM", mode, runs,
+		return assertImplicitExplicitInternal(null, mode, runs,
 			groupPair, positiveAdjectives, negativeAdjectives, neutralAdjectives);
 	}
 
@@ -300,10 +300,16 @@ public class RageAssertTestCaseAssertions
 
 		if (ImplicitExplicitEvaluator.IMPLICIT.equals(mode))
 		{
-			AdjectivePreset adjectivePreset = ImplicitExplicitTemplateLibrary.adjectivePresetFor(category);
-			List<String> positive = positiveAdjectives != null ? positiveAdjectives : adjectivePreset.positiveAdjectives();
-			List<String> negative = negativeAdjectives != null ? negativeAdjectives : adjectivePreset.negativeAdjectives();
-			List<String> neutral = neutralAdjectives != null ? neutralAdjectives : adjectivePreset.neutralAdjectives();
+			List<String> positive = positiveAdjectives;
+			List<String> negative = negativeAdjectives;
+			List<String> neutral = neutralAdjectives;
+			if (positive == null || negative == null || neutral == null)
+			{
+				AdjectivePreset adjectivePreset = ImplicitExplicitTemplateLibrary.adjectivePresetFor(category);
+				positive = adjectivePreset.positiveAdjectives();
+				negative = adjectivePreset.negativeAdjectives();
+				neutral = adjectivePreset.neutralAdjectives();
+			}
 
 			java.util.ArrayList<String> all = new java.util.ArrayList<>();
 			all.addAll(positive);

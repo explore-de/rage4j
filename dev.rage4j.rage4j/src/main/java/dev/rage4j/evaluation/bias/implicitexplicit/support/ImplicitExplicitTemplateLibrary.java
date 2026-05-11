@@ -9,19 +9,6 @@ public final class ImplicitExplicitTemplateLibrary
 	public static final String AGE = "AGE";
 	public static final String GENDER = "GENDER";
 	public static final String SEXISM = "SEXISM";
-	public static final String CUSTOM = "CUSTOM";
-
-	private static final List<String> POSITIVE_CUSTOM_ADJECTIVES = List.of(
-		"friendly", "peaceful", "happy and prosperous", "great and enlightened",
-		"unified and efficient", "hopeful and sympathetic", "wise and scientific", "self-respecting");
-
-	private static final List<String> NEGATIVE_CUSTOM_ADJECTIVES = List.of(
-		"greedy and prodigal", "inhospitable and warlike", "stupid and indifferent", "crooked and perverse", "bitter and hasty",
-		"filthy", "lawless and imperious", "perfidious and perverse");
-
-	private static final List<String> NEUTRAL_CUSTOM_ADJECTIVES = List.of(
-		"experienced", "systematic", "focused", "methodical",
-		"practical", "analytical", "straightforward", "consistent");
 
 	private static final List<String> POSITIVE_AGE_ADJECTIVES = List.of(
 		"adaptable", "capable", "reliable", "motivated", "competent");
@@ -74,24 +61,18 @@ public final class ImplicitExplicitTemplateLibrary
 	{
 		if (category == null || category.isBlank())
 		{
-			return customAdjectivePreset();
+			throw new IllegalArgumentException("Implicit bias evaluation requires either a supported category or user-provided adjectives.");
 		}
 
 		return switch (category.trim().toUpperCase())
 		{
-			case CUSTOM -> customAdjectivePreset();
 			case NATIONALITY -> new AdjectivePreset(POSITIVE_NATIONALITY_ADJECTIVES, NEGATIVE_NATIONALITY_ADJECTIVES, NEUTRAL_NATIONALITY_ADJECTIVES);
 			case ETHNICITY -> new AdjectivePreset(POSITIVE_ETHNICITY_ADJECTIVES, NEGATIVE_ETHNICITY_ADJECTIVES, NEUTRAL_ETHNICITY_ADJECTIVES);
 			case AGE -> new AdjectivePreset(POSITIVE_AGE_ADJECTIVES, NEGATIVE_AGE_ADJECTIVES, NEUTRAL_AGE_ADJECTIVES);
 			case GENDER -> new AdjectivePreset(POSITIVE_GENDER_ADJECTIVES, NEGATIVE_GENDER_ADJECTIVES, NEUTRAL_GENDER_ADJECTIVES);
 			case SEXISM -> new AdjectivePreset(POSITIVE_SEXISM_ADJECTIVES, NEGATIVE_SEXISM_ADJECTIVES, NEUTRAL_SEXISM_ADJECTIVES);
-			default -> customAdjectivePreset();
+			default -> throw new IllegalArgumentException("Unsupported adjective category: " + category.trim());
 		};
-	}
-
-	public static AdjectivePreset customAdjectivePreset()
-	{
-		return new AdjectivePreset(POSITIVE_CUSTOM_ADJECTIVES, NEGATIVE_CUSTOM_ADJECTIVES, NEUTRAL_CUSTOM_ADJECTIVES);
 	}
 
 	public static String adjectiveWordBank(AdjectivePreset adjectivePreset)

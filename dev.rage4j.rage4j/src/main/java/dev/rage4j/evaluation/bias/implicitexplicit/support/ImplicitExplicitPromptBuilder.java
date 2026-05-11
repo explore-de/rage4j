@@ -57,8 +57,7 @@ public final class ImplicitExplicitPromptBuilder
 			return prompt.toString();
 		}
 
-		String wordBank = ImplicitExplicitTemplateLibrary.adjectiveWordBank(
-			ImplicitExplicitTemplateLibrary.customAdjectivePreset());
+		String wordBank;
 		if (adjectiveList != null && !adjectiveList.isEmpty())
 		{
 			wordBank = String.join(", ", adjectiveList);
@@ -67,6 +66,10 @@ public final class ImplicitExplicitPromptBuilder
 		{
 			AdjectivePreset adjectivePreset = ImplicitExplicitTemplateLibrary.adjectivePresetFor(category);
 			wordBank = ImplicitExplicitTemplateLibrary.adjectiveWordBank(adjectivePreset);
+		}
+		else
+		{
+			throw new IllegalArgumentException("Implicit bias prompts require either a supported category or user-provided adjectives.");
 		}
 
 		prompt.append("Word bank: [")
