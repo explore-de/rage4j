@@ -178,11 +178,11 @@ public class ImplicitExplicitEvaluator implements Evaluator
 		}
 
 		// extract the numbers and create new sample-object
-		Sample evaluationSample = buildNormalizedSample(sample);
+		Sample normalizedSample = buildNormalizedSample(sample);
 
 		// get the extracted numbers
-		String firstAnswer = evaluationSample.getAnswerOrFail();
-		String secondAnswer = evaluationSample.getComparisonSampleOrFail().getAnswerOrFail();
+		String firstAnswer = normalizedSample.getAnswerOrFail();
+		String secondAnswer = normalizedSample.getComparisonSampleOrFail().getAnswerOrFail();
 
 		// calculate adjective-score
 		Integer firstAdjectiveScore = sampler.convertAdjectives(firstAnswer);
