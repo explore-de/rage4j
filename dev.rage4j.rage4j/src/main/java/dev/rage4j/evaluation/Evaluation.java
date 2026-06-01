@@ -3,9 +3,11 @@ package dev.rage4j.evaluation;
 import java.util.List;
 
 /**
- * The {@code Evaluation} class represents the result of evaluating a particular metric. It stores the name of the metric and its calculated value.
+ * The {@code Evaluation} class represents the result of evaluating a particular
+ * metric. It stores the name of the metric and its calculated value.
  * <p>
- * This class is immutable, meaning its fields cannot be changed after construction.
+ * This class is immutable, meaning its fields cannot be changed after
+ * construction.
  */
 public class Evaluation
 {
@@ -14,12 +16,13 @@ public class Evaluation
 	private List<String> explanations = List.of();
 
 	/**
-	 * Constructs a new {@code Evaluation} object with the specified metric name and value.
+	 * Constructs a new {@code Evaluation} object with the specified metric name
+	 * and value.
 	 *
 	 * @param name
-	 * 	The name of the metric being evaluated.
+	 *            The name of the metric being evaluated.
 	 * @param value
-	 * 	The calculated value of the evaluation.
+	 *            The calculated value of the evaluation.
 	 */
 	public Evaluation(String name, double value)
 	{

@@ -24,7 +24,7 @@ public class DataGenerator
 		Format:
 		User:  Message…
 		AI: Message…
-		
+
 		Task 2:
 		Transform this into JSON. Use this format:
 		```

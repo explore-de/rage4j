@@ -23,7 +23,7 @@ public class AxcelEvaluatorIntegrationTest
 	{
 		OpenAiChatModel model = OpenAiChatModel.builder()
 			.logRequests(true)
-			//.logResponses(true)
+			// .logResponses(true)
 			.apiKey(OPEN_AI_KEY)
 			.modelName("gpt-4.1")
 			.supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)

@@ -21,8 +21,8 @@ class PairEvalEvaluatorTest
 	void setup()
 	{
 		OpenAiChatModel model = OpenAiChatModel.builder()
-			//.logRequests(true)
-			//.logResponses(true)
+			// .logRequests(true)
+			// .logResponses(true)
 			.apiKey(OPEN_AI_KEY)
 			.modelName("gpt-4.1")
 			.temperature(0.0)
@@ -67,7 +67,7 @@ class PairEvalEvaluatorTest
 			.build();
 
 		Evaluation evaluation = evaluator.evaluate(sample);
-		//assertTrue(evaluation.getValue() <= 0.5);
+		// assertTrue(evaluation.getValue() <= 0.5);
 		assertTrue(evaluation.getValue() <= 0.33);
 	}
 }

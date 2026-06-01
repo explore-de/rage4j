@@ -38,7 +38,7 @@ class ModelResults
 	}
 
 	public void storeResults()
-	{        // Grouped by context, dialog and one shot example
+	{ // Grouped by context, dialog and one shot example
 		List<StatisticsUtil.Stats> statsList = CONTEXT_EXAMPLE_RESULTS.entrySet().stream()
 			.map(StatisticsUtil::buildStats)
 			.toList();

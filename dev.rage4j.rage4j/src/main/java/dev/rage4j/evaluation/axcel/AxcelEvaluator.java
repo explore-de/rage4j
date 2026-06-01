@@ -107,9 +107,7 @@ public class AxcelEvaluator implements Evaluator
 	{
 		if (log.isDebugEnabled())
 		{
-			parsedFacts.forEach(fact ->
-				log.debug("Fact {} rating: {} -> {}", fact.title(), fact.rating(), fact.verification())
-			);
+			parsedFacts.forEach(fact -> log.debug("Fact {} rating: {} -> {}", fact.title(), fact.rating(), fact.verification()));
 		}
 	}
 

@@ -12,7 +12,8 @@ public record Dialog(Message[] dialog, String path)
 	{
 		int length = dialog().length;
 		List<String> context = new ArrayList<>();
-		// Add all messages except the last two (question and answer) to the context
+		// Add all messages except the last two (question and answer) to the
+		// context
 		for (int i = 0; i < length - 2; i++)
 		{
 			context.add(messageToString(dialog()[i]));
@@ -39,4 +40,3 @@ public record Dialog(Message[] dialog, String path)
 		return message.role() + ": " + message.message();
 	}
 }
-
