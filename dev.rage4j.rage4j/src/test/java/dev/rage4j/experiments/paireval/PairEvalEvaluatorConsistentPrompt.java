@@ -24,7 +24,6 @@ class PairEvalEvaluatorConsistentPrompt extends PairEvalEvaluator
 			historyA,
 			sampleA.getAnswer(),
 			historyB,
-			sampleB.getAnswer()
-		);
+			sampleB.getAnswer());
 	}
 }

@@ -93,7 +93,6 @@ public class PairEvalEvaluator implements Evaluator
 			historyA,
 			sampleA.getAnswer(),
 			historyB,
-			sampleB.getAnswer()
-		);
+			sampleB.getAnswer());
 	}
 }

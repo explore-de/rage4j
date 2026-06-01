@@ -3,7 +3,9 @@ package dev.rage4j.evaluation.axcel;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a single fact evaluation entry produced by the Axcel evaluator prompt. Each entry contains the fact index, title, supporting text snippets, and the rating assigned by the LLM (if present).
+ * Represents a single fact evaluation entry produced by the Axcel evaluator
+ * prompt. Each entry contains the fact index, title, supporting text snippets,
+ * and the rating assigned by the LLM (if present).
  */
 public record AxcelFactEvaluation(
 	int index,
