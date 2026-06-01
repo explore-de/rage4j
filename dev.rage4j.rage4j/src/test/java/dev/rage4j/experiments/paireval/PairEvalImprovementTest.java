@@ -29,12 +29,15 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("Experiments disabled")
 public class PairEvalImprovementTest
 {
 	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
 	private static final String[] MODELS = { "gpt-5.2", "gpt-4.1", "ministral-3", "llama3.1:8b", "gemma3:12b" };
-	//private static final String[] OLLAMA_MODELS = { "gemma3:12b", "qwen3:14b" };//, "ministral-3", "llama3.1:8b"
+	// private static final String[] OLLAMA_MODELS = { "gemma3:12b", "qwen3:14b"
+	// };//, "ministral-3", "llama3.1:8b"
 
 	private static final String DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").format(LocalDateTime.now());
 	private static final Map<String, Map<String, List<Double>>> dialogToModelResult = new HashMap<>();

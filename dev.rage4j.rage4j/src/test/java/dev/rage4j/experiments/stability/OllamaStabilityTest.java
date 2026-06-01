@@ -24,7 +24,9 @@ import java.util.Map;
 
 import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("Experiments disabled")
 public class OllamaStabilityTest
 {
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();

@@ -8,7 +8,9 @@ import dev.rage4j.util.LlmContextCompressor;
 import org.jspecify.annotations.NonNull;
 
 import static dev.rage4j.experiments.context.AxcelContextCompressionTest.getOpenAIChatModel;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("Experiments disabled")
 public class PairEvalContextCompressionTest extends PairEvalContextTest
 {
 	private static final int TOKEN_LIMIT = 512;

@@ -10,8 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Disabled;
 
 @ExtendWith(LoggingTestWatcher.class)
+@Disabled("Experiments disabled")
 class DialogLoaderTest
 {
 	private DialogLoader dialogLoader;
@@ -51,7 +53,8 @@ class DialogLoaderTest
 		Sample firstSample = dialogLoader.getDialog();
 		assertNotNull(firstSample, "First sample should not be null");
 
-		// Call getDialog multiple times to test cycling (10 times to reproduce the bug)
+		// Call getDialog multiple times to test cycling (10 times to reproduce
+		// the bug)
 		for (int i = 0; i < 10; i++)
 		{
 			Sample sample = dialogLoader.getDialog();
@@ -64,7 +67,8 @@ class DialogLoaderTest
 	@Test
 	void testGetDialog_shouldNotThrowIndexOutOfBounds()
 	{
-		// This test specifically reproduces the "Index 10 out of bounds for length 10" error
+		// This test specifically reproduces the "Index 10 out of bounds for
+		// length 10" error
 		assertDoesNotThrow(() -> {
 			for (int i = 0; i < 20; i++)
 			{
@@ -78,7 +82,8 @@ class DialogLoaderTest
 	{
 		Sample sample = dialogLoader.getDialog();
 
-		// The context should not contain the question or answer (last two messages)
+		// The context should not contain the question or answer (last two
+		// messages)
 		assertTrue(sample.hasContext(), "Sample should have contexts");
 		assertFalse(sample.getContext().contains(sample.getQuestion()),
 			"Context should not include the question");

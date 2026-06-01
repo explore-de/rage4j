@@ -11,7 +11,9 @@ import dev.rage4j.util.LlmContextCompressor;
 import org.jspecify.annotations.NonNull;
 
 import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("Experiments disabled")
 public class AxcelContextCompressionTest extends AxcelContextTest
 {
 	private static final String OPEN_AI_MODEL_NAME = "gpt-5.2";

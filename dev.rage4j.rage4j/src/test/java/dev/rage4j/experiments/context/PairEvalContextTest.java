@@ -24,7 +24,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("Experiments disabled")
 public class PairEvalContextTest
 {
 	private static final List<String> MODELS = List.of("ministral-3", "gemma3:12b", "llama3.1:8b", "qwen3:14b");
