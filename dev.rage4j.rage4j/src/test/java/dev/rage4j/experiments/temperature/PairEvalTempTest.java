@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
+import org.junit.jupiter.api.Disabled;
 
 @ExtendWith(LoggingTestWatcher.class)
+@Disabled("Experiments disabled")
 public class PairEvalTempTest
 {
 	private static final int RUNS = 40;

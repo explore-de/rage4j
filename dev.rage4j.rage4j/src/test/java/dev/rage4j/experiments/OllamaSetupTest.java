@@ -12,7 +12,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static dev.langchain4j.model.chat.Capability.RESPONSE_FORMAT_JSON_SCHEMA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("Experiments disabled")
 public class OllamaSetupTest
 {
 	private static final DialogLoader DIALOG_LOADER = new DialogLoader();
