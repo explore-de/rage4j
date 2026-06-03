@@ -1,9 +1,10 @@
-package dev.rage4j.evaluation.answerrelevance;
+package dev.rage4j.evaluation.answerrelevance.embedding;
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.config.ConfigFactory;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,26 +12,21 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.function.BiFunction;
-
-import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O;
-import static dev.langchain4j.model.openai.OpenAiEmbeddingModelName.TEXT_EMBEDDING_3_LARGE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(LoggingTestWatcher.class)
-class AnswerRelevanceEvaluatorIntegrationTest
+class AnswerRelevanceEmbeddingEvaluatorIntegrationTest
 {
 
 	private static final String QUESTION = "What is the capital of France?";
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "Paris";
 
-	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final String OPEN_AI_KEY = ConfigFactory.getConfig().OPEN_AI_KEY();
+	private static final String OPEN_AI_MODEL = ConfigFactory.getConfig().OPEN_AI_MODEL();
+	private static final String OPEN_AI_EMBEDDING_MODEL = ConfigFactory.getConfig().OPEN_AI_EMBEDDING_MODEL();
 
-	private AnswerRelevanceEvaluator evaluator;
-	private AnswerRelevanceBot mockBot;
-	private BiFunction<String, String, Double> mockStringSimilarityComputer;
+	private AnswerRelevanceEmbeddingEvaluator evaluator;
 
 	@BeforeEach
 	void setUp()
@@ -39,21 +35,21 @@ class AnswerRelevanceEvaluatorIntegrationTest
 		// OpenAIEmbeddingModel
 		OpenAiChatModel chatModel = OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName(GPT_4_O)
+			.modelName(OPEN_AI_MODEL)
 			.responseFormat("json_object")
 			.build();
 
 		EmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
-			.modelName(TEXT_EMBEDDING_3_LARGE)
+			.modelName(OPEN_AI_EMBEDDING_MODEL)
 			.apiKey(OPEN_AI_KEY)
 			.build();
 
-		evaluator = new AnswerRelevanceEvaluator(chatModel, embeddingModel);
+		evaluator = new AnswerRelevanceEmbeddingEvaluator(chatModel, embeddingModel);
 	}
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceFullSimilarity()
+	void testEvaluateRelevanceEmbeddingFullSimilarity()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -62,23 +58,23 @@ class AnswerRelevanceEvaluatorIntegrationTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 		assertEquals(0.875, result.getValue(), 0.125);
 	}
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceWithPartialSimilarity()
+	void testEvaluateRelevanceEmbeddingWithPartialSimilarity()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
-			.withAnswer("Paris is located in France.")
+			.withAnswer("Paris is the capital of France, known for the Eiffel Tower.")
 			.build();
 
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertTrue(result.getValue() >= 0.5);
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 
 		// Expect a value less than 1.0 due to partial similarity
 		assertTrue(result.getValue() < 1.0);
@@ -86,7 +82,7 @@ class AnswerRelevanceEvaluatorIntegrationTest
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceWithEmptyAnswer()
+	void testEvaluateRelevanceEmbeddingWithEmptyAnswer()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -95,51 +91,43 @@ class AnswerRelevanceEvaluatorIntegrationTest
 
 		Evaluation result = evaluator.evaluate(sample);
 
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 		assertEquals(0.05, result.getValue(), 0.05);
 	}
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceWithNullAnswer()
+	void testEvaluateRelevanceEmbeddingWithNullAnswer()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
 			.withAnswer(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalStateException e)
-		{
-			assertEquals("Attribute not found: answer", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample));
+		assertEquals("Sample must have an answer for answer relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
 	@Test
-	void testEvaluateRelevanceWithNullQuestion()
+	void testEvaluateRelevanceEmbeddingWithNullQuestion()
 	{
 		Sample sample = Sample.builder()
 			.withAnswer(ANSWER)
 			.withQuestion(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalStateException e)
-		{
-			assertEquals("Attribute not found: question", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample));
+		assertEquals("Sample must have a question for answer relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
 	@Test
-	void shouldEvaluateHigh()
+	void testEverythingEmbeddingCorrect()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -147,6 +135,9 @@ class AnswerRelevanceEvaluatorIntegrationTest
 			.withGroundTruth(GROUND_TRUTH)
 			.build();
 
-		assertEquals(0.85, evaluator.evaluate(sample).getValue(), 0.15);
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals("Answer relevance embedding", result.getName());
+		assertEquals(0.8, result.getValue(), 0.1);
 	}
 }

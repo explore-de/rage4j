@@ -27,7 +27,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>2.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -36,8 +36,19 @@ For fluent test assertions:
 ```xml
 <dependency>
     <groupId>dev.rage4j</groupId>
-    <artifactId>rage-assert</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <artifactId>rage4j-assert</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+```
+
+For persistence of evaluations:
+
+```xml
+<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage4j-persist</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -105,6 +116,7 @@ For development, use the code formatter (`./mvnw formatter:format`) and install 
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kmscheuer"><img src="https://avatars.githubusercontent.com/u/3342781?v=4?s=100" width="100px;" alt="Klaus-Martin Fink"/><br /><sub><b>Klaus-Martin Fink</b></sub></a><br /><a href="#code-kmscheuer" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/andresCh01"><img src="https://avatars.githubusercontent.com/u/196327563?v=4?s=100" width="100px;" alt="andresCh01"/><br /><sub><b>andresCh01</b></sub></a><br /><a href="#code-andresCh01" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ainges"><img src="https://avatars.githubusercontent.com/u/81434615?v=4?s=100" width="100px;" alt="Hubertus Seitz"/><br /><sub><b>Hubertus Seitz</b></sub></a><br /><a href="#code-Ainges" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

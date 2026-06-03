@@ -13,8 +13,9 @@ const getMavenDependency = (version: string) => `<dependency>
 
 const getAssertDependency = (version: string) => `<dependency>
     <groupId>dev.rage4j</groupId>
-    <artifactId>rage-assert</artifactId>
+    <artifactId>rage4j-assert</artifactId>
     <version>${version}</version>
+    <scope>test</scope>
 </dependency>`;
 
 const useScrollAnimation = () => {

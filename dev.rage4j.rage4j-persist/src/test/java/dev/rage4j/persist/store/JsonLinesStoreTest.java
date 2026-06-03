@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.rage4j.model.EvaluationAggregation;
+import dev.rage4j.model.Rage4jImage;
 import dev.rage4j.model.Sample;
 
 class JsonLinesStoreTest
@@ -194,6 +195,52 @@ class JsonLinesStoreTest
 		assertTrue(Files.exists(file));
 		List<String> lines = Files.readAllLines(file);
 		assertEquals(1, lines.size());
+	}
+
+	@Test
+	void testImagesPersistedAsNameList() throws IOException
+	{
+		Rage4jImage img1 = Rage4jImage.fromBytes(new byte[] { 1, 2, 3 }, "image/png", "eiffel-tower.png");
+		Rage4jImage img2 = Rage4jImage.fromUrl("https://example.com/path/louvre.jpg");
+		Sample sample = Sample.builder()
+			.withQuestion("What landmarks are mentioned in the document?")
+			.withContext("Paris is the capital of France and home to many landmarks.")
+			.withImages(List.of(img1, img2))
+			.build();
+
+		EvaluationAggregation aggregation = new EvaluationAggregation(sample);
+		aggregation.put("Faithfulness", 0.9);
+
+		store.storeFlush(aggregation);
+
+		List<String> lines = Files.readAllLines(file);
+		JsonNode json = objectMapper.readTree(lines.getFirst());
+		JsonNode sampleNode = json.get("sample");
+		JsonNode images = sampleNode.get("images");
+
+		assertTrue(images.isArray());
+		assertEquals(2, images.size());
+		assertEquals("eiffel-tower.png", images.get(0).asText());
+		assertEquals("louvre.jpg", images.get(1).asText());
+		// Bytes must NOT leak into the JSONL output
+		assertTrue(!lines.getFirst().contains("data") || !lines.getFirst().contains("AQID"));
+	}
+
+	@Test
+	void testImagesFieldOmittedWhenAbsent() throws IOException
+	{
+		Sample sample = Sample.builder()
+			.withQuestion("Test")
+			.withAnswer("Answer")
+			.build();
+		EvaluationAggregation aggregation = new EvaluationAggregation(sample);
+		aggregation.put("score", 0.5);
+
+		store.storeFlush(aggregation);
+
+		List<String> lines = Files.readAllLines(file);
+		JsonNode sampleNode = objectMapper.readTree(lines.getFirst()).get("sample");
+		assertTrue(!sampleNode.has("images"));
 	}
 
 	@Test

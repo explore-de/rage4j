@@ -3,6 +3,7 @@ package dev.rage4j.evaluation.answersemanicsimilarity;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.config.ConfigFactory;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.answersemanticsimilarity.AnswerSemanticSimilarityEvaluator;
 import dev.rage4j.model.Sample;
@@ -11,9 +12,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static dev.langchain4j.model.openai.OpenAiEmbeddingModelName.TEXT_EMBEDDING_3_LARGE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(LoggingTestWatcher.class)
 class AnswerSemanticSimilarityEvaluatorIntegrationTest
@@ -22,16 +21,17 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 	private static final String ANSWER = "Paris is the capital of France.";
 	private static final String GROUND_TRUTH = "The capital of France is Paris.";
 
-	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final String OPEN_AI_KEY = ConfigFactory.getConfig().OPEN_AI_KEY();
+	private static final String OPEN_AI_EMBEDDING_MODEL = ConfigFactory.getConfig().OPEN_AI_EMBEDDING_MODEL();
 
 	private AnswerSemanticSimilarityEvaluator evaluator;
 
 	@BeforeEach
 	void setUp()
 	{
-		// Initialise the evaluator using OpenAIEmbeddingModel
+		// Initialize the evaluator using OpenAIEmbeddingModel
 		EmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
-			.modelName(TEXT_EMBEDDING_3_LARGE)
+			.modelName(OPEN_AI_EMBEDDING_MODEL)
 			.apiKey(OPEN_AI_KEY)
 			.build();
 
@@ -108,14 +108,10 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 			.withAnswer(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalStateException e)
-		{
-			assertEquals("Attribute not found: answer", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample));
+		assertEquals("Sample must have an answer for Answer Semantic Similarity evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -127,19 +123,15 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 			.withGroundTruth(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalStateException e)
-		{
-			assertEquals("Attribute not found: groundTruth", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample));
+		assertEquals("Sample must have a ground truth for Answer Semantic Similarity evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
 	@Test
-	void shouldEvaluateAboveZeroPointEight()
+	void testEverythingCorrect()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -147,6 +139,9 @@ class AnswerSemanticSimilarityEvaluatorIntegrationTest
 			.withGroundTruth(GROUND_TRUTH)
 			.build();
 
-		assertTrue(evaluator.evaluate(sample).getValue() > 0.8);
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals("Answer semantic similarity", result.getName());
+		assertTrue(result.getValue() > 0.8);
 	}
 }

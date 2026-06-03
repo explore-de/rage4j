@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.answerrelevance;
+package dev.rage4j.evaluation.answerrelevance.embedding;
 
 import dev.rage4j.LoggingTestWatcher;
 import dev.rage4j.evaluation.Evaluation;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(LoggingTestWatcher.class)
-class AnswerRelevanceEvaluatorTest
+class AnswerRelevanceEmbeddingEvaluatorTest
 {
 	private static final String QUESTION = "What is the capital of France?";
 	private static final String ANSWER = "Paris is the capital of France.";
@@ -26,18 +26,18 @@ class AnswerRelevanceEvaluatorTest
 		"Which city is the capital of France?"
 	};
 
-	private AnswerRelevanceEvaluator evaluator;
-	private AnswerRelevanceBot mockBot;
+	private AnswerRelevanceEmbeddingEvaluator evaluator;
+	private AnswerRelevanceEmbeddingBot mockBot;
 	private BiFunction<String, String, Double> mockSimilarityComputer;
 	private Sample sample;
 
 	@BeforeEach
 	void setUp()
 	{
-		mockBot = mock(AnswerRelevanceBot.class);
+		mockBot = mock(AnswerRelevanceEmbeddingBot.class);
 		mockSimilarityComputer = mock(BiFunction.class);
 
-		evaluator = new AnswerRelevanceEvaluator(mockBot, mockSimilarityComputer);
+		evaluator = new AnswerRelevanceEmbeddingEvaluator(mockBot, mockSimilarityComputer);
 
 		sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -55,7 +55,7 @@ class AnswerRelevanceEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(EXPECTED_SCORE, result.getValue(), 0.01);
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class AnswerRelevanceEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(0.0, result.getValue(), 0.01);
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class AnswerRelevanceEvaluatorTest
 		Evaluation result = evaluator.evaluate(sample);
 
 		assertEquals(0.0, result.getValue(), 0.01);
-		assertEquals("Answer relevance", result.getName());
+		assertEquals("Answer relevance embedding", result.getName());
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class AnswerRelevanceEvaluatorTest
 			.build();
 
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullAnswerSample));
-		assertEquals("Sample must have an answer for Answer Relevance evaluation", exception.getMessage());
+		assertEquals("Sample must have an answer for answer relevance embedding evaluation", exception.getMessage());
 	}
 
 	@Test
@@ -103,6 +103,6 @@ class AnswerRelevanceEvaluatorTest
 			.build();
 
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> evaluator.evaluate(nullQuestionSample));
-		assertEquals("Sample must have a question for Answer Relevance evaluation", exception.getMessage());
+		assertEquals("Sample must have a question for answer relevance embedding evaluation", exception.getMessage());
 	}
 }

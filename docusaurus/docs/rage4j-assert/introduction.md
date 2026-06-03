@@ -80,7 +80,7 @@ rageAssert.given()
     .assertAnswerCorrectness(0.7);
 ```
 
-**Note:** Requires langchain4j version 1.11.0 or higher.
+**Note:** Ollama support requires `langchain4j-ollama` on the runtime classpath. Use the same LangChain4j version as Rage4J when managing dependencies explicitly.
 
 ## Evaluation Mode
 

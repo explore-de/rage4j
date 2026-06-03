@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rage-assert</artifactId>
+    <artifactId>rage4j-assert</artifactId>
     <version>2.0.1-SNAPSHOT</version>
     <name>Rage4j Assert</name>
 
@@ -15,7 +15,7 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <langchain4j.version>1.11.0</langchain4j.version>
+        <langchain4j.version>1.7.1</langchain4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

@@ -13,8 +13,8 @@ Add this dependency to your `pom.xml`:
 ```xml
 <dependency>
     <groupId>dev.rage4j</groupId>
-    <artifactId>rage-assert</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <artifactId>rage4j-assert</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -74,13 +74,13 @@ RageAssert rageAssert = new OllamaLLMBuilder()
     .fromApiKey("not-used");  // API key ignored for Ollama
 ```
 
-**Note:** Requires langchain4j version 1.11.0 or higher. Add the following dependency:
+**Note:** Ollama support requires `langchain4j-ollama` on the runtime classpath. If your application manages LangChain4j dependencies explicitly, add it with the same LangChain4j version used by Rage4J:
 
 ```xml
 <dependency>
     <groupId>dev.langchain4j</groupId>
     <artifactId>langchain4j-ollama</artifactId>
-    <version>1.11.0</version>
+    <version>${langchain4j.version}</version>
 </dependency>
 ```
 

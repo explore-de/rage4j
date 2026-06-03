@@ -1,4 +1,4 @@
-package dev.rage4j.evaluation.answerrelevance;
+package dev.rage4j.evaluation.answerrelevance.embedding;
 
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
@@ -21,12 +21,12 @@ import java.util.function.BiFunction;
  * question and the generated questions, and returns the mean similarity as the
  * evaluation score.
  */
-public class AnswerRelevanceEvaluator implements Evaluator
+public class AnswerRelevanceEmbeddingEvaluator implements Evaluator
 {
-	private static final String METRIC_NAME = "Answer relevance";
-	private static final Logger LOG = LoggerFactory.getLogger(AnswerRelevanceEvaluator.class);
+	private static final String METRIC_NAME = "Answer relevance embedding";
+	private static final Logger LOG = LoggerFactory.getLogger(AnswerRelevanceEmbeddingEvaluator.class);
 
-	private final AnswerRelevanceBot bot;
+	private final AnswerRelevanceEmbeddingBot bot;
 	private final BiFunction<String, String, Double> stringSimilarityComputer;
 
 	/**
@@ -41,9 +41,9 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	 *            The embedding model used to compute string similarity between
 	 *            questions.
 	 */
-	public AnswerRelevanceEvaluator(ChatModel chatModel, EmbeddingModel embeddingModel)
+	public AnswerRelevanceEmbeddingEvaluator(ChatModel chatModel, EmbeddingModel embeddingModel)
 	{
-		bot = AiServices.create(AnswerRelevanceBot.class, chatModel);
+		bot = AiServices.create(AnswerRelevanceEmbeddingBot.class, chatModel);
 		stringSimilarityComputer = new StringSimilarityComputer(embeddingModel);
 	}
 
@@ -58,7 +58,7 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	 * @param stringSimilarityComputer
 	 *            A function that computes the similarity between two strings.
 	 */
-	public AnswerRelevanceEvaluator(AnswerRelevanceBot bot, BiFunction<String, String, Double> stringSimilarityComputer)
+	public AnswerRelevanceEmbeddingEvaluator(AnswerRelevanceEmbeddingBot bot, BiFunction<String, String, Double> stringSimilarityComputer)
 	{
 		this.bot = bot;
 		this.stringSimilarityComputer = stringSimilarityComputer;
@@ -74,17 +74,17 @@ public class AnswerRelevanceEvaluator implements Evaluator
 	 *            The sample containing the original question and answer to be
 	 *            evaluated.
 	 * @return An {@code Evaluation} object containing the metric name and the
-	 *         calculated relevance score.awdawd
+	 *         calculated relevance score.
 	 */
 	public Evaluation evaluate(Sample sample)
 	{
 		if (!sample.hasAnswer())
 		{
-			throw new IllegalArgumentException("Sample must have an answer for Answer Relevance evaluation");
+			throw new IllegalArgumentException("Sample must have an answer for answer relevance embedding evaluation");
 		}
 		if (!sample.hasQuestion())
 		{
-			throw new IllegalArgumentException("Sample must have a question for Answer Relevance evaluation");
+			throw new IllegalArgumentException("Sample must have a question for answer relevance embedding evaluation");
 		}
 
 		String answer = sample.getAnswer();
