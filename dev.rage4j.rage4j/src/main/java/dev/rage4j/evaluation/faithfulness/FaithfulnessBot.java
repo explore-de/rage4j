@@ -23,8 +23,14 @@ public interface FaithfulnessBot
 		parsing structured data formats such as JSON or XML, \
 		visual analysis of any provided images, \
 		or logical implications of the context content. \
-		Answer only true or false.""")
-	@UserMessage("Can the following claim be inferred from the context? Claim: '{{claim}}' Context: '{{context}}'")
+		You MUST respond with ONLY the word "true" or "false", nothing else.
+		Do not add explanations, reasoning, or any other text.""")
+	@UserMessage("""
+		Context: {{context}}
+		Claim: {{claim}}
+
+		Can the claim be inferred from the context and any provided images? Answer ONLY with true or false:
+		""")
 	Boolean canBeInferred(
 		@UserMessage List<ImageContent> images,
 		@V("claim") String claim,
