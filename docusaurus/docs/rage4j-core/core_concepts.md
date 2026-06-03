@@ -22,6 +22,18 @@ A Sample typically consists of:
 - An **answer**: the model-generated response.
 - A **ground truth**: the expected or correct answer.
 - A **context** (optional): additional information related to the question.
+- **Images** (optional): part of the context, forwarded to vision-capable
+  evaluators. See [Image support](image_support) for details.
+
+```java
+Sample sampleWithImages = Sample.builder()
+    .withQuestion("What landmarks are mentioned in the document?")
+    .withContext("Paris is the capital of France and home to many landmarks.")
+    .withImage(Rage4jImage.fromPath(Path.of("eiffel-tower.jpg")))
+    .withImage(Rage4jImage.fromPath(Path.of("louvre.png")))
+    .withAnswer(answer)
+    .build();
+```
 
 ---
 

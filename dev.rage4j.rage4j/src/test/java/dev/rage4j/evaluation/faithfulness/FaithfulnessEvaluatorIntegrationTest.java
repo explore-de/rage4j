@@ -2,6 +2,7 @@ package dev.rage4j.evaluation.faithfulness;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.LoggingTestWatcher;
+import dev.rage4j.config.ConfigFactory;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +10,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(LoggingTestWatcher.class)
 class FaithfulnessEvaluatorIntegrationTest
@@ -21,7 +20,8 @@ class FaithfulnessEvaluatorIntegrationTest
 	private static final String GROUND_TRUTH = "Paris";
 	private static final String CONTEXT = "Paris is the capital of France.";
 
-	private static final String OPEN_AI_KEY = System.getenv("OPEN_AI_KEY");
+	private static final String OPEN_AI_KEY = ConfigFactory.getConfig().OPEN_AI_KEY();
+	private static final String OPEN_AI_MODEL = ConfigFactory.getConfig().OPEN_AI_MODEL();
 
 	private FaithfulnessEvaluator evaluator;
 
@@ -31,7 +31,7 @@ class FaithfulnessEvaluatorIntegrationTest
 		// Initialise the evaluator using OpenAIChatModel
 		OpenAiChatModel model = OpenAiChatModel.builder()
 			.apiKey(OPEN_AI_KEY)
-			.modelName(GPT_4_O)
+			.modelName(OPEN_AI_MODEL)
 			.build();
 
 		evaluator = new FaithfulnessEvaluator(model);
@@ -100,14 +100,10 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withContext(null)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have a context for Faithfulness evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample));
+		assertEquals("Sample must have a context for Faithfulness evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
@@ -121,19 +117,15 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withContext(CONTEXT)
 			.build();
 
-		try
-		{
-			evaluator.evaluate(sample);
-		}
-		catch (IllegalArgumentException e)
-		{
-			assertEquals("Sample must have an answer for Faithfulness evaluation", e.getMessage());
-		}
+		IllegalArgumentException exception = assertThrows(
+			IllegalArgumentException.class,
+			() -> evaluator.evaluate(sample));
+		assertEquals("Sample must have an answer for Faithfulness evaluation", exception.getMessage());
 	}
 
 	@Tag("integration")
 	@Test
-	void shouldEvaluateAboveZeroPointEight()
+	void testEverythingCorrect()
 	{
 		Sample sample = Sample.builder()
 			.withQuestion(QUESTION)
@@ -142,6 +134,9 @@ class FaithfulnessEvaluatorIntegrationTest
 			.withContext(CONTEXT)
 			.build();
 
-		assertTrue(evaluator.evaluate(sample).getValue() > 0.8);
+		Evaluation result = evaluator.evaluate(sample);
+
+		assertEquals("Faithfulness", result.getName());
+		assertTrue(result.getValue() > 0.8);
 	}
 }

@@ -1,0 +1,26 @@
+Let’s verify the factual accuracy of the derived text step by step:
+
+1. The Kyoto Protocol Was Adopted in Kyoto, Japan, in 1997 and Came into Force in 2005:
+- **Derived Text:** The Kyoto Protocol was adopted in Kyoto, Japan, in 1997 and came into force in 2005.
+- **Source Text:** "The Kyoto Protocol is an international treaty that was adopted on December 11, 1997, in Kyoto, Japan, and entered into force on February 16, 2005."
+- **Verification:** Correct (year and locations/dates match; the derived text is slightly less specific but consistent). Rating: 5
+
+2. It Sets Legally Binding Emission Reduction Targets for Dozens of Industrialized Countries and the European Community:
+- **Derived Text:** It sets legally binding emission reduction targets for dozens of industrialized countries and the European Community.
+- **Source Text:** "It commits 37 industrialized countries and the European Community to internationally binding emission reduction targets."
+- **Verification:** Mostly correct: "dozens of industrialized countries" is a less precise way of stating 37, but not contradictory; "legally binding" and the inclusion of the European Community align with "internationally binding." Rating: 4
+
+3. The Treaty Is Built on the Idea That Developed Countries Bear Greater Responsibility for Greenhouse Gas Emissions:
+- **Derived Text:** The treaty is built on the idea that developed countries bear greater responsibility for greenhouse gas emissions.
+- **Source Text:** "The treaty is based on the principle of 'common but differentiated responsibilities,' recognizing that developed countries are chiefly responsible for the current high levels of greenhouse gas emissions."
+- **Verification:** Correct: this is a faithful paraphrase of the principle described. Rating: 5
+
+4. The United States Refused to Sign the Kyoto Protocol and Was Therefore Never Part of the Agreement:
+- **Derived Text:** The United States refused to sign the Kyoto Protocol and was therefore never part of the agreement.
+- **Source Text:** "The United States signed the Kyoto Protocol but never ratified it, and therefore is not bound by its emission targets."
+- **Verification:** Incorrect with respect to the source: the source explicitly says the U.S. *signed* the protocol; the derived text claims it "refused to sign," which directly contradicts the source. Rating: 1
+
+5. The First Commitment Period of Kyoto Ran from 2008 to 2012 and a Second Period Was Created by the Doha Amendment to Cover 2013 to 2020:
+- **Derived Text:** The first commitment period of Kyoto ran from 2008 to 2012 and a second period was created by the Doha Amendment to cover 2013 to 2020.
+- **Source Text:** "Kyoto’s first commitment period ran from 2008 to 2012 and was later extended by the Doha Amendment for a second period from 2013 to 2020."
+- **Verification:** Correct: the dates and role of the Doha Amendment match the source. Rating: 5

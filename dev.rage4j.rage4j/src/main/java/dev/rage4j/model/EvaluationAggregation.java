@@ -71,19 +71,20 @@ public class EvaluationAggregation extends HashMap<String, Double>
 
 	/**
 	 * Returns the sample as a map for JSON serialization. Only non-null fields
-	 * of the sample are included.
+	 * of the sample are included. Images, when present, are serialised as a
+	 * list of their names – the actual image bytes are never persisted.
 	 *
-	 * @return A map representation of the sample, or null if no sample is
-	 *         associated.
+	 * @return A map representation of the sample, or an empty map if no sample
+	 *         is associated.
 	 */
 	@JsonProperty("sample")
-	public Map<String, String> sampleMap()
+	public Map<String, Object> sampleMap()
 	{
 		if (sample == null)
 		{
 			return Collections.emptyMap();
 		}
-		Map<String, String> map = new LinkedHashMap<>();
+		Map<String, Object> map = new LinkedHashMap<>();
 		if (sample.hasQuestion())
 		{
 			map.put("question", sample.getQuestion());
@@ -99,6 +100,12 @@ public class EvaluationAggregation extends HashMap<String, Double>
 		if (sample.hasContext())
 		{
 			map.put("context", sample.getContext());
+		}
+		if (sample.hasImages())
+		{
+			map.put("images", sample.getImages().stream()
+				.map(Rage4jImage::getName)
+				.toList());
 		}
 		return map;
 	}

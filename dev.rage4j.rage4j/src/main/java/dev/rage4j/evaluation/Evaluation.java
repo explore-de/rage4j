@@ -1,5 +1,7 @@
 package dev.rage4j.evaluation;
 
+import java.util.List;
+
 /**
  * The {@code Evaluation} class represents the result of evaluating a particular
  * metric. It stores the name of the metric and its calculated value.
@@ -11,6 +13,7 @@ public class Evaluation
 {
 	private final String name;
 	private final double value;
+	private List<String> explanations = List.of();
 
 	/**
 	 * Constructs a new {@code Evaluation} object with the specified metric name
@@ -25,6 +28,13 @@ public class Evaluation
 	{
 		this.name = name;
 		this.value = value;
+	}
+
+	public Evaluation(String name, double value, List<String> explanations)
+	{
+		this.name = name;
+		this.value = value;
+		this.explanations = explanations;
 	}
 
 	/**
@@ -45,5 +55,10 @@ public class Evaluation
 	public double getValue()
 	{
 		return value;
+	}
+
+	public List<String> getExplanations()
+	{
+		return explanations;
 	}
 }

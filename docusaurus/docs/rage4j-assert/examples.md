@@ -106,6 +106,32 @@ rageAssert.given()
 This example uses the [`assertRougeScore`](/docs/rage4j-core/metrics/rouge_score) feature, with the **ROUGE_L_SUM**
 metric. This example makes sure that the LCS across multiple sentences yields a precision of 0.9.
 
+### Example: Testing Faithfulness with images
+
+When the system under test consumed images alongside the textual context,
+attach them via `.image(...)` (or `.images(List)`). The configured
+`ChatModel` must be vision-capable &mdash; calling `.image(...)` is treated as
+an implicit opt-in and the underlying `FaithfulnessEvaluator` is built with
+vision support enabled. See [Image support](/docs/rage4j-core/image_support)
+for the full reference.
+
+``` java
+import dev.rage4j.model.Rage4jImage;
+import java.nio.file.Path;
+
+RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key); // model must support vision
+rageAssert.given()
+    .question("What landmarks are mentioned in the document?")
+    .context("Paris is the capital of France and home to many landmarks.")
+    .image(Rage4jImage.fromPath(Path.of("eiffel-tower.jpg")))
+    .image(Rage4jImage.fromPath(Path.of("louvre.png")))
+    .groundTruth(GROUND_TRUTH)
+    .when()
+    .answer(model::generate)
+    .then()
+    .assertFaithfulness(0.7);
+```
+
 ### Example: Concatenation of multiple assertions
 
 ``` java
