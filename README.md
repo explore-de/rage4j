@@ -42,6 +42,17 @@ For fluent test assertions:
 </dependency>
 ```
 
+For persistence of evaluations:
+
+```xml
+<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage4j-persist</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+```
+
 ## Usage
 
 ### Core Evaluation
