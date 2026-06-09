@@ -24,7 +24,7 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 
 class RageAssertTest
 {
-	private final String key = System.getenv("OPEN_API_KEY");
+	private final String key = System.getenv("OPEN_AI_KEY");
 	private final OpenAiChatModel model = OpenAiChatModel.builder()
 		.apiKey(key)
 		.modelName(GPT_4_O_MINI)
@@ -40,7 +40,7 @@ class RageAssertTest
 			.question("What is the capital of France?")
 			.groundTruth("Paris is the capital of France")
 			.when()
-			.answer(q -> model.generate(q))
+			.answer(q -> model.chat(q))
 			.then()
 			.assertAnswerCorrectness(0.7);
 	}
@@ -96,7 +96,7 @@ rageAssert.given()
     .question("What is the capital of France?")
     .groundTruth("Paris")
     .when()
-    .answer(q -> llm.generate(q))
+    .answer("Paris is the capital of France.")
     .then()
     .assertAnswerCorrectness(0.7);
 ```
@@ -125,6 +125,6 @@ additional features from the core API, including:
 - `assertAnswerCorrectness(double minValue)`
 - `assertAnswerRelevance(double minValue)`
 - `assertSemanticSimilarity(double minValue)`
-- `asserBleuScore(double minValue)`
+- `assertBleuScore(double minValue)`
 - `assertRougeScore(double minValue, RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)`
 If you're eager to explore more examples, check out the [examples on the next page](/docs/rage4j-assert/examples)! 😊

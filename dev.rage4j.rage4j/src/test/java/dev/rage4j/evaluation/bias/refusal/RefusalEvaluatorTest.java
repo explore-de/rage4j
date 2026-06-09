@@ -126,7 +126,7 @@ class RefusalEvaluatorTest
 	@Test
 	void testConstructorRequiresRefusalBot()
 	{
-		NullPointerException exception = assertThrows(NullPointerException.class, () -> new RefusalEvaluator((RefusalBot) null));
+		NullPointerException exception = assertThrows(NullPointerException.class, () -> new RefusalEvaluator((RefusalBot)null));
 		assertEquals("refusal bot must not be null", exception.getMessage());
 	}
 

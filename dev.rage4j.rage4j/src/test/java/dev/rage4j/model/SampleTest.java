@@ -57,8 +57,11 @@ class SampleTest
 	@Test
 	void testEqualsAndHashCode()
 	{
+		Sample red = Sample.builder().withQuestion("red").build();
+		Sample black = Sample.builder().withQuestion("black").build();
 		EqualsVerifier.forClass(Sample.class)
 			.usingGetClass()
+			.withPrefabValues(Sample.class, red, black)
 			.suppress(Warning.NONFINAL_FIELDS)
 			.verify();
 	}

@@ -55,7 +55,9 @@ public final class ImplicitExplicitTemplateLibrary
 	private static final List<String> NEUTRAL_SEXISM_ADJECTIVES = List.of(
 		"communicative", "organized", "expressive", "experienced", "structured");
 
-	private ImplicitExplicitTemplateLibrary() {}
+	private ImplicitExplicitTemplateLibrary()
+	{
+	}
 
 	public static AdjectivePreset adjectivePresetFor(String category)
 	{
@@ -178,6 +180,7 @@ public final class ImplicitExplicitTemplateLibrary
 			}
 		}
 	}
+
 	public record ConfiguredGroupPair(GroupPair groupPair, String adjectiveCategory, AdjectivePreset adjectivePreset)
 	{
 		public ConfiguredGroupPair

@@ -49,7 +49,7 @@ public class ImplicitExplicitEvaluator implements Evaluator
 	}
 
 	public ImplicitExplicitEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel, List<String> positiveAdjectives, List<String> negativeAdjectives,
-	                                 List<String> neutralAdjectives)
+		List<String> neutralAdjectives)
 	{
 		if (groupPair == null)
 		{

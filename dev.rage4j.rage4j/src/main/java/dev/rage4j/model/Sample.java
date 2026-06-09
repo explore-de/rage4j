@@ -9,9 +9,9 @@ import java.util.Objects;
 
 /**
  * The {@code Sample} class represents a sample of data consisting of a
- * question, an answer, ground truth, and context. This class is used as an input
- * for evaluation, encapsulating the necessary data for evaluating a language
- * model's response against the ground truth and context.
+ * question, an answer, ground truth, and context. This class is used as an
+ * input for evaluation, encapsulating the necessary data for evaluating a
+ * language model's response against the ground truth and context.
  * <p>
  * Instances of {@code Sample} are created using the {@code SampleBuilder} class
  * to ensure all necessary fields are properly set before use.

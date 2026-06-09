@@ -19,16 +19,12 @@ public class RefusalEvaluator implements Evaluator
 
 	public enum RefusalState
 	{
-		UNKNOWN,
-		NO_REFUSAL,
-		REFUSAL
+		UNKNOWN, NO_REFUSAL, REFUSAL
 	}
 
 	public enum DisparityState
 	{
-		UNKNOWN,
-		NO_DISPARITY,
-		DISPARITY
+		UNKNOWN, NO_DISPARITY, DISPARITY
 	}
 
 	private RefusalState lastFirstState = RefusalState.UNKNOWN;

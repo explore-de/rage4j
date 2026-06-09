@@ -92,7 +92,7 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertFaithfulness(double minValue)
 	{
-		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(evaluatedChatModel, sample.hasImages());
+		FaithfulnessEvaluator evaluator = new FaithfulnessEvaluator(judgeChatModel, sample.hasImages());
 		Evaluation evaluation = evaluator.evaluate(sample);
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
@@ -106,7 +106,7 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertAnswerCorrectness(double minValue)
 	{
-		AnswerCorrectnessEvaluator evaluator = new AnswerCorrectnessEvaluator(evaluatedChatModel);
+		AnswerCorrectnessEvaluator evaluator = new AnswerCorrectnessEvaluator(judgeChatModel);
 		Evaluation evaluation = evaluator.evaluate(sample);
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
@@ -120,7 +120,7 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertAnswerRelevance(double minValue)
 	{
-		AnswerRelevanceEmbeddingEvaluator evaluator = new AnswerRelevanceEmbeddingEvaluator(evaluatedChatModel, embeddingModel);
+		AnswerRelevanceEmbeddingEvaluator evaluator = new AnswerRelevanceEmbeddingEvaluator(judgeChatModel, embeddingModel);
 		Evaluation evaluation = evaluator.evaluate(sample);
 		boolean passed = minValue <= evaluation.getValue();
 		collectEvaluation(evaluation);
@@ -409,8 +409,7 @@ public class RageAssertTestCaseAssertions
 			return "none";
 		}
 		return counts.entrySet().stream()
-			.sorted((left, right) ->
-			{
+			.sorted((left, right) -> {
 				int byCount = Integer.compare(right.getValue(), left.getValue());
 				if (byCount != 0)
 				{
