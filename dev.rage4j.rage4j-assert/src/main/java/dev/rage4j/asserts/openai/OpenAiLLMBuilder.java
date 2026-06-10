@@ -1,6 +1,7 @@
 package dev.rage4j.asserts.openai;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.openai.OpenAiChatRequestParameters;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.rage4j.asserts.LLMBuilder;
 import dev.rage4j.asserts.RageAssert;
@@ -11,35 +12,127 @@ public class OpenAiLLMBuilder implements LLMBuilder<OpenAiLLMBuilder>
 	private static final String DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small";
 
 	private String chatModelName = DEFAULT_CHAT_MODEL;
+	private String judgeChatModelName = DEFAULT_CHAT_MODEL;
 	private String embeddingModelName = DEFAULT_EMBEDDING_MODEL;
+	private String chatReasoningEffort;
+	private String judgeReasoningEffort;
 
-	@Override
-	public OpenAiLLMBuilder withChatModel(String modelName)
+	public OpenAiLLMBuilder modelName(String modelName)
+	{
+		this.chatModelName = modelName;
+		this.judgeChatModelName = modelName;
+		return this;
+	}
+
+	public OpenAiLLMBuilder chatModelName(String modelName)
 	{
 		this.chatModelName = modelName;
 		return this;
 	}
 
-	@Override
-	public OpenAiLLMBuilder withEmbeddingModel(String modelName)
+	public OpenAiLLMBuilder judgeModelName(String modelName)
+	{
+		this.judgeChatModelName = modelName;
+		return this;
+	}
+
+	public OpenAiLLMBuilder embeddingModelName(String modelName)
 	{
 		this.embeddingModelName = modelName;
 		return this;
 	}
 
 	@Override
+	public OpenAiLLMBuilder withChatModel(String modelName)
+	{
+		return chatModelName(modelName);
+	}
+
+	@Override
+	public OpenAiLLMBuilder withEmbeddingModel(String modelName)
+	{
+		return embeddingModelName(modelName);
+	}
+
+	public OpenAiLLMBuilder reasoningEffort(OpenAiReasoningEffort reasoningEffort)
+	{
+		return reasoningEffort(reasoningEffort == null ? null : reasoningEffort.value());
+	}
+
+	public OpenAiLLMBuilder reasoningEffort(String reasoningEffort)
+	{
+		this.chatReasoningEffort = normalizeReasoningEffort(reasoningEffort);
+		this.judgeReasoningEffort = this.chatReasoningEffort;
+		return this;
+	}
+
+	public OpenAiLLMBuilder chatReasoningEffort(OpenAiReasoningEffort reasoningEffort)
+	{
+		return chatReasoningEffort(reasoningEffort == null ? null : reasoningEffort.value());
+	}
+
+	public OpenAiLLMBuilder chatReasoningEffort(String reasoningEffort)
+	{
+		this.chatReasoningEffort = normalizeReasoningEffort(reasoningEffort);
+		return this;
+	}
+
+	public OpenAiLLMBuilder judgeReasoningEffort(OpenAiReasoningEffort reasoningEffort)
+	{
+		return judgeReasoningEffort(reasoningEffort == null ? null : reasoningEffort.value());
+	}
+
+	public OpenAiLLMBuilder judgeReasoningEffort(String reasoningEffort)
+	{
+		this.judgeReasoningEffort = normalizeReasoningEffort(reasoningEffort);
+		return this;
+	}
+
+	@Override
 	public RageAssert fromApiKey(String apiKey)
 	{
-		OpenAiChatModel chatModel = OpenAiChatModel.builder()
-			.apiKey(apiKey)
-			.modelName(chatModelName)
-			.build();
+		OpenAiChatModel chatModel = createChatModel(apiKey, chatModelName, chatReasoningEffort);
+		OpenAiChatModel judgeChatModel = createChatModel(apiKey, judgeChatModelName, judgeReasoningEffort);
 
 		OpenAiEmbeddingModel embeddingModel = OpenAiEmbeddingModel.builder()
 			.apiKey(apiKey)
 			.modelName(embeddingModelName)
 			.build();
 
-		return new RageAssert(chatModel, embeddingModel);
+		return new RageAssert(chatModel, judgeChatModel, embeddingModel);
+	}
+
+	private static OpenAiChatModel createChatModel(String apiKey, String modelName, String reasoningEffort)
+	{
+		OpenAiChatModel.OpenAiChatModelBuilder builder = OpenAiChatModel.builder()
+			.apiKey(apiKey)
+			.modelName(modelName);
+
+		if (reasoningEffort != null)
+		{
+			builder.defaultRequestParameters(OpenAiChatRequestParameters.builder()
+				.reasoningEffort(reasoningEffort)
+				.build());
+		}
+
+		return builder.build();
+	}
+
+	private static String normalizeReasoningEffort(String reasoningEffort)
+	{
+		if (reasoningEffort == null)
+		{
+			return null;
+		}
+
+		String normalizedReasoningEffort = reasoningEffort.trim().toLowerCase();
+
+		return switch (normalizedReasoningEffort)
+		{
+			case "none", "minimal", "low", "medium", "high", "xhigh" -> normalizedReasoningEffort;
+			default -> throw new IllegalArgumentException(
+				"Unsupported reasoning effort '" + reasoningEffort
+					+ "'. Supported values: none, minimal, low, medium, high, xhigh.");
+		};
 	}
 }

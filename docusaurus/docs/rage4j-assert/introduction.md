@@ -17,13 +17,14 @@ RAGE4J-Assert, writing tests becomes both quicker and more comfortable.
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.rage4j.asserts.RageAssert;
 import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
+import dev.rage4j.asserts.openai.OpenAiReasoningEffort;
 import org.junit.jupiter.api.Test;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 
 class RageAssertTest
 {
-	private final String key = System.getenv("OPEN_API_KEY");
+	private final String key = System.getenv("OPEN_AI_KEY");
 	private final OpenAiChatModel model = OpenAiChatModel.builder()
 		.apiKey(key)
 		.modelName(GPT_4_O_MINI)
@@ -32,12 +33,14 @@ class RageAssertTest
 	@Test
 	void testCorrectnessApi()
 	{
-		RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+		RageAssert rageAssert = new OpenAiLLMBuilder()
+			.reasoningEffort(OpenAiReasoningEffort.MEDIUM)
+			.fromApiKey(key);
 		rageAssert.given()
 			.question("What is the capital of France?")
 			.groundTruth("Paris is the capital of France")
 			.when()
-			.answer(q -> model.generate(q))
+			.answer(q -> model.chat(q))
 			.then()
 			.assertAnswerCorrectness(0.7);
 	}
@@ -46,16 +49,34 @@ class RageAssertTest
 
 ## Model Selection
 
-Configure custom models for chat and embedding operations:
+Configure custom models for chat, judge, and embedding operations:
 
 ``` java
 RageAssert rageAssert = new OpenAiLLMBuilder()
     .withChatModel("gpt-4o")
+    .judgeModelName("gpt-4o")
     .withEmbeddingModel("text-embedding-3-large")
     .fromApiKey(key);
 ```
 
-Default models: `gpt-5.1` (chat), `text-embedding-3-small` (embedding).
+Default models: `gpt-5.1` (chat and judge), `text-embedding-3-small` (embedding).
+
+## OpenAI Reasoning Effort
+
+If you use OpenAI reasoning-capable models such as `gpt-5.4`, you can configure the reasoning effort once on
+`OpenAiLLMBuilder`. The configured value is then used for the evaluated chat model and the judge chat model across all
+chat-based assertions.
+
+``` java
+RageAssert rageAssert = new OpenAiLLMBuilder()
+	.chatModelName("gpt-5.4")
+	.judgeModelName("gpt-5.4")
+	.reasoningEffort(OpenAiReasoningEffort.HIGH)
+	.fromApiKey(key);
+```
+
+Supported values are `NONE`, `MINIMAL`, `LOW`, `MEDIUM`, `HIGH`, and `XHIGH`. If you need different settings, use
+`chatReasoningEffort(...)` and `judgeReasoningEffort(...)`.
 
 ## Using Ollama (Local LLMs)
 
@@ -75,7 +96,7 @@ rageAssert.given()
     .question("What is the capital of France?")
     .groundTruth("Paris")
     .when()
-    .answer(q -> llm.generate(q))
+    .answer("Paris is the capital of France.")
     .then()
     .assertAnswerCorrectness(0.7);
 ```
@@ -104,6 +125,6 @@ additional features from the core API, including:
 - `assertAnswerCorrectness(double minValue)`
 - `assertAnswerRelevance(double minValue)`
 - `assertSemanticSimilarity(double minValue)`
-- `asserBleuScore(double minValue)`
+- `assertBleuScore(double minValue)`
 - `assertRougeScore(double minValue, RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)`
 If you're eager to explore more examples, check out the [examples on the next page](/docs/rage4j-assert/examples)! 😊

@@ -17,6 +17,8 @@
         <maven.compiler.target>21</maven.compiler.target>
         <langchain4j.version>1.7.1</langchain4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <includedGroups />
+        <excludedGroups>integration</excludedGroups>
     </properties>
 
     <dependencies>
@@ -101,6 +103,10 @@
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.3</version>
+                    <configuration>
+                        <excludedGroups>${excludedGroups}</excludedGroups>
+                        <groups>${includedGroups}</groups>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>

@@ -14,13 +14,34 @@ public class RageAssertTestCaseBuilder
 	private String groundTruth;
 	private String context;
 	private List<Rage4jImage> images;
-	private final ChatModel chatModel;
+	private String comparisonQuestion;
+	private String comparisonGroundTruth;
+	private String comparisonContext;
+	private ImplicitExplicitScenario implicitExplicitScenario;
+	private final ChatModel judgeChatModel;
+	private final ChatModel evaluatedChatModel;
 	private final EmbeddingModel embeddingModel;
 	private final boolean evaluationMode;
 
 	public RageAssertTestCaseBuilder(ChatModel chatModel, EmbeddingModel embeddingModel, boolean evaluationMode)
 	{
-		this.chatModel = chatModel;
+		this(chatModel, chatModel, embeddingModel, evaluationMode);
+	}
+
+	public RageAssertTestCaseBuilder(ChatModel judgeChatModel, EmbeddingModel embeddingModel)
+	{
+		this(judgeChatModel, judgeChatModel, embeddingModel, false);
+	}
+
+	public RageAssertTestCaseBuilder(ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel)
+	{
+		this(judgeChatModel, evaluatedChatModel, embeddingModel, false);
+	}
+
+	public RageAssertTestCaseBuilder(ChatModel judgeChatModel, ChatModel evaluatedChatModel, EmbeddingModel embeddingModel, boolean evaluationMode)
+	{
+		this.judgeChatModel = judgeChatModel;
+		this.evaluatedChatModel = evaluatedChatModel;
 		this.embeddingModel = embeddingModel;
 		this.evaluationMode = evaluationMode;
 	}
@@ -43,12 +64,12 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
-	/**
-	 * Attaches a single image to the test case. Calling this method opts the
-	 * test case into multimodal evaluation; downstream LLM-based assertions
-	 * (e.g. {@code assertFaithfulness}) will pass the images to the configured
-	 * {@link ChatModel}, which therefore must be vision-capable.
-	 */
+	public RageAssertTestCaseBuilder contextList(List<String> contextList)
+	{
+		this.context = contextList == null ? null : String.join("\n", contextList);
+		return this;
+	}
+
 	public RageAssertTestCaseBuilder image(Rage4jImage image)
 	{
 		Objects.requireNonNull(image, "image");
@@ -60,18 +81,64 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
-	/**
-	 * Replaces the image list of this test case. Pass {@code null} or an empty
-	 * list to clear it.
-	 */
 	public RageAssertTestCaseBuilder images(List<Rage4jImage> images)
 	{
 		this.images = images == null ? null : new ArrayList<>(images);
 		return this;
 	}
 
+	public RageAssertTestCaseBuilder comparisonQuestion(String comparisonQuestion)
+	{
+		this.comparisonQuestion = comparisonQuestion;
+		return this;
+	}
+
+	public RageAssertTestCaseBuilder comparisonGroundTruth(String comparisonGroundTruth)
+	{
+		this.comparisonGroundTruth = comparisonGroundTruth;
+		return this;
+	}
+
+	public RageAssertTestCaseBuilder comparisonContext(String comparisonContext)
+	{
+		this.comparisonContext = comparisonContext;
+		return this;
+	}
+
+	public RageAssertTestCaseBuilder comparisonContextList(List<String> comparisonContextList)
+	{
+		this.comparisonContext = comparisonContextList == null ? null : String.join("\n", comparisonContextList);
+		return this;
+	}
+
+	public RageAssertTestCaseBuilder implicitExplicitScenario(ImplicitExplicitScenario scenario)
+	{
+		this.implicitExplicitScenario = scenario;
+		if (scenario == null)
+		{
+			return this;
+		}
+		this.question = scenario.question();
+		this.comparisonQuestion = scenario.comparisonQuestion();
+		this.context = scenario.qualifications();
+		this.comparisonContext = scenario.qualifications();
+		return this;
+	}
+
 	public RageAssertTestCaseGiven when()
 	{
-		return new RageAssertTestCaseGiven(question, groundTruth, context, images, chatModel, embeddingModel, evaluationMode);
+		return new RageAssertTestCaseGiven(
+			question,
+			groundTruth,
+			context,
+			images,
+			comparisonQuestion,
+			comparisonGroundTruth,
+			comparisonContext,
+			implicitExplicitScenario,
+			judgeChatModel,
+			evaluatedChatModel,
+			embeddingModel,
+			evaluationMode);
 	}
 }

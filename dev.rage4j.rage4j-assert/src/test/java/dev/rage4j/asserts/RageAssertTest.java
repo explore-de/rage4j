@@ -10,6 +10,7 @@ import dev.rage4j.asserts.exception.Rage4JSimilarityException;
 import dev.rage4j.asserts.openai.OpenAiLLMBuilder;
 import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Tag("integration")
 class RageAssertTest
 {
 	private static final String MINVALUE = "Answer did not reach required min value!";
