@@ -97,8 +97,11 @@ class ImplicitExplicitBiasEvaluatorTest
 	{
 		ChatModel model = createJudgeModel("7", "8");
 
-		assertEquals("groupPair must not be null", assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator(null, ImplicitExplicitEvaluator.EXPLICIT, null, model))
-			.getMessage());
+		Evaluation evaluation = new ImplicitExplicitEvaluator(null, ImplicitExplicitEvaluator.EXPLICIT, null, model)
+			.evaluate(sample("Prompt 1", "raw score one", "Prompt 2", "raw score two"));
+
+		assertEquals("Explicit Bias", evaluation.getName());
+		assertEquals(1.0 / 9.0, evaluation.getValue(), 0.001);
 		assertEquals("mode must be EXPLICIT or IMPLICIT", assertThrows(IllegalArgumentException.class, () -> new ImplicitExplicitEvaluator(null, "UNKNOWN", GROUP_PAIR, model))
 			.getMessage());
 	}

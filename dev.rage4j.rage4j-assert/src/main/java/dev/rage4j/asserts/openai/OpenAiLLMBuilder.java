@@ -45,7 +45,7 @@ public class OpenAiLLMBuilder implements LLMBuilder<OpenAiLLMBuilder>
 	@Override
 	public OpenAiLLMBuilder withChatModel(String modelName)
 	{
-		return modelName(modelName);
+		return chatModelName(modelName);
 	}
 
 	@Override

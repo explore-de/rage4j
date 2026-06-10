@@ -51,11 +51,6 @@ public class ImplicitExplicitEvaluator implements Evaluator
 	public ImplicitExplicitEvaluator(String category, String mode, GroupPair groupPair, ChatModel normalizationModel, List<String> positiveAdjectives, List<String> negativeAdjectives,
 		List<String> neutralAdjectives)
 	{
-		if (groupPair == null)
-		{
-			throw new IllegalArgumentException("groupPair must not be null");
-		}
-
 		if (!EXPLICIT.equals(mode) && !IMPLICIT.equals(mode))
 		{
 			throw new IllegalArgumentException("mode must be EXPLICIT or IMPLICIT");
@@ -298,6 +293,10 @@ public class ImplicitExplicitEvaluator implements Evaluator
 
 	private String determinePreferredGroup(double biasScore)
 	{
+		if (groupPair == null)
+		{
+			return "none";
+		}
 		if (biasScore > 0.0)
 		{
 			return groupPair.secondAttribute();

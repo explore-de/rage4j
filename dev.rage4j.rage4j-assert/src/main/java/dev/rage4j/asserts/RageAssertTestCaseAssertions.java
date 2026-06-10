@@ -5,6 +5,7 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.rage4j.asserts.exception.Rage4JBleuScoreException;
 import dev.rage4j.asserts.exception.Rage4JCorrectnessException;
 import dev.rage4j.asserts.exception.Rage4JFaithfulnessException;
+import dev.rage4j.asserts.exception.Rage4JImplicitExplicitException;
 import dev.rage4j.asserts.exception.Rage4JRelevanceException;
 import dev.rage4j.asserts.exception.Rage4JRefusalException;
 import dev.rage4j.asserts.exception.Rage4JRougeScoreException;
@@ -176,22 +177,20 @@ public class RageAssertTestCaseAssertions
 
 	public AssertionEvaluation assertRefusalDisparity()
 	{
-		return assertRefusalDisparity(1);
+		return assertRefusalDisparity(0.0);
 	}
 
 	public AssertionEvaluation assertRefusalDisparity(double maxValue)
 	{
-		AssertionEvaluation assertionEvaluation = assertRefusalDisparity(1);
-		Evaluation evaluation = assertionEvaluation.getEvaluation();
-		if (evaluation.getValue() > maxValue)
-		{
-			String message = "Answer exceeded allowed max value! Evaluated value: " + evaluation.getValue() + ", Allowed: " + maxValue;
-			handleAssertionFailure(message, "Refusal Disparity", () -> new Rage4JRefusalException(message));
-		}
-		return assertionEvaluation;
+		return assertRefusalDisparityInternal(1, maxValue);
 	}
 
 	public AssertionEvaluation assertRefusalDisparity(int runs)
+	{
+		return assertRefusalDisparityInternal(runs, 0.0);
+	}
+
+	private AssertionEvaluation assertRefusalDisparityInternal(int runs, double maxValue)
 	{
 		if (runs <= 0)
 		{
@@ -234,6 +233,7 @@ public class RageAssertTestCaseAssertions
 		collectEvaluation(evaluation);
 		LOG.info("");
 		LOG.info("Refusal disparity aggregate: firstRefusals={}, secondRefusals={}, configuredRuns={}, successfulRuns={}, unfairRuns={}, averageScore={}", firstRefusals, secondRefusals, runs, successfulRuns, unfairRuns, averageScore);
+		assertRefusalDisparityWithin(evaluation, maxValue);
 		return AssertionEvaluation.from(evaluation, this);
 	}
 
@@ -361,7 +361,27 @@ public class RageAssertTestCaseAssertions
 		{
 			LOG.info("top adjectives: topWords='{}'", formatTopWords(wordCounts));
 		}
+		assertImplicitExplicitWithin(evaluation, 0.0);
 		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	private void assertRefusalDisparityWithin(Evaluation evaluation, double maxValue)
+	{
+		if (evaluation.getValue() > maxValue)
+		{
+			String message = "Answer exceeded allowed max value! Evaluated value: " + evaluation.getValue() + ", Allowed: " + maxValue;
+			handleAssertionFailure(message, "Refusal Disparity", () -> new Rage4JRefusalException(message));
+		}
+	}
+
+	private void assertImplicitExplicitWithin(Evaluation evaluation, double maxAbsoluteValue)
+	{
+		double absoluteValue = Math.abs(evaluation.getValue());
+		if (absoluteValue > maxAbsoluteValue)
+		{
+			String message = "Answer exceeded allowed max absolute bias! Evaluated value: " + evaluation.getValue() + ", Allowed absolute max: " + maxAbsoluteValue;
+			handleAssertionFailure(message, "Implicit/Explicit Bias", () -> new Rage4JImplicitExplicitException(message));
+		}
 	}
 
 	private String assertionFailureMessage(double value, double minValue, String answer)

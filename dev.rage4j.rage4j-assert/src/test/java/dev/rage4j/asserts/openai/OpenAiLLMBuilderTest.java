@@ -32,6 +32,22 @@ class OpenAiLLMBuilderTest
 		assertEquals("high", judgeChatModel.defaultRequestParameters().reasoningEffort());
 	}
 
+	@Test
+	void withChatModelDoesNotOverridePreviouslyConfiguredJudgeModel()
+		throws Exception
+	{
+		RageAssert rageAssert = new OpenAiLLMBuilder()
+			.judgeModelName("gpt-5.1")
+			.withChatModel("gpt-4o-mini")
+			.fromApiKey("test-key");
+
+		OpenAiChatModel chatModel = readChatModel(rageAssert, "chatModel");
+		OpenAiChatModel judgeChatModel = readChatModel(rageAssert, "judgeChatModel");
+
+		assertEquals("gpt-4o-mini", chatModel.defaultRequestParameters().modelName());
+		assertEquals("gpt-5.1", judgeChatModel.defaultRequestParameters().modelName());
+	}
+
 	private static OpenAiChatModel readChatModel(RageAssert rageAssert, String fieldName)
 		throws ReflectiveOperationException
 	{
