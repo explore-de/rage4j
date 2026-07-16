@@ -21,6 +21,26 @@ Add this dependency to your `pom.xml`:
 
 ## Usage
 
+### HTML report for Jenkins
+
+Use `@Rage4jHtmlReport` to inject an `EvaluationStore` that produces one self-contained HTML file when the test class finishes. The file is ready to archive as a Jenkins artifact.
+
+```java
+import dev.rage4j.persist.EvaluationStore;
+import dev.rage4j.persist.junit5.Rage4jHtmlReport;
+
+@Rage4jHtmlReport(file = "target/rage4j-report.html")
+class AiEvaluationTest {
+    @Test
+    void evaluatesAnswer(EvaluationStore store) {
+        // evaluate the sample, then persist the resulting aggregation
+        store.store(aggregation);
+    }
+}
+```
+
+Archive `**/target/rage4j-report.html` in Jenkins (or publish it with the HTML Publisher plugin). Existing `@Rage4jPersistConfig` JSONL output remains unchanged.
+
 ### Basic Usage
 
 Annotate your test class with `@Rage4jPersistConfig`:

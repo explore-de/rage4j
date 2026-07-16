@@ -65,6 +65,17 @@ class Rage4jPersistExtensionTest
 	}
 
 	@Test
+	void htmlReportAnnotationHasDefaultFile()
+	{
+		@Rage4jHtmlReport
+		class HtmlReportConfig
+		{
+		}
+
+		assertEquals("target/rage4j-report.html", HtmlReportConfig.class.getAnnotation(Rage4jHtmlReport.class).file());
+	}
+
+	@Test
 	void jsonLinesStoreWorks() throws IOException
 	{
 		Path jsonlFile = tempDir.resolve("test.jsonl");
