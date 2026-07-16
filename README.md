@@ -16,8 +16,8 @@ Rage4J provides tools to evaluate and measure the quality of language model outp
 **Modules:**
 - **rage4j** - Core evaluation library with evaluators and model classes
 - **rage4j-assert** - Fluent assertion library for RAG evaluation in tests
-- **rage4j-persist** - Persistence module for saving evaluation results (JSONL format)
-- **rage4j-persist-junit5** - JUnit 5 extension for automatic persistence lifecycle
+- **rage4j-persist** - Persistence module for saving evaluation results (JSONL and HTML reports)
+- **rage4j-persist-junit5** - JUnit 5 extension for evaluation persistence and HTML artifacts
 
 ## Installation
 
@@ -48,6 +48,17 @@ For persistence of evaluations:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-persist</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+```
+
+For JUnit 5 persistence and HTML reports:
+
+```xml
+<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage4j-persist-junit5</artifactId>
     <version>2.0.1-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
@@ -85,6 +96,39 @@ rageAssert.given()
     .then()
     .assertAnswerCorrectness(0.8);
 ```
+
+### HTML evaluation report for Jenkins
+
+Annotate an AI integration-test class with `@Rage4jHtmlReport`. Rage4j injects an `EvaluationStore` and writes a self-contained HTML artifact after the class completes.
+
+```java
+import org.junit.jupiter.api.Test;
+
+import dev.rage4j.persist.EvaluationStore;
+import dev.rage4j.persist.junit5.Rage4jHtmlReport;
+
+@Rage4jHtmlReport(file = "target/rage4j-report.html")
+class AiEvaluationTest
+{
+    @Test
+    void evaluatesAnswer(EvaluationStore store)
+    {
+        EvaluationAggregation result = rageAssert.given()
+            .question("What is the capital of France?")
+            .groundTruth("Paris")
+            .context("Paris is the capital of France.")
+            .when()
+            .answer("Paris")
+            .then()
+            .assertFaithfulness(0.7)
+            .getEvaluationAggregation();
+
+        store.store(result);
+    }
+}
+```
+
+Archive `**/target/rage4j-report.html` in Jenkins, or publish it with the HTML Publisher plugin.
 
 ## Documentation
 Visit our documentation on Github Pages: <a href="https://explore-de.github.io/rage4j/" target="_blank">Visit Docs</a>
