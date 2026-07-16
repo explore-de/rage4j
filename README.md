@@ -130,6 +130,15 @@ class AiEvaluationTest
 
 Archive `**/target/rage4j-report.html` in Jenkins, or publish it with the HTML Publisher plugin.
 
+<details>
+<summary>Generated HTML example</summary>
+
+```html
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rage4j evaluation report</title><style>body{font-family:system-ui,sans-serif;max-width:1200px;margin:2rem auto;padding:0 1rem;color:#172033}table{border-collapse:collapse;width:100%;margin:1rem 0}th,td{border:1px solid #d7dce5;padding:.65rem;text-align:left;vertical-align:top}th{background:#f3f5f8}details{max-width:36rem;white-space:pre-wrap}summary{cursor:pointer} .score{font-variant-numeric:tabular-nums}</style></head><body><h1>Rage4j evaluation report</h1><p>Generated 2026-07-16T11:48:38.317199+02:00 · 1 evaluation(s)</p><table><thead><tr><th>#</th><th>Question</th><th>Metrics</th><th>Answer</th></tr></thead><tbody><tr><td>1</td><td>What is the capital of France?</td><td><ul><li><strong>AnswerCorrectness</strong>: <span class="score">1.000</span></li><li><strong>Faithfulness</strong>: <span class="score">1.000</span></li></ul></td><td>Paris is the capital of France.</td></tr></tbody></table></body></html>
+```
+
+</details>
+
 ## Documentation
 Visit our documentation on Github Pages: <a href="https://explore-de.github.io/rage4j/" target="_blank">Visit Docs</a>
 
