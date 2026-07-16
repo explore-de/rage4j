@@ -16,8 +16,8 @@ Rage4J provides tools to evaluate and measure the quality of language model outp
 **Modules:**
 - **rage4j** - Core evaluation library with evaluators and model classes
 - **rage4j-assert** - Fluent assertion library for RAG evaluation in tests
-- **rage4j-persist** - Persistence module for saving evaluation results (JSONL format)
-- **rage4j-persist-junit5** - JUnit 5 extension for automatic persistence lifecycle
+- **rage4j-persist** - Persistence module for saving evaluation results (JSONL and HTML reports)
+- **rage4j-persist-junit5** - JUnit 5 extension for evaluation persistence and HTML artifacts
 
 ## Installation
 
@@ -48,6 +48,17 @@ For persistence of evaluations:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-persist</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+```
+
+For JUnit 5 persistence and HTML reports:
+
+```xml
+<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage4j-persist-junit5</artifactId>
     <version>2.0.1-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
@@ -85,6 +96,48 @@ rageAssert.given()
     .then()
     .assertAnswerCorrectness(0.8);
 ```
+
+### HTML evaluation report for Jenkins
+
+Annotate an AI integration-test class with `@Rage4jHtmlReport`. Rage4j injects an `EvaluationStore` and writes a self-contained HTML artifact after the class completes.
+
+```java
+import org.junit.jupiter.api.Test;
+
+import dev.rage4j.persist.EvaluationStore;
+import dev.rage4j.persist.junit5.Rage4jHtmlReport;
+
+@Rage4jHtmlReport(file = "target/rage4j-report.html")
+class AiEvaluationTest
+{
+    @Test
+    void evaluatesAnswer(EvaluationStore store)
+    {
+        EvaluationAggregation result = rageAssert.given()
+            .question("What is the capital of France?")
+            .groundTruth("Paris")
+            .context("Paris is the capital of France.")
+            .when()
+            .answer("Paris")
+            .then()
+            .assertFaithfulness(0.7)
+            .getEvaluationAggregation();
+
+        store.store(result);
+    }
+}
+```
+
+Archive `**/target/rage4j-report.html` in Jenkins, or publish it with the HTML Publisher plugin.
+
+<details>
+<summary>Generated HTML example</summary>
+
+```html
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rage4j evaluation report</title><style>body{font-family:system-ui,sans-serif;max-width:1200px;margin:2rem auto;padding:0 1rem;color:#172033}table{border-collapse:collapse;width:100%;margin:1rem 0}th,td{border:1px solid #d7dce5;padding:.65rem;text-align:left;vertical-align:top}th{background:#f3f5f8}details{max-width:36rem;white-space:pre-wrap}summary{cursor:pointer} .score{font-variant-numeric:tabular-nums}</style></head><body><h1>Rage4j evaluation report</h1><p>Generated 2026-07-16T11:48:38.317199+02:00 · 1 evaluation(s)</p><table><thead><tr><th>#</th><th>Question</th><th>Metrics</th><th>Answer</th></tr></thead><tbody><tr><td>1</td><td>What is the capital of France?</td><td><ul><li><strong>AnswerCorrectness</strong>: <span class="score">1.000</span></li><li><strong>Faithfulness</strong>: <span class="score">1.000</span></li></ul></td><td>Paris is the capital of France.</td></tr></tbody></table></body></html>
+```
+
+</details>
 
 ## Documentation
 Visit our documentation on Github Pages: <a href="https://explore-de.github.io/rage4j/" target="_blank">Visit Docs</a>

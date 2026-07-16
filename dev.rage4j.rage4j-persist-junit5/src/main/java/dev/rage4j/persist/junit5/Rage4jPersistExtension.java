@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import dev.rage4j.persist.EvaluationStore;
+import dev.rage4j.persist.store.HtmlReportStore;
 
 /**
  * JUnit 5 extension that manages {@link EvaluationStore} lifecycle for test
@@ -48,8 +49,7 @@ public class Rage4jPersistExtension implements BeforeAllCallback, AfterAllCallba
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception
 	{
-		Rage4jPersistConfig config = findConfig(context);
-		EvaluationStore store = createStore(config);
+		EvaluationStore store = createStore(context);
 
 		ExtensionContext.Store extensionStore = context.getStore(NAMESPACE);
 		extensionStore.put(STORE_KEY, new CloseableStoreWrapper(store));
@@ -97,13 +97,39 @@ public class Rage4jPersistExtension implements BeforeAllCallback, AfterAllCallba
 		return context.getStore(NAMESPACE);
 	}
 
-	private Rage4jPersistConfig findConfig(ExtensionContext context)
+	private EvaluationStore createStore(ExtensionContext context)
 	{
-		return context.getTestClass().map(this::findConfigOnClass).orElseGet(this::defaultConfig);
+		Class<?> testClass = context.getTestClass().orElse(null);
+		Rage4jHtmlReport htmlReport = findHtmlReport(testClass);
+		if (htmlReport != null)
+		{
+			return new HtmlReportStore(Path.of(reportPath(htmlReport.file(), testClass)));
+		}
+		return createStore(findConfigOnClass(testClass));
+	}
+
+	static String reportPath(String template, Class<?> testClass)
+	{
+		String className = testClass == null ? "unknown" : testClass.getName();
+		return template.replace("{class}", className);
+	}
+
+	private Rage4jHtmlReport findHtmlReport(Class<?> testClass)
+	{
+		if (testClass == null || testClass == Object.class)
+		{
+			return null;
+		}
+		Rage4jHtmlReport report = testClass.getAnnotation(Rage4jHtmlReport.class);
+		return report != null ? report : findHtmlReport(testClass.getSuperclass());
 	}
 
 	private Rage4jPersistConfig findConfigOnClass(Class<?> testClass)
 	{
+		if (testClass == null)
+		{
+			return defaultConfig();
+		}
 		Rage4jPersistConfig config = testClass.getAnnotation(Rage4jPersistConfig.class);
 		if (config != null)
 		{
