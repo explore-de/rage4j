@@ -72,7 +72,14 @@ class Rage4jPersistExtensionTest
 		{
 		}
 
-		assertEquals("target/rage4j-report.html", HtmlReportConfig.class.getAnnotation(Rage4jHtmlReport.class).file());
+		assertEquals("target/rage4j-report-{class}.html", HtmlReportConfig.class.getAnnotation(Rage4jHtmlReport.class).file());
+	}
+
+	@Test
+	void htmlReportPathIncludesTestClassName()
+	{
+		assertEquals("target/rage4j-report-dev.rage4j.persist.junit5.Rage4jPersistExtensionTest.html",
+			Rage4jPersistExtension.reportPath("target/rage4j-report-{class}.html", Rage4jPersistExtensionTest.class));
 	}
 
 	@Test

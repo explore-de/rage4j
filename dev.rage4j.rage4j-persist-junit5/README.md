@@ -23,7 +23,7 @@ Add this dependency to your `pom.xml`:
 
 ### HTML report for Jenkins
 
-Use `@Rage4jHtmlReport` to inject an `EvaluationStore` that produces one self-contained HTML file when the test class finishes. The file is ready to archive as a Jenkins artifact.
+Use `@Rage4jHtmlReport` to inject an `EvaluationStore` that produces one self-contained HTML file when the test class finishes. By default the report filename includes the fully qualified test class name, so reports from different test classes do not overwrite each other. The file is ready to archive as a Jenkins artifact.
 
 ```java
 import dev.rage4j.persist.EvaluationStore;
@@ -39,7 +39,7 @@ class AiEvaluationTest {
 }
 ```
 
-Archive `**/target/rage4j-report.html` in Jenkins (or publish it with the HTML Publisher plugin). Existing `@Rage4jPersistConfig` JSONL output remains unchanged.
+Archive `**/target/rage4j-report-*.html` in Jenkins (or publish it with the HTML Publisher plugin). Existing `@Rage4jPersistConfig` JSONL output remains unchanged.
 
 ### Basic Usage
 

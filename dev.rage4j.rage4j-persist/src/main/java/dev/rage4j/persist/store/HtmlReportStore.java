@@ -112,14 +112,14 @@ public class HtmlReportStore implements EvaluationStore
 
 	private void appendDetail(StringBuilder report, String value)
 	{
-		String escaped = escape(value);
-		if (escaped.length() > 160)
+		if (value.length() > 160)
 		{
-			report.append("<details><summary>").append(escaped, 0, 160).append("…</summary>").append(escaped).append("</details>");
+			String preview = value.substring(0, 160);
+			report.append("<details><summary>").append(escape(preview)).append("…</summary>").append(escape(value)).append("</details>");
 		}
 		else
 		{
-			report.append(escaped);
+			report.append(escape(value));
 		}
 	}
 

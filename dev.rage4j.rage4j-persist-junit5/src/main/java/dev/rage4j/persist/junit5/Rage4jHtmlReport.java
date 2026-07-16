@@ -23,9 +23,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface Rage4jHtmlReport
 {
 	/**
-	 * The generated HTML report. Defaults to a conventional Maven target path.
+	 * The generated HTML report. The {@code {class}} placeholder is replaced with
+	 * the fully qualified test class name, which keeps reports from separate test
+	 * classes from overwriting each other.
 	 *
 	 * @return the report file path
 	 */
-	String file() default "target/rage4j-report.html";
+	String file() default "target/rage4j-report-{class}.html";
 }

@@ -103,9 +103,15 @@ public class Rage4jPersistExtension implements BeforeAllCallback, AfterAllCallba
 		Rage4jHtmlReport htmlReport = findHtmlReport(testClass);
 		if (htmlReport != null)
 		{
-			return new HtmlReportStore(Path.of(htmlReport.file()));
+			return new HtmlReportStore(Path.of(reportPath(htmlReport.file(), testClass)));
 		}
 		return createStore(findConfigOnClass(testClass));
+	}
+
+	static String reportPath(String template, Class<?> testClass)
+	{
+		String className = testClass == null ? "unknown" : testClass.getName();
+		return template.replace("{class}", className);
 	}
 
 	private Rage4jHtmlReport findHtmlReport(Class<?> testClass)
