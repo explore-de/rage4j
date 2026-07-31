@@ -68,11 +68,6 @@
             <name>github</name>
             <url>https://maven.pkg.github.com/explore-de/rage4j</url>
         </snapshotRepository>
-        <repository>
-            <id>central</id>
-            <name>Central Repository OSSRH</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
     </distributionManagement>
 
     <licenses>
@@ -162,6 +157,14 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <releaseProfiles>central</releaseProfiles>
                 </configuration>
             </plugin>
         </plugins>
