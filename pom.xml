@@ -222,7 +222,7 @@
                                     <goal>jar</goal>
                                 </goals>
                                 <configuration>
-                                    <source>15</source>
+                                    <source>21</source>
                                 </configuration>
                             </execution>
                         </executions>
