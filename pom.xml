@@ -24,10 +24,15 @@
         <module>dev.rage4j.rage4j-persist</module>
         <module>dev.rage4j.rage4j-assert</module>
         <module>dev.rage4j.rage4j-persist-junit5</module>
+        <module>dev.rage4j.rage4j-quarkus</module>
+        <module>dev.rage4j.rage4j-quarkus-deployment</module>
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.22.0</jackson.version>
+        <quarkus.version>3.37.0</quarkus.version>
+        <langchain4j.version>1.16.1</langchain4j.version>
     </properties>
 
     <dependencyManagement>
@@ -58,6 +63,13 @@
                 <groupId>dev.rage4j</groupId>
                 <artifactId>rage4j-persist-junit5</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

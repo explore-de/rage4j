@@ -1,0 +1,11 @@
+name: "Rage4J"
+description: "Quarkus integration for Rage4J evaluation tests"
+metadata:
+  keywords:
+    - "rage4j"
+    - "rag"
+    - "evaluation"
+    - "testing"
+  categories:
+    - "testing"
+  status: "experimental"
