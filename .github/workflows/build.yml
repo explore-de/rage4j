@@ -16,3 +16,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:
           mvn clean install
+      - name: Javadoc
+        run:
+          mvn -Pcentral package -DskipTests
