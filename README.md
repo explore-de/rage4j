@@ -18,6 +18,7 @@ Rage4J provides tools to evaluate and measure the quality of language model outp
 - **rage4j-assert** - Fluent assertion library for RAG evaluation in tests
 - **rage4j-persist** - Persistence module for saving evaluation results (JSONL and HTML reports)
 - **rage4j-persist-junit5** - JUnit 5 extension for evaluation persistence and HTML artifacts
+- **rage4j-quarkus** - Quarkus CDI integration for `RageAssert` and evaluation stores
 
 ## Installation
 
@@ -27,7 +28,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -37,7 +38,7 @@ For fluent test assertions:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-assert</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.2-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -48,7 +49,7 @@ For persistence of evaluations:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-persist</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.2-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -59,7 +60,18 @@ For JUnit 5 persistence and HTML reports:
 <dependency>
     <groupId>dev.rage4j</groupId>
     <artifactId>rage4j-persist-junit5</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.2-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+```
+
+For Quarkus tests, use the Quarkus extension. It reuses the application’s CDI-managed LangChain4j models:
+
+```xml
+<dependency>
+    <groupId>dev.rage4j</groupId>
+    <artifactId>rage4j-quarkus</artifactId>
+    <version>2.0.2-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -96,6 +108,33 @@ rageAssert.given()
     .then()
     .assertAnswerCorrectness(0.8);
 ```
+
+### Quarkus tests
+
+With `rage4j-quarkus` and a CDI-managed LangChain4j `ChatModel`, inject `RageAssert` directly:
+
+```java
+@QuarkusTest
+class AiEvaluationTest
+{
+    @Inject
+    RageAssert rageAssert;
+
+    @Test
+    void evaluatesAnswer()
+    {
+        rageAssert.given()
+            .question("What is the capital of France?")
+            .groundTruth("Paris")
+            .when()
+            .answer("Paris")
+            .then()
+            .assertAnswerCorrectness(0.8);
+    }
+}
+```
+
+Configure `quarkus.rage4j.evaluation-mode=true` to collect threshold failures as warnings. An optional `EvaluationStore` CDI bean is also available; enable its default JSONL implementation with `quarkus.rage4j.persistence.enabled=true`, then call `storeFlush(...)` with the aggregation returned by the assertion chain.
 
 ### HTML evaluation report for Jenkins
 
