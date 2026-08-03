@@ -2,11 +2,13 @@ package dev.rage4j.persist.store;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -85,7 +87,7 @@ public class JsonLinesStore implements EvaluationStore
 	}
 
 	@Override
-	public void store(EvaluationAggregation aggregation)
+	public synchronized void store(EvaluationAggregation aggregation)
 	{
 		checkNotClosed();
 		buffer.add(aggregation);
@@ -99,7 +101,7 @@ public class JsonLinesStore implements EvaluationStore
 	 *            The evaluation aggregation to store.
 	 */
 	@Override
-	public void storeFlush(EvaluationAggregation aggregation)
+	public synchronized void storeFlush(EvaluationAggregation aggregation)
 	{
 		store(aggregation);
 		flush();
@@ -107,18 +109,30 @@ public class JsonLinesStore implements EvaluationStore
 
 	private void writeBufferWithLock()
 	{
+		StringBuilder stringBuilder = new StringBuilder();
+		for (EvaluationAggregation aggregation : buffer)
+		{
+			Map<String, Object> evaluationRecord = new LinkedHashMap<>();
+			evaluationRecord.put("sample", aggregation.sampleMap());
+			evaluationRecord.put("metrics", aggregation.getMetrics());
+			try
+			{
+				stringBuilder.append(objectMapper.writeValueAsString(evaluationRecord)).append(NEWLINE);
+			}
+			catch (IOException e)
+			{
+				throw new UncheckedIOException("Failed to serialize evaluations to JSONL", e);
+			}
+		}
+
 		try (FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.APPEND,
 			StandardOpenOption.WRITE); FileLock lock = channel.lock())
 		{
-			StringBuilder stringBuilder = new StringBuilder();
-			for (EvaluationAggregation aggregation : buffer)
+			ByteBuffer bytes = ByteBuffer.wrap(stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+			while (bytes.hasRemaining())
 			{
-				Map<String, Object> evaluationRecord = new LinkedHashMap<>();
-				evaluationRecord.put("sample", aggregation.sampleMap());
-				evaluationRecord.put("metrics", aggregation.getMetrics());
-				stringBuilder.append(objectMapper.writeValueAsString(evaluationRecord)).append(NEWLINE);
+				channel.write(bytes);
 			}
-			Files.writeString(file, stringBuilder.toString(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 		}
 		catch (IOException e)
 		{
@@ -127,7 +141,7 @@ public class JsonLinesStore implements EvaluationStore
 	}
 
 	@Override
-	public void flush()
+	public synchronized void flush()
 	{
 		checkNotClosed();
 		if (buffer.isEmpty())
@@ -139,7 +153,7 @@ public class JsonLinesStore implements EvaluationStore
 	}
 
 	@Override
-	public void close()
+	public synchronized void close()
 	{
 		if (!closed)
 		{
