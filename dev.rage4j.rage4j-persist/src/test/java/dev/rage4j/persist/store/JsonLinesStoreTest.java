@@ -6,7 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -259,5 +263,36 @@ class JsonLinesStoreTest
 		assertTrue(Files.exists(file));
 		List<String> lines = Files.readAllLines(file);
 		assertEquals(1, lines.size());
+	}
+
+	@Test
+	void concurrentStoreFlushDoesNotLoseRecords() throws Exception
+	{
+		int recordCount = 32;
+		ExecutorService executor = Executors.newFixedThreadPool(8);
+		List<Future<?>> futures = new ArrayList<>();
+		try
+		{
+			for (int i = 0; i < recordCount; i++)
+			{
+				int index = i;
+				futures.add(executor.submit(() -> {
+					Sample sample = Sample.builder().withQuestion("Question " + index).withAnswer("Answer " + index).build();
+					EvaluationAggregation aggregation = new EvaluationAggregation(sample);
+					aggregation.put("score", (double) index);
+					store.storeFlush(aggregation);
+				}));
+			}
+			for (Future<?> future : futures)
+			{
+				future.get();
+			}
+		}
+		finally
+		{
+			executor.shutdownNow();
+		}
+
+		assertEquals(recordCount, Files.readAllLines(file).size());
 	}
 }
