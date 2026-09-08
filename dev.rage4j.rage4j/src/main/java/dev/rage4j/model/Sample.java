@@ -27,6 +27,8 @@ public class Sample implements Serializable
 	protected String context;
 	protected List<Rage4jImage> images;
 	protected Sample comparisonSample;
+	protected List<ToolCall> toolCalls;
+	protected List<ToolCall> expectedToolCalls;
 
 	private Sample(SampleBuilder builder)
 	{
@@ -36,6 +38,8 @@ public class Sample implements Serializable
 		this.context = builder.context;
 		this.images = builder.images == null ? null : List.copyOf(builder.images);
 		this.comparisonSample = builder.comparisonSample;
+		this.toolCalls = builder.toolCalls == null ? null : List.copyOf(builder.toolCalls);
+		this.expectedToolCalls = builder.expectedToolCalls == null ? null : List.copyOf(builder.expectedToolCalls);
 	}
 
 	public String getQuestion()
@@ -163,6 +167,44 @@ public class Sample implements Serializable
 		return hasComparisonSample();
 	}
 
+	public List<ToolCall> getToolCalls()
+	{
+		return toolCalls == null ? Collections.emptyList() : toolCalls;
+	}
+
+	public List<ToolCall> getToolCallsOrFail()
+	{
+		if (Objects.isNull(toolCalls))
+		{
+			throwAttributeNotFound("toolCalls");
+		}
+		return toolCalls;
+	}
+
+	public boolean hasToolCalls()
+	{
+		return toolCalls != null;
+	}
+
+	public List<ToolCall> getExpectedToolCalls()
+	{
+		return expectedToolCalls == null ? Collections.emptyList() : expectedToolCalls;
+	}
+
+	public List<ToolCall> getExpectedToolCallsOrFail()
+	{
+		if (Objects.isNull(expectedToolCalls))
+		{
+			throwAttributeNotFound("expectedToolCalls");
+		}
+		return expectedToolCalls;
+	}
+
+	public boolean hasExpectedToolCalls()
+	{
+		return expectedToolCalls != null && !expectedToolCalls.isEmpty();
+	}
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -180,13 +222,15 @@ public class Sample implements Serializable
 			&& Objects.equals(groundTruth, sample.groundTruth)
 			&& Objects.equals(context, sample.context)
 			&& Objects.equals(images, sample.images)
-			&& Objects.equals(comparisonSample, sample.comparisonSample);
+			&& Objects.equals(comparisonSample, sample.comparisonSample)
+			&& Objects.equals(toolCalls, sample.toolCalls)
+			&& Objects.equals(expectedToolCalls, sample.expectedToolCalls);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(question, answer, groundTruth, context, images, comparisonSample);
+		return Objects.hash(question, answer, groundTruth, context, images, comparisonSample, toolCalls, expectedToolCalls);
 	}
 
 	private void throwAttributeNotFound(String attribute)
@@ -207,6 +251,8 @@ public class Sample implements Serializable
 		private String context;
 		private List<Rage4jImage> images;
 		private Sample comparisonSample;
+		private List<ToolCall> toolCalls;
+		private List<ToolCall> expectedToolCalls;
 
 		public SampleBuilder withQuestion(String question)
 		{
@@ -264,6 +310,18 @@ public class Sample implements Serializable
 		public SampleBuilder withControlSample(Sample controlSample)
 		{
 			return withComparisonSample(controlSample);
+		}
+
+		public SampleBuilder withToolCalls(List<ToolCall> toolCalls)
+		{
+			this.toolCalls = toolCalls == null ? null : new ArrayList<>(toolCalls);
+			return this;
+		}
+
+		public SampleBuilder withExpectedToolCalls(List<ToolCall> expectedToolCalls)
+		{
+			this.expectedToolCalls = expectedToolCalls == null ? null : new ArrayList<>(expectedToolCalls);
+			return this;
 		}
 
 		public Sample build()
