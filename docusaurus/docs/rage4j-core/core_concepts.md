@@ -24,6 +24,8 @@ A Sample typically consists of:
 - A **context** (optional): additional information related to the question.
 - **Images** (optional): part of the context, forwarded to vision-capable
   evaluators. See [Image support](image_support) for details.
+- **Tool calls** (optional): the tool calls the model actually performed, and the ones the test expects. See
+  [Tool Call Accuracy](metrics/tool_call_accuracy) for details.
 
 ```java
 Sample sampleWithImages = Sample.builder()

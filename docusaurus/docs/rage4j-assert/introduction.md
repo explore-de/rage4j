@@ -127,4 +127,8 @@ additional features from the core API, including:
 - `assertSemanticSimilarity(double minValue)`
 - `assertBleuScore(double minValue)`
 - `assertRougeScore(double minValue, RougeScoreEvaluator.RougeType rougeType, RougeScoreEvaluator.MeasureType measureType)`
+- `assertToolCallAccuracy(double minValue)`
+- `assertToolCallOrder()`
+- `assertNoToolCall()`
+- `assertNoUnexpectedToolCalls()`
 If you're eager to explore more examples, check out the [examples on the next page](/docs/rage4j-assert/examples)! 😊

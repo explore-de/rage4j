@@ -2,10 +2,19 @@ package dev.rage4j.asserts;
 
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.rage4j.asserts.toolref.ToolNameResolver;
+import dev.rage4j.asserts.toolref.ToolRef0;
+import dev.rage4j.asserts.toolref.ToolRef1;
+import dev.rage4j.asserts.toolref.ToolRef2;
+import dev.rage4j.asserts.toolref.ToolRef3;
+import dev.rage4j.asserts.toolref.ToolRef4;
 import dev.rage4j.model.Rage4jImage;
+import dev.rage4j.model.ToolArguments;
+import dev.rage4j.model.ToolCall;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class RageAssertTestCaseBuilder
@@ -18,6 +27,7 @@ public class RageAssertTestCaseBuilder
 	private String comparisonGroundTruth;
 	private String comparisonContext;
 	private ImplicitExplicitScenario implicitExplicitScenario;
+	private final List<ToolCall> expectedToolCalls = new ArrayList<>();
 	private final ChatModel judgeChatModel;
 	private final ChatModel evaluatedChatModel;
 	private final EmbeddingModel embeddingModel;
@@ -125,6 +135,68 @@ public class RageAssertTestCaseBuilder
 		return this;
 	}
 
+	public RageAssertTestCaseBuilder expectedToolCall(String toolName)
+	{
+		Objects.requireNonNull(toolName, "toolName");
+		expectedToolCalls.add(ToolCall.of(toolName));
+		return this;
+	}
+
+	public <T> RageAssertTestCaseBuilder expectedToolCall(ToolRef0<T> toolReference)
+	{
+		return expectedToolCall(ToolNameResolver.resolve(toolReference));
+	}
+
+	public <T, A> RageAssertTestCaseBuilder expectedToolCall(ToolRef1<T, A> toolReference)
+	{
+		return expectedToolCall(ToolNameResolver.resolve(toolReference));
+	}
+
+	public <T, A, B> RageAssertTestCaseBuilder expectedToolCall(ToolRef2<T, A, B> toolReference)
+	{
+		return expectedToolCall(ToolNameResolver.resolve(toolReference));
+	}
+
+	public <T, A, B, C> RageAssertTestCaseBuilder expectedToolCall(ToolRef3<T, A, B, C> toolReference)
+	{
+		return expectedToolCall(ToolNameResolver.resolve(toolReference));
+	}
+
+	public <T, A, B, C, D> RageAssertTestCaseBuilder expectedToolCall(ToolRef4<T, A, B, C, D> toolReference)
+	{
+		return expectedToolCall(ToolNameResolver.resolve(toolReference));
+	}
+
+	public RageAssertTestCaseBuilder withArgument(String argumentName, Object value)
+	{
+		Objects.requireNonNull(argumentName, "argumentName");
+		int lastIndex = requireExpectedToolCallIndex();
+		expectedToolCalls.set(lastIndex, expectedToolCalls.get(lastIndex).withArgument(argumentName, value));
+		return this;
+	}
+
+	public RageAssertTestCaseBuilder withArguments(Map<String, Object> arguments)
+	{
+		Objects.requireNonNull(arguments, "arguments");
+		int lastIndex = requireExpectedToolCallIndex();
+		expectedToolCalls.set(lastIndex, expectedToolCalls.get(lastIndex).withArguments(arguments));
+		return this;
+	}
+
+	public RageAssertTestCaseBuilder withArgumentsJson(String argumentsJson)
+	{
+		return withArguments(ToolArguments.fromJson(argumentsJson));
+	}
+
+	private int requireExpectedToolCallIndex()
+	{
+		if (expectedToolCalls.isEmpty())
+		{
+			throw new IllegalStateException("An expectedToolCall must be set before arguments are added.");
+		}
+		return expectedToolCalls.size() - 1;
+	}
+
 	public RageAssertTestCaseGiven when()
 	{
 		return new RageAssertTestCaseGiven(
@@ -136,6 +208,7 @@ public class RageAssertTestCaseBuilder
 			comparisonGroundTruth,
 			comparisonContext,
 			implicitExplicitScenario,
+			List.copyOf(expectedToolCalls),
 			judgeChatModel,
 			evaluatedChatModel,
 			embeddingModel,

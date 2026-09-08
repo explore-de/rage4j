@@ -106,6 +106,26 @@ rageAssert.given()
 This example uses the [`assertRougeScore`](/docs/rage4j-core/metrics/rouge_score) feature, with the **ROUGE_L_SUM**
 metric. This example makes sure that the LCS across multiple sentences yields a precision of 0.9.
 
+### Example: Testing Tool Call Accuracy
+
+``` java
+RageAssert rageAssert = new OpenAiLLMBuilder().fromApiKey(key);
+rageAssert.given()
+    .question("Wie wird das Wetter morgen in Berlin?")
+    .expectedToolCall(WeatherTools::getWeather)
+    .withArgument("city", "Berlin")
+    .withArgument("day", "tomorrow")
+    .when()
+    .answerFrom(assistant::chat)
+    .then()
+    .assertToolCallAccuracy(1.0);
+```
+
+This example uses the [`assertToolCallAccuracy`](/docs/rage4j-core/metrics/tool_call_accuracy) feature.
+`expectedToolCall` accepts a method reference to a `@Tool`-annotated method, and `withArgument` declares the arguments
+the call is expected to carry. `answerFrom` calls the AI service once and records both the answer and the tool calls
+it performed.
+
 ### Example: Testing Faithfulness with images
 
 When the system under test consumed images alongside the textual context,
