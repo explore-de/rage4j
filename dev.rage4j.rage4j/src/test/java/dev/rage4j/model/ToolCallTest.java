@@ -4,6 +4,9 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,6 +61,38 @@ class ToolCallTest
 		ToolCall toolCall = ToolCall.of("getWeather").withArgument("city", "Berlin");
 
 		assertThrows(UnsupportedOperationException.class, () -> toolCall.arguments().put("day", "tomorrow"));
+	}
+
+	@Test
+	void testNestedArgumentsAreCopiedDefensively()
+	{
+		Map<String, Object> nestedFilter = new HashMap<>();
+		nestedFilter.put("limit", 3);
+		Map<String, Object> arguments = new HashMap<>();
+		arguments.put("filter", nestedFilter);
+
+		ToolCall toolCall = ToolCall.of("search", arguments);
+		nestedFilter.put("limit", 99);
+
+		assertEquals(Map.of("limit", 3), toolCall.arguments().get("filter"));
+	}
+
+	@Test
+	void testNestedMapArgumentsAreImmutable()
+	{
+		ToolCall toolCall = ToolCall.of("search", Map.of("filter", new HashMap<>(Map.of("limit", 3))));
+
+		Map<?, ?> filter = (Map<?, ?>)toolCall.arguments().get("filter");
+		assertThrows(UnsupportedOperationException.class, () -> ((Map<Object, Object>)filter).put("limit", 99));
+	}
+
+	@Test
+	void testNestedListArgumentsAreImmutable()
+	{
+		ToolCall toolCall = ToolCall.of("search", Map.of("tags", new ArrayList<>(List.of("a", "b"))));
+
+		List<?> tags = (List<?>)toolCall.arguments().get("tags");
+		assertThrows(UnsupportedOperationException.class, () -> ((List<Object>)tags).add("c"));
 	}
 
 	@Test
