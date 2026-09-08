@@ -145,6 +145,21 @@ class RageAssertToolCallTest
 	}
 
 	@Test
+	void testAssertNoUnexpectedToolCallsMatchesExpectationsOptimally()
+	{
+		rageAssert.given()
+			.question(QUESTION)
+			.expectedToolCall(WeatherTools::getWeather)
+			.expectedToolCall(WeatherTools::getWeather)
+			.withArgument("city", "Berlin")
+			.when()
+			.answer("18 Grad und sonnig.")
+			.toolCalls(List.of(ToolCall.of("getWeather").withArgument("city", "Berlin"), ToolCall.of("getWeather").withArgument("city", "Hamburg")))
+			.then()
+			.assertNoUnexpectedToolCalls();
+	}
+
+	@Test
 	void testAssertToolCallOrderAcceptsInterleavedCalls()
 	{
 		rageAssert.given()

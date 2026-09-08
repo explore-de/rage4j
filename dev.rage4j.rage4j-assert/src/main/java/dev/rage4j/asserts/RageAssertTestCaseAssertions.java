@@ -27,12 +27,12 @@ import dev.rage4j.evaluation.toolcall.ToolCallAccuracyEvaluator;
 import dev.rage4j.model.EvaluationAggregation;
 import dev.rage4j.model.Sample;
 import dev.rage4j.model.ToolCall;
+import dev.rage4j.model.ToolCallMatching;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -238,30 +238,7 @@ public class RageAssertTestCaseAssertions
 
 	private List<ToolCall> unexpectedToolCalls()
 	{
-		List<ToolCall> remainingExpected = new ArrayList<>(sample.getExpectedToolCalls());
-		List<ToolCall> unexpected = new ArrayList<>();
-		for (ToolCall actualToolCall : sample.getToolCallsOrFail())
-		{
-			if (!removeFirstMatch(remainingExpected, actualToolCall))
-			{
-				unexpected.add(actualToolCall);
-			}
-		}
-		return unexpected;
-	}
-
-	private boolean removeFirstMatch(List<ToolCall> expectedToolCalls, ToolCall actualToolCall)
-	{
-		Iterator<ToolCall> iterator = expectedToolCalls.iterator();
-		while (iterator.hasNext())
-		{
-			if (iterator.next().matches(actualToolCall))
-			{
-				iterator.remove();
-				return true;
-			}
-		}
-		return false;
+		return ToolCallMatching.match(sample.getExpectedToolCalls(), sample.getToolCallsOrFail()).unmatchedActualCalls();
 	}
 
 	private boolean isOrderedSubsequence(List<ToolCall> expectedToolCalls, List<ToolCall> actualToolCalls)

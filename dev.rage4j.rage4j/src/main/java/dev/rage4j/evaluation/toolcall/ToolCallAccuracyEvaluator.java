@@ -4,11 +4,11 @@ import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.Evaluator;
 import dev.rage4j.model.Sample;
 import dev.rage4j.model.ToolCall;
+import dev.rage4j.model.ToolCallMatchResult;
+import dev.rage4j.model.ToolCallMatching;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -56,36 +56,14 @@ public class ToolCallAccuracyEvaluator implements Evaluator
 		}
 
 		List<ToolCall> expectedToolCalls = sample.getExpectedToolCalls();
-		List<ToolCall> unmatchedToolCalls = new ArrayList<>(sample.getToolCalls());
+		List<ToolCall> actualToolCalls = sample.getToolCalls();
 		LOG.info("Evaluating new sample");
 		LOG.info("Expected tool calls: {}", expectedToolCalls);
-		LOG.info("Actual tool calls: {}", unmatchedToolCalls);
+		LOG.info("Actual tool calls: {}", actualToolCalls);
 
-		int matches = 0;
-		for (ToolCall expectedToolCall : expectedToolCalls)
-		{
-			if (removeFirstMatch(unmatchedToolCalls, expectedToolCall))
-			{
-				matches++;
-			}
-		}
-
-		double score = (double)matches / expectedToolCalls.size();
+		ToolCallMatchResult matchResult = ToolCallMatching.match(expectedToolCalls, actualToolCalls);
+		double score = (double)matchResult.matchedExpectedCalls() / expectedToolCalls.size();
 		LOG.info("Tool Call Accuracy: {}", score);
 		return new Evaluation(METRIC_NAME, score);
-	}
-
-	private boolean removeFirstMatch(List<ToolCall> actualToolCalls, ToolCall expectedToolCall)
-	{
-		Iterator<ToolCall> iterator = actualToolCalls.iterator();
-		while (iterator.hasNext())
-		{
-			if (expectedToolCall.matches(iterator.next()))
-			{
-				iterator.remove();
-				return true;
-			}
-		}
-		return false;
 	}
 }

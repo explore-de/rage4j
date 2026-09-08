@@ -109,6 +109,26 @@ class ToolCallAccuracyEvaluatorTest
 	}
 
 	@Test
+	void testUnconstrainedExpectationDoesNotConsumeTheCallASpecificOneNeeds()
+	{
+		Sample sample = sample(
+			List.of(ToolCall.of("getWeather"), ToolCall.of("getWeather").withArgument("city", "Berlin")),
+			List.of(ToolCall.of("getWeather").withArgument("city", "Berlin"), ToolCall.of("getWeather").withArgument("city", "Hamburg")));
+
+		assertEquals(1.0, evaluator.evaluate(sample).getValue(), 0.001);
+	}
+
+	@Test
+	void testOverlappingExpectationsAreMatchedOptimally()
+	{
+		Sample sample = sample(
+			List.of(ToolCall.of("search").withArgument("query", "x"), ToolCall.of("search").withArguments(Map.of("query", "x", "limit", 10))),
+			List.of(ToolCall.of("search").withArguments(Map.of("query", "x", "limit", 10)), ToolCall.of("search").withArguments(Map.of("query", "x", "limit", 5))));
+
+		assertEquals(1.0, evaluator.evaluate(sample).getValue(), 0.001);
+	}
+
+	@Test
 	void testNoActualToolCallsScoresZero()
 	{
 		Sample sample = sample(List.of(ToolCall.of("getWeather")), List.of());

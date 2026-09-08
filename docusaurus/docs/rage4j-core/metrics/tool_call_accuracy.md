@@ -19,8 +19,10 @@ match in type.
 
 ## How It Works
 
-1. For each expected tool call, searches the actual tool calls for the first one that matches it.
-2. A matched actual call is removed from the pool, so each actual call can satisfy at most one expectation.
+1. Pairs the expected tool calls with the actual ones so that each actual call satisfies at most one expectation.
+2. The pairing is a maximum matching, not a first-match-wins scan. An expectation without arguments matches any call
+   of its name, and taking the first match would let it consume the very call a more specific expectation of the same
+   tool needs — reporting a failure even though a pairing satisfying both exists.
 3. The score is the number of matched expectations divided by the total number of expected tool calls.
 4. Additional actual calls that no expectation covers do not lower the score.
 
