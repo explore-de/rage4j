@@ -46,6 +46,19 @@ class ToolArgumentsTest
 	}
 
 	@Test
+	void testFromJsonRejectsEmptyInput()
+	{
+		assertThrows(IllegalArgumentException.class, () -> ToolArguments.fromJson(""));
+		assertThrows(IllegalArgumentException.class, () -> ToolArguments.fromJson("   "));
+	}
+
+	@Test
+	void testFromJsonRejectsJsonNullLiteral()
+	{
+		assertThrows(IllegalArgumentException.class, () -> ToolArguments.fromJson("null"));
+	}
+
+	@Test
 	void testFromJsonRejectsNull()
 	{
 		assertThrows(NullPointerException.class, () -> ToolArguments.fromJson(null));
