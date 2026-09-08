@@ -1,8 +1,10 @@
 package dev.rage4j.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -11,7 +13,8 @@ import java.util.Objects;
  * one that a language model actually performed or one that a test expects it to
  * perform.
  * <p>
- * Instances are immutable; {@link #withArgument(String, Object)} and
+ * Instances are deeply immutable: nested maps and lists in the arguments are
+ * copied and wrapped as well. {@link #withArgument(String, Object)} and
  * {@link #withArguments(Map)} return new instances with the additional
  * arguments merged in.
  * <p>
@@ -30,7 +33,31 @@ public record ToolCall(String name, Map<String, Object> arguments) implements Se
 	{
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(arguments, "arguments");
-		arguments = Collections.unmodifiableMap(new LinkedHashMap<>(arguments));
+		arguments = immutableCopy(arguments);
+	}
+
+	private static Map<String, Object> immutableCopy(Map<String, Object> arguments)
+	{
+		Map<String, Object> copy = new LinkedHashMap<>();
+		arguments.forEach((argumentName, value) -> copy.put(argumentName, immutableValue(value)));
+		return Collections.unmodifiableMap(copy);
+	}
+
+	private static Object immutableValue(Object value)
+	{
+		if (value instanceof Map<?, ?> nestedMap)
+		{
+			Map<Object, Object> copy = new LinkedHashMap<>();
+			nestedMap.forEach((key, nestedValue) -> copy.put(key, immutableValue(nestedValue)));
+			return Collections.unmodifiableMap(copy);
+		}
+		if (value instanceof List<?> nestedList)
+		{
+			List<Object> copy = new ArrayList<>(nestedList.size());
+			nestedList.forEach(element -> copy.add(immutableValue(element)));
+			return Collections.unmodifiableList(copy);
+		}
+		return value;
 	}
 
 	/**
