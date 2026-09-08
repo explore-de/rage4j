@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Metrics overview
 
-RAGE4j-Core provides six primary metrics for evaluating LLM responses. Each metric focuses on a different aspect of
+RAGE4j-Core provides seven primary metrics for evaluating LLM responses. Each metric focuses on a different aspect of
 response quality and is implemented through a dedicated evaluator.
 
 ## Basic understanding of the metrics
@@ -24,3 +24,5 @@ response quality and is implemented through a dedicated evaluator.
     - **ROUGE-Lsum**: LCS across sentence pairs (summary-level).
 
   Each variant provides **Precision**, **Recall**, and **F1** scores.
+- **Tool Call Accuracy** (0-1): Fraction of expected tool calls that the model actually performed, matched by tool
+  name and argument values.

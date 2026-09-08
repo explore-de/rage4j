@@ -11,7 +11,7 @@ RAG Evaluation library for Java.
 
 ## Overview
 
-Rage4J provides tools to evaluate and measure the quality of language model outputs using various metrics like correctness, relevance, faithfulness, and semantic similarity. It integrates with LangChain4j and supports fluent test assertions for RAG pipelines.
+Rage4J provides tools to evaluate and measure the quality of language model outputs using various metrics like correctness, relevance, faithfulness, semantic similarity, and tool call accuracy. It integrates with LangChain4j and supports fluent test assertions for RAG pipelines.
 
 **Modules:**
 - **rage4j** - Core evaluation library with evaluators and model classes
@@ -96,6 +96,22 @@ rageAssert.given()
     .then()
     .assertAnswerCorrectness(0.8);
 ```
+
+### Tool Call Assertions
+
+```java
+rageAssert.given()
+    .question("Wie wird das Wetter morgen in Berlin?")
+    .expectedToolCall(WeatherTools::getWeather)
+    .withArgument("city", "Berlin")
+    .withArgument("day", "tomorrow")
+    .when()
+    .answerFrom(assistant::chat)
+    .then()
+    .assertToolCallAccuracy(1.0);
+```
+
+`expectedToolCall(...)` accepts a tool name or a method reference to a `@Tool`-annotated method; `withArgument`/`withArguments`/`withArgumentsJson` merge arguments into the most recently declared expected tool call. `answerFrom` runs the LangChain4j AI service once and records both the answer and the tool calls it performed. Besides `assertToolCallAccuracy(minValue)`, `assertToolCallOrder()`, `assertNoToolCall()`, and `assertNoUnexpectedToolCalls()` are available.
 
 ### HTML evaluation report for Jenkins
 

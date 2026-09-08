@@ -10,6 +10,7 @@ import dev.rage4j.asserts.exception.Rage4JRelevanceException;
 import dev.rage4j.asserts.exception.Rage4JRefusalException;
 import dev.rage4j.asserts.exception.Rage4JRougeScoreException;
 import dev.rage4j.asserts.exception.Rage4JSimilarityException;
+import dev.rage4j.asserts.exception.Rage4JToolCallException;
 import dev.rage4j.evaluation.Evaluation;
 import dev.rage4j.evaluation.answercorrectness.AnswerCorrectnessEvaluator;
 import dev.rage4j.evaluation.answerrelevance.embedding.AnswerRelevanceEmbeddingEvaluator;
@@ -22,13 +23,16 @@ import dev.rage4j.evaluation.bias.implicitexplicit.support.ImplicitExplicitTempl
 import dev.rage4j.evaluation.bias.refusal.RefusalEvaluator;
 import dev.rage4j.evaluation.faithfulness.FaithfulnessEvaluator;
 import dev.rage4j.evaluation.rougescore.RougeScoreEvaluator;
+import dev.rage4j.evaluation.toolcall.ToolCallAccuracyEvaluator;
 import dev.rage4j.model.EvaluationAggregation;
 import dev.rage4j.model.Sample;
+import dev.rage4j.model.ToolCall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -173,6 +177,104 @@ public class RageAssertTestCaseAssertions
 			handleAssertionFailure(message, "ROUGE Score", () -> new Rage4JRougeScoreException(message));
 		}
 		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	public AssertionEvaluation assertToolCallAccuracy(double minValue)
+	{
+		ToolCallAccuracyEvaluator evaluator = new ToolCallAccuracyEvaluator();
+		Evaluation evaluation = evaluator.evaluate(sample);
+		boolean passed = minValue <= evaluation.getValue();
+		collectEvaluation(evaluation);
+		if (!passed)
+		{
+			String message = MINVALUE + evaluation.getValue() + " expected tool calls: " + sample.getExpectedToolCalls() + " actual tool calls: " + sample.getToolCalls();
+			handleAssertionFailure(message, "Tool Call Accuracy", () -> new Rage4JToolCallException(message));
+		}
+		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	public AssertionEvaluation assertToolCallOrder()
+	{
+		List<ToolCall> expectedToolCalls = sample.getExpectedToolCallsOrFail();
+		List<ToolCall> actualToolCalls = sample.getToolCallsOrFail();
+		boolean passed = isOrderedSubsequence(expectedToolCalls, actualToolCalls);
+		Evaluation evaluation = new Evaluation("Tool Call Order", passed ? 1.0 : 0.0);
+		collectEvaluation(evaluation);
+		if (!passed)
+		{
+			String message = "Expected tool calls were not performed in the expected order! Expected: " + expectedToolCalls + " actual: " + actualToolCalls;
+			handleAssertionFailure(message, "Tool Call Order", () -> new Rage4JToolCallException(message));
+		}
+		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	public AssertionEvaluation assertNoToolCall()
+	{
+		List<ToolCall> actualToolCalls = sample.getToolCallsOrFail();
+		boolean passed = actualToolCalls.isEmpty();
+		Evaluation evaluation = new Evaluation("No Tool Call", passed ? 1.0 : 0.0);
+		collectEvaluation(evaluation);
+		if (!passed)
+		{
+			String message = "Expected no tool call but got: " + actualToolCalls;
+			handleAssertionFailure(message, "No Tool Call", () -> new Rage4JToolCallException(message));
+		}
+		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	public AssertionEvaluation assertNoUnexpectedToolCalls()
+	{
+		List<ToolCall> unexpectedToolCalls = unexpectedToolCalls();
+		boolean passed = unexpectedToolCalls.isEmpty();
+		Evaluation evaluation = new Evaluation("No Unexpected Tool Calls", passed ? 1.0 : 0.0);
+		collectEvaluation(evaluation);
+		if (!passed)
+		{
+			String message = "Tool calls were performed that no expectation covers: " + unexpectedToolCalls;
+			handleAssertionFailure(message, "No Unexpected Tool Calls", () -> new Rage4JToolCallException(message));
+		}
+		return AssertionEvaluation.from(evaluation, this);
+	}
+
+	private List<ToolCall> unexpectedToolCalls()
+	{
+		List<ToolCall> remainingExpected = new ArrayList<>(sample.getExpectedToolCalls());
+		List<ToolCall> unexpected = new ArrayList<>();
+		for (ToolCall actualToolCall : sample.getToolCallsOrFail())
+		{
+			if (!removeFirstMatch(remainingExpected, actualToolCall))
+			{
+				unexpected.add(actualToolCall);
+			}
+		}
+		return unexpected;
+	}
+
+	private boolean removeFirstMatch(List<ToolCall> expectedToolCalls, ToolCall actualToolCall)
+	{
+		Iterator<ToolCall> iterator = expectedToolCalls.iterator();
+		while (iterator.hasNext())
+		{
+			if (iterator.next().matches(actualToolCall))
+			{
+				iterator.remove();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isOrderedSubsequence(List<ToolCall> expectedToolCalls, List<ToolCall> actualToolCalls)
+	{
+		int expectedIndex = 0;
+		for (ToolCall actualToolCall : actualToolCalls)
+		{
+			if (expectedIndex < expectedToolCalls.size() && expectedToolCalls.get(expectedIndex).matches(actualToolCall))
+			{
+				expectedIndex++;
+			}
+		}
+		return expectedIndex == expectedToolCalls.size();
 	}
 
 	public AssertionEvaluation assertRefusalDisparity()

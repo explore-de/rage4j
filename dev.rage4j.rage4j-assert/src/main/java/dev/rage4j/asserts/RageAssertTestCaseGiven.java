@@ -2,8 +2,11 @@ package dev.rage4j.asserts;
 
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.service.Result;
+import dev.langchain4j.service.tool.ToolExecution;
 import dev.rage4j.model.Rage4jImage;
 import dev.rage4j.model.Sample;
+import dev.rage4j.model.ToolCall;
 
 import java.util.List;
 import java.util.function.Function;
@@ -18,6 +21,8 @@ public class RageAssertTestCaseGiven
 	private final String comparisonGroundTruth;
 	private final String comparisonContext;
 	private final ImplicitExplicitScenario implicitExplicitScenario;
+	private final List<ToolCall> expectedToolCalls;
+	private List<ToolCall> toolCalls;
 	private String answer;
 	private String comparisonAnswer;
 	private final ChatModel judgeChatModel;
@@ -34,6 +39,7 @@ public class RageAssertTestCaseGiven
 		String comparisonGroundTruth,
 		String comparisonContext,
 		ImplicitExplicitScenario implicitExplicitScenario,
+		List<ToolCall> expectedToolCalls,
 		ChatModel judgeChatModel,
 		ChatModel evaluatedChatModel,
 		EmbeddingModel embeddingModel,
@@ -47,6 +53,7 @@ public class RageAssertTestCaseGiven
 		this.comparisonGroundTruth = comparisonGroundTruth;
 		this.comparisonContext = comparisonContext;
 		this.implicitExplicitScenario = implicitExplicitScenario;
+		this.expectedToolCalls = expectedToolCalls;
 		this.judgeChatModel = judgeChatModel;
 		this.evaluatedChatModel = evaluatedChatModel;
 		this.embeddingModel = embeddingModel;
@@ -81,6 +88,51 @@ public class RageAssertTestCaseGiven
 		return this;
 	}
 
+	/**
+	 * Calls the AI service and records both its answer and the tool calls it
+	 * performed, so that tool call and answer metrics can be asserted on the
+	 * same invocation.
+	 *
+	 * @param callAi
+	 *            The AI service call, returning a LangChain4j {@code Result}.
+	 * @return This instance for chaining.
+	 */
+	public RageAssertTestCaseGiven answerFrom(Function<String, Result<String>> callAi)
+	{
+		Result<String> result = callAi.apply(question);
+		this.answer = result.content();
+		this.toolCalls = ToolExecutionAdapter.toToolCalls(result.toolExecutions());
+		return this;
+	}
+
+	/**
+	 * Records the tool calls LangChain4j reported for the evaluated answer.
+	 *
+	 * @param toolExecutions
+	 *            The tool executions, typically from
+	 *            {@code Result#toolExecutions()}.
+	 * @return This instance for chaining.
+	 */
+	public RageAssertTestCaseGiven toolExecutions(List<ToolExecution> toolExecutions)
+	{
+		this.toolCalls = ToolExecutionAdapter.toToolCalls(toolExecutions);
+		return this;
+	}
+
+	/**
+	 * Records the tool calls performed for the evaluated answer, independently
+	 * of any framework.
+	 *
+	 * @param toolCalls
+	 *            The tool calls the model performed.
+	 * @return This instance for chaining.
+	 */
+	public RageAssertTestCaseGiven toolCalls(List<ToolCall> toolCalls)
+	{
+		this.toolCalls = toolCalls == null ? null : List.copyOf(toolCalls);
+		return this;
+	}
+
 	public RageAssertTestCaseAssertions then()
 	{
 		Sample comparisonSample = buildComparisonSample();
@@ -89,7 +141,9 @@ public class RageAssertTestCaseGiven
 			.withGroundTruth(groundTruth)
 			.withQuestion(question)
 			.withContext(context)
-			.withImages(images);
+			.withImages(images)
+			.withToolCalls(toolCalls)
+			.withExpectedToolCalls(expectedToolCalls == null || expectedToolCalls.isEmpty() ? null : expectedToolCalls);
 		if (comparisonSample != null)
 		{
 			builder.withComparisonSample(comparisonSample);
