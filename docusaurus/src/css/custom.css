@@ -524,7 +524,7 @@ body {
     transition: background-color var(--theme-transition-duration) ease-in-out;
 }
 
-[data-theme='light'] body {
+[data-theme='light'].plugin-pages body {
     background: #f7f6f4;
 }
 
