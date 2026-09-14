@@ -7,7 +7,7 @@
 
 # Rage4J
 
-RAG Evaluation library for Java.
+Test your LLM apps like the rest of your Java code.
 
 ## Overview
 

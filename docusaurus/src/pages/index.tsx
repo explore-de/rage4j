@@ -81,7 +81,7 @@ function HomepageHeader() {
                     />
                     <div className={styles.heroText}>
                         <h1 className="heroTitle">Rage4J</h1>
-                        <p className="heroDescription">Comprehensive RAG Evaluation Library for Java</p>
+                        <p className="heroDescription">Test your LLM apps like the rest of your Java code</p>
                         <div className={styles.buttons}>
                             <Link className="button button--secondary button--lg" to="/docs/intro">
                                 Get Started →

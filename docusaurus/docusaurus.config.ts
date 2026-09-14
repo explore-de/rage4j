@@ -4,7 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
     title: "Rage4J",
-    tagline: "Comprehensive RAG Evaluation Library for Java",
+    tagline: "Test your LLM apps like the rest of your Java code",
     favicon: "img/favicon.ico",
 
     url: "https://rage4j.dev",
@@ -27,21 +27,21 @@ const config: Config = {
             tagName: 'meta',
             attributes: {
                 name: 'description',
-                content: 'Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.',
+                content: 'Evaluate RAG pipelines and AI agents in plain JUnit tests, with metrics for answer correctness, relevance, faithfulness, tool call accuracy and more.',
             },
         },
         {
             tagName: 'meta',
             attributes: {
                 property: 'og:title',
-                content: 'Rage4J - RAG Evaluation Library for Java',
+                content: 'Rage4J - Test your LLM apps like the rest of your Java code',
             },
         },
         {
             tagName: 'meta',
             attributes: {
                 property: 'og:description',
-                content: 'Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.',
+                content: 'Evaluate RAG pipelines and AI agents in plain JUnit tests, with metrics for answer correctness, relevance, faithfulness, tool call accuracy and more.',
             },
         },
         {
@@ -76,14 +76,14 @@ const config: Config = {
             tagName: 'meta',
             attributes: {
                 name: 'twitter:title',
-                content: 'Rage4J - RAG Evaluation Library for Java',
+                content: 'Rage4J - Test your LLM apps like the rest of your Java code',
             },
         },
         {
             tagName: 'meta',
             attributes: {
                 name: 'twitter:description',
-                content: 'Evaluate RAG systems with multiple metrics including answer correctness, relevance, faithfulness and more.',
+                content: 'Evaluate RAG pipelines and AI agents in plain JUnit tests, with metrics for answer correctness, relevance, faithfulness, tool call accuracy and more.',
             },
         },
         {
@@ -97,7 +97,7 @@ const config: Config = {
             tagName: 'meta',
             attributes: {
                 name: 'twitter:image:alt',
-                content: 'Rage4J - RAG Evaluation Library for Java',
+                content: 'Rage4J - Test your LLM apps like the rest of your Java code',
             },
         },
     ],
@@ -123,27 +123,27 @@ const config: Config = {
         metadata: [
             {
                 name: 'description',
-                content: 'Rage4J - Comprehensive RAG Evaluation Library for Java. Evaluate your Retrieval-Augmented Generation systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
+                content: 'Rage4J - Test your LLM apps like the rest of your Java code. Evaluate RAG pipelines and AI agents in plain JUnit tests, with metrics for answer correctness, relevance, faithfulness, tool call accuracy and more.'
             },
-            {property: 'og:title', content: 'Rage4J - RAG Evaluation Library for Java'},
+            {property: 'og:title', content: 'Rage4J - Test your LLM apps like the rest of your Java code'},
             {
                 property: 'og:description',
-                content: 'Comprehensive RAG Evaluation Library for Java. Evaluate your Retrieval-Augmented Generation systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
+                content: 'Evaluate RAG pipelines and AI agents in plain JUnit tests, with metrics for answer correctness, relevance, faithfulness, tool call accuracy and more.'
             },
             {property: 'og:url', content: 'https://rage4j.dev/'},
             {property: 'og:type', content: 'website'},
-            {property: 'og:image', content: 'https://rage4j.dev/img/rage4j.png'},
-            {property: 'og:image:alt', content: 'Rage4J Logo - RAG Evaluation Library for Java'},
+            {property: 'og:image', content: 'https://rage4j.dev/img/opengraph.png'},
+            {property: 'og:image:alt', content: 'Rage4J - Test your LLM apps like the rest of your Java code'},
             {property: 'og:site_name', content: 'Rage4J'},
             {property: 'og:locale', content: 'en_US'},
             {name: 'twitter:card', content: 'summary_large_image'},
-            {name: 'twitter:title', content: 'Rage4J - RAG Evaluation Library for Java'},
+            {name: 'twitter:title', content: 'Rage4J - Test your LLM apps like the rest of your Java code'},
             {
                 name: 'twitter:description',
-                content: 'Comprehensive RAG Evaluation Library for Java. Evaluate your Retrieval-Augmented Generation systems with multiple metrics.'
+                content: 'Evaluate RAG pipelines and AI agents in plain JUnit tests.'
             },
-            {name: 'twitter:image', content: 'https://rage4j.dev/img/rage4j.png'},
-            {name: 'twitter:image:alt', content: 'Rage4J Logo - RAG Evaluation Library for Java'},
+            {name: 'twitter:image', content: 'https://rage4j.dev/img/opengraph.png'},
+            {name: 'twitter:image:alt', content: 'Rage4J - Test your LLM apps like the rest of your Java code'},
             {
                 name: 'keywords',
                 content: 'RAG, Retrieval Augmented Generation, Java, Evaluation, Metrics, AI, Machine Learning, NLP'
