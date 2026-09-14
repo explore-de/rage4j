@@ -7,8 +7,8 @@ const config: Config = {
     tagline: "Comprehensive RAG Evaluation Library for Java",
     favicon: "img/favicon.ico",
 
-    url: "https://explore-de.github.io",
-    baseUrl: "/rage4j/",
+    url: "https://rage4j.dev",
+    baseUrl: "/",
 
     organizationName: "explore-de",
     projectName: "rage4j",
@@ -48,7 +48,7 @@ const config: Config = {
             tagName: 'meta',
             attributes: {
                 property: 'og:image',
-                content: 'https://explore-de.github.io/rage4j/img/opengraph.png',
+                content: 'https://rage4j.dev/img/opengraph.png',
             },
         },
         {
@@ -62,7 +62,7 @@ const config: Config = {
             tagName: 'meta',
             attributes: {
                 property: 'og:url',
-                content: 'https://explore-de.github.io/rage4j/',
+                content: 'https://rage4j.dev/',
             },
         },
         {
@@ -90,7 +90,7 @@ const config: Config = {
             tagName: 'meta',
             attributes: {
                 name: 'twitter:image',
-                content: 'https://explore-de.github.io/rage4j/img/opengraph.png',
+                content: 'https://rage4j.dev/img/opengraph.png',
             },
         },
         {
@@ -130,9 +130,9 @@ const config: Config = {
                 property: 'og:description',
                 content: 'Comprehensive RAG Evaluation Library for Java. Evaluate your Retrieval-Augmented Generation systems with multiple metrics including answer correctness, relevance, faithfulness and more.'
             },
-            {property: 'og:url', content: 'https://explore-de.github.io/rage4j/'},
+            {property: 'og:url', content: 'https://rage4j.dev/'},
             {property: 'og:type', content: 'website'},
-            {property: 'og:image', content: 'https://explore-de.github.io/rage4j/img/rage4j.png'},
+            {property: 'og:image', content: 'https://rage4j.dev/img/rage4j.png'},
             {property: 'og:image:alt', content: 'Rage4J Logo - RAG Evaluation Library for Java'},
             {property: 'og:site_name', content: 'Rage4J'},
             {property: 'og:locale', content: 'en_US'},
@@ -142,7 +142,7 @@ const config: Config = {
                 name: 'twitter:description',
                 content: 'Comprehensive RAG Evaluation Library for Java. Evaluate your Retrieval-Augmented Generation systems with multiple metrics.'
             },
-            {name: 'twitter:image', content: 'https://explore-de.github.io/rage4j/img/rage4j.png'},
+            {name: 'twitter:image', content: 'https://rage4j.dev/img/rage4j.png'},
             {name: 'twitter:image:alt', content: 'Rage4J Logo - RAG Evaluation Library for Java'},
             {
                 name: 'keywords',

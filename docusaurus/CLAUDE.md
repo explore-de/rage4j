@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the Docusaurus documentation site for Rage4J, a RAG Evaluation library for Java. The site is deployed to GitHub Pages at https://explore-de.github.io/rage4j/.
+This is the Docusaurus documentation site for Rage4J, a RAG Evaluation library for Java. The site is deployed to GitHub Pages at https://rage4j.dev/.
 
 ## Build Commands
 

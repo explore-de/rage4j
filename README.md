@@ -156,7 +156,7 @@ Archive `**/target/rage4j-report.html` in Jenkins, or publish it with the HTML P
 </details>
 
 ## Documentation
-Visit our documentation on Github Pages: <a href="https://explore-de.github.io/rage4j/" target="_blank">Visit Docs</a>
+Visit our documentation on Github Pages: <a href="https://rage4j.dev/" target="_blank">Visit Docs</a>
 
 ## Requirements
 
