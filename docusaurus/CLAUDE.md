@@ -43,9 +43,8 @@ docker-compose up
 ## Project Structure
 
 - `docs/` - Markdown documentation content (auto-generates sidebar via `sidebars.ts`)
-- `src/pages/` - Custom React pages (homepage at `index.tsx`)
+- `src/pages/` - Custom React pages (landing page at `index.tsx`, styled by `index.module.css`)
 - `src/components/` - React components
-  - `HomepageFeatures/` - Main landing page feature sections with scroll animations
   - `ThemeToggleHandler.tsx` - Custom animated theme switching
 - `src/api/GitHubApi.ts` - Fetches GitHub stats (stars, forks, version) with cookie caching
 - `src/css/custom.css` - Global CSS customizations
@@ -57,3 +56,4 @@ docker-compose up
 - **GitHub stats caching**: Stats are fetched from GitHub API and cached in cookies for 6 hours to avoid rate limits
 - **Theme animation**: Custom overlay animation for theme switching on desktop (disabled on mobile)
 - **Dynamic Maven versions**: Homepage displays latest release version from GitHub API
+- **Badges**: The landing page hero shows shields.io badges (license, Maven Central, Java, build)

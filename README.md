@@ -1,3 +1,6 @@
+[![License: MIT](https://img.shields.io/github/license/explore-de/rage4j)](LICENSE)
+[![Maven Central](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fdev%2Frage4j%2Frage4j%2Fmaven-metadata.xml&label=maven%20central)](https://central.sonatype.com/namespace/dev.rage4j)
+[![Build](https://github.com/explore-de/rage4j/actions/workflows/build.yml/badge.svg)](https://github.com/explore-de/rage4j/actions/workflows/build.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=explore-de_rage4j&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=explore-de_rage4j)
 [![Docusaurus Build And Deploy](https://github.com/explore-de/rage4j/actions/workflows/docusaurus.yml/badge.svg)](https://github.com/explore-de/rage4j/actions/workflows/docusaurus.yml)
 

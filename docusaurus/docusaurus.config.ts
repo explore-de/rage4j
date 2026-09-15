@@ -151,24 +151,34 @@ const config: Config = {
             {name: 'author', content: 'EXP Software GmbH'},
         ],
         navbar: {
+            title: "Rage4J",
+            logo: {
+                alt: "Rage4J logo",
+                src: "img/rage4j-mark.png",
+            },
+            hideOnScroll: false,
             items: [
                 {
                     type: "docSidebar",
                     sidebarId: "tutorialSidebar",
-                    href: "/",
                     position: "left",
-                    label: "Home",
+                    label: "Docs",
                 },
                 {
-                    type: "docSidebar",
-                    sidebarId: "tutorialSidebar",
+                    to: "/docs/rage4j-core/metrics/overview",
                     position: "left",
-                    label: "Wiki",
+                    label: "Metrics",
+                },
+                {
+                    to: "/docs/rage4j-assert/examples",
+                    position: "left",
+                    label: "Examples",
                 },
                 {
                     href: "https://github.com/explore-de/rage4j",
-                    label: "GitHub",
                     position: "right",
+                    className: "header-github-link",
+                    "aria-label": "GitHub repository",
                 },
             ],
         },
@@ -176,33 +186,38 @@ const config: Config = {
             style: "dark",
             links: [
                 {
-                    title: "Wiki",
+                    title: "Docs",
                     items: [
-                        {
-                            label: "Getting Started",
-                            to: "/docs/intro",
-                        },
-                        {
-                            label: "RAGE4j-Core",
-                            to: "/docs/category/rage4j-core",
-                        },
-                        {
-                            label: "RAGE4j-Assert",
-                            to: "/docs/category/rage4j-assert",
-                        },
+                        {label: "Getting Started", to: "/docs/intro"},
+                        {label: "Rage4J Core", to: "/docs/category/rage4j-core"},
+                        {label: "Rage4J Assert", to: "/docs/category/rage4j-assert"},
+                        {label: "Metrics", to: "/docs/rage4j-core/metrics/overview"},
                     ],
                 },
                 {
-                    title: "Open Source",
+                    title: "Project",
                     items: [
-                        {
-                            label: "GitHub",
-                            href: "https://github.com/explore-de/rage4j",
-                        },
+                        {label: "Source on GitHub", href: "https://github.com/explore-de/rage4j"},
+                        {label: "Issues", href: "https://github.com/explore-de/rage4j/issues"},
+                        {label: "Releases", href: "https://github.com/explore-de/rage4j/releases"},
+                        {label: "MIT licence", href: "https://github.com/explore-de/rage4j/blob/main/LICENSE"},
+                    ],
+                },
+                {
+                    title: "Legal",
+                    items: [
+                        {label: "Impressum", to: "/impressum"},
+                        {label: "Datenschutz", href: "https://explore.de/datenschutz"},
                     ],
                 },
             ],
-            copyright: `Copyright © ${new Date().getFullYear()} Rage4J made by EXP Software GmbH`,
+            logo: {
+                alt: "EXP Software GmbH",
+                src: "img/exp-logo.svg",
+                href: "https://explore.de",
+                height: 26,
+            },
+            copyright: `Built and maintained by <strong>EXP Software GmbH</strong> · Ludwig-Hirschberger-Allee 11 · 85276 Pfaffenhofen an der Ilm · Deutschland<br/>© ${new Date().getFullYear()} EXP Software GmbH and the Rage4J contributors · MIT`,
         },
         customFields: {
             githubToken: process.env.GITHUB_TOKEN || "",
