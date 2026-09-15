@@ -80,7 +80,7 @@ const METRICS: Metric[] = [
     },
     {
         name: 'Faithfulness',
-        description: 'Catches hallucinations: is every claim backed by the retrieved context?',
+        description: 'Catches hallucinations: is every claim backed by the given context?',
         kind: 'LLM judge',
         to: '/docs/rage4j-core/metrics/faithfulness',
     },
@@ -114,7 +114,7 @@ const STEPS = [
     {
         keyword: 'given()',
         title: 'Describe the case',
-        text: 'A question, the answer you expect, and the context your retriever should find.',
+        text: 'A question, the answer you expect, plus the context or tool calls it should use.',
     },
     {
         keyword: 'when()',
@@ -349,7 +349,7 @@ function Metrics() {
         <section className={clsx(styles.section, styles.sectionTinted)}>
             <div className={styles.wrap}>
                 <p className={clsx(styles.eyebrow, styles.reveal)}>Metrics</p>
-                <h2 className={clsx(styles.sectionTitle, styles.reveal)}>Measure what matters in a RAG answer</h2>
+                <h2 className={clsx(styles.sectionTitle, styles.reveal)}>Measure what matters in your LLM app</h2>
                 <div className={styles.metricGrid}>
                     {METRICS.map((metric, i) => (
                         <Link key={metric.name} to={metric.to} className={clsx(styles.metricCard, styles.reveal)}
